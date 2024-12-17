@@ -1,5 +1,6 @@
-import { db } from './lib/db';
+import { Button } from '@/components/ui/button';
 import { useLiveQuery } from 'dexie-react-hooks';
+import { db } from './lib/db';
 
 function App() {
   const youngFriends = useLiveQuery(() =>
@@ -16,13 +17,21 @@ function App() {
           </li>
         ))}
       </ul>
-      <button
+      <Button
         onClick={() => {
           db.friends.add({ name: 'Alice', age: 21 });
         }}
       >
         Add another friend
-      </button>
+      </Button>
+
+      <Button
+        onClick={() => {
+          db.friends.clear();
+        }}
+      >
+        Delete all friends
+      </Button>
     </>
   );
 }
