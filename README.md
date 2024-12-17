@@ -1,50 +1,36 @@
-# React + TypeScript + Vite
+# Spaced
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## What is this?
 
-Currently, two official plugins are available:
+An updated version of spaced, a flashcard app that uses FSRS.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### Differences from spaced
 
-## Expanding the ESLint configuration
+The main differences between this version of spaced and the original are speed and performance.
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+#### Reason 1: Speed
 
-- Configure the top-level `parserOptions` property like this:
+Next.js + Vercel -> Vite + Cloudflare pages
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+TTFB and First Contentful Paint is very slow on Vercel because the serverless functions are slow to start up.
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+The startup time for cloudflare workers is much lower.
+In addition, by making this application a Progressive Web App, the user can install it on their device and it will be much faster to load.
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+#### Reason 2: Performance and Complexity
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+An offline-first architecture is used to handle the flashcards.
+
+When everything is maintained on the server, the logic for fetching flashcards is more complex as we have to handle the ordering of the next flashcards to review and limit the results due to network latency.
+
+By keeping all the flashcards on the client, we simplify the logic for showing the next flashcard to the user.
+
+**Doesn't offline-first require synchronisation which increases complexity?**
+
+Not necessarily.
+For a flashcard application, the consistency guarantees are less stringent.
+
+If the data is *not synced*, the drawback is just showing the same flashcard to the user more than once (e.g. on mobile and desktop).
+In addition, it's okay if newly created flashcards are not synced to the current device yet, as we can still review the new cards later.
+
+Lastly, most cards don't change frequently (especially the card content), so it makes sense to keep the cards locally and avoid having to use the network bandwidth to fetch the card each time the user opens the app.
