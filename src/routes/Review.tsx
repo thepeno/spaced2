@@ -45,7 +45,9 @@ export default function ReviewRoute() {
         )}
       </div>
 
-      <GradeButtons onGrade={handleGrade} />
+      {nextReviewCard && (
+        <GradeButtons onGrade={handleGrade} card={nextReviewCard} />
+      )}
     </div>
   );
 }
