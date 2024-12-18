@@ -1,3 +1,4 @@
+import CardActionButtons from '@/components/card-action-buttons';
 import CardCountBadges from '@/components/card-count-badges';
 import CurrentCardBadge from '@/components/current-card-badge';
 import FlashcardContent from '@/components/flashcard-content';
@@ -22,6 +23,11 @@ export default function ReviewRoute() {
     });
   }
 
+  function handleDelete() {
+    if (!nextReviewCard) return;
+    db.cards.delete(nextReviewCard.id);
+  }
+
   return (
     <div className='max-w-4xl h-full flex gap-2 flex-col items-center mx-auto mt-20'>
       <div className='w-full flex justify-between'>
@@ -29,7 +35,7 @@ export default function ReviewRoute() {
           <CardCountBadges />
           {nextReviewCard && <CurrentCardBadge card={nextReviewCard} />}
         </div>
-        <div>action buttons</div>
+        <CardActionButtons onDelete={handleDelete} />
       </div>
 
       <div className='flex justify-center items-center gap-2 mb-6 w-full'>
