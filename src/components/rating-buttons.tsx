@@ -8,6 +8,7 @@ import {
 } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import { intlFormatDistance } from 'date-fns';
+import { useEffect } from 'react';
 import { Card, FSRS, Grade, Rating } from 'ts-fsrs';
 
 type GradeButtonsProps = {
@@ -41,6 +42,16 @@ function GradeButton({
   dateString: string;
 }) {
   const key = RATING_TO_KEY[grade] ?? '';
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === key) {
+        onGrade(grade);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [grade, key, onGrade]);
 
   return (
     <TooltipProvider key={grade} delayDuration={100}>
