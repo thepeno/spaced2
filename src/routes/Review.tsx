@@ -1,4 +1,5 @@
 import CardCountBadges from '@/components/card-count-badges';
+import CurrentCardBadge from '@/components/current-card-badge';
 import GradeButtons from '@/components/rating-buttons';
 import { db } from '@/lib/db';
 import { useFlashcardReviewQuery } from '@/lib/query';
@@ -22,10 +23,12 @@ export default function ReviewRoute() {
   }
 
   return (
-    <div className='max-w-4xl h-full flex flex-col items-center mx-auto mt-12'>
-      <h1 className='text-2xl font-bold mb-4'>Review cards</h1>
+    <div className='max-w-4xl h-full flex gap-2 flex-col items-center mx-auto mt-20'>
       <div className='w-full flex justify-between'>
-        <CardCountBadges />
+        <div className='flex gap-2'>
+          <CardCountBadges />
+          {nextReviewCard && <CurrentCardBadge card={nextReviewCard} />}
+        </div>
         <div>action buttons</div>
       </div>
       <div className='flex justify-center items-center gap-2 mb-6 w-full'>
