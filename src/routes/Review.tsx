@@ -3,6 +3,7 @@ import { db } from '@/lib/db';
 import { useFlashcardReviewQuery } from '@/lib/query';
 import { gradeCard } from '@/lib/review';
 import { markdownToHtml } from '@/lib/utils';
+import { Fragment } from 'react/jsx-runtime';
 import { Grade } from 'ts-fsrs';
 
 export default function ReviewRoute() {
@@ -20,25 +21,25 @@ export default function ReviewRoute() {
   }
 
   return (
-    <div>
+    <div className='w-screen h-full flex flex-col items-center mt-12'>
       <h1 className='text-2xl font-bold mb-4'>Review cards</h1>
-      <div className='flex flex-wrap gap-2 mb-6 border border-1 shadow-md p-2'>
+      <div className='flex justify-center items-center gap-2 mb-6 max-w-4xl w-full'>
         {nextReviewCard ? (
-          <div className='w-40 h-80 flex flex-col justify-between'>
+          <Fragment>
             <article
-              className='prose'
+              className='prose h-96 flex-1 border border-1 p-2 rounded-sm flex flex-col items-center justify-center shadow-sm'
               dangerouslySetInnerHTML={{
                 __html: markdownToHtml(nextReviewCard.question),
               }}
             ></article>
             <hr className='my-4' />
             <article
-              className='prose'
+              className='prose h-96 flex-1 border border-1 p-2 rounded-sm flex flex-col items-center justify-center shadow-sm'
               dangerouslySetInnerHTML={{
                 __html: markdownToHtml(nextReviewCard.answer),
               }}
             ></article>
-          </div>
+          </Fragment>
         ) : (
           <div>No cards to review</div>
         )}
