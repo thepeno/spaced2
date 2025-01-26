@@ -2,6 +2,7 @@ import { CreateFlashcardForm } from '@/components/create-flashcard';
 import Flashcard from '@/components/flashcard';
 import { buttonVariants } from '@/components/ui/button';
 import { db } from '@/lib/db';
+import { emptyCardToOperations } from '@/lib/operation';
 import { useFlashcardReviewQuery } from '@/lib/query';
 import { CardWithContent } from '@/lib/types';
 import { useLiveQuery } from 'dexie-react-hooks';
@@ -50,6 +51,8 @@ function App() {
           };
 
           db.cards.add(card);
+          const operations = emptyCardToOperations(card);
+          db.operations.bulkAdd(operations);
         }}
       />
     </div>
