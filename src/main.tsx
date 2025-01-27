@@ -7,6 +7,7 @@ import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Route, Routes } from 'react-router';
 import App from './App.tsx';
 import './index.css';
+import SyncRoute from '@/routes/Sync.tsx';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -17,6 +18,7 @@ createRoot(document.getElementById('root')!).render(
         <Route path='/ops' element={<OpsRoute />} />
         <Route path='/login' element={<LoginScreen />} />
         <Route path='/me' element={<MeRoute />} />
+        <Route path='/sync' element={<SyncRoute />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>

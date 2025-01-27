@@ -89,6 +89,7 @@ export type Operation = z.infer<typeof operationSchema>;
  * and will not be used by the server.
  */
 export type OperationWithId = Operation & { id: number };
+export type Server2ClientOperation = Operation & { seqNo: number };
 
 export function emptyCardToOperations(card: CardWithContent): Operation[] {
   const now = Date.now();
