@@ -36,9 +36,50 @@ export const cardContentOperationSchema = z.object({
 
 export type CardContentOperation = z.infer<typeof cardContentOperationSchema>;
 
+export const cardDeletedOperationSchema = z.object({
+  type: z.literal('cardDeleted'),
+  payload: z.object({
+    cardId: z.string(),
+    deleted: z.boolean(),
+  }),
+  timestamp: z.number(),
+});
+
+export type CardDeletedOperation = z.infer<typeof cardDeletedOperationSchema>;
+
+export const deckOperationSchema = z.object({
+  type: z.literal('deck'),
+  payload: z.object({
+    id: z.string(),
+    name: z.string(),
+    deleted: z.boolean(),
+    description: z.string(),
+  }),
+  timestamp: z.number(),
+});
+
+export type DeckOperation = z.infer<typeof deckOperationSchema>;
+
+export const updateDeckCardOperationSchema = z.object({
+  type: z.literal('updateDeckCard'),
+  payload: z.object({
+    deckId: z.string(),
+    cardId: z.string(),
+    clCount: z.number(),
+  }),
+  timestamp: z.number(),
+});
+
+export type UpdateDeckCardOperation = z.infer<
+  typeof updateDeckCardOperationSchema
+>;
+
 export const operationSchema = z.union([
   cardOperationSchema,
   cardContentOperationSchema,
+  cardDeletedOperationSchema,
+  deckOperationSchema,
+  updateDeckCardOperationSchema,
 ]);
 export type Operation = z.infer<typeof operationSchema>;
 
@@ -68,7 +109,7 @@ export function emptyCardToOperations(card: CardWithContent): Operation[] {
     timestamp: now,
   };
 
-  // TODO: standardise to use question and answer instead of front and 
+  // TODO: standardise to use question and answer instead of front and
   // back
   const cardContentOperation: CardContentOperation = {
     type: 'cardContent',
@@ -79,7 +120,15 @@ export function emptyCardToOperations(card: CardWithContent): Operation[] {
     },
     timestamp: now,
   };
-  // TODO: add card deleted operation
 
-  return [cardOperation, cardContentOperation];
+  const cardDeletedOperation: CardDeletedOperation = {
+    type: 'cardDeleted',
+    payload: {
+      cardId: card.id,
+      deleted: false,
+    },
+    timestamp: now,
+  };
+
+  return [cardOperation, cardContentOperation, cardDeletedOperation];
 }
