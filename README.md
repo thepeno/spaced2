@@ -34,7 +34,7 @@ such as infinite scrolling.
 Not necessarily.
 For a flashcard application, the consistency guarantees are less stringent.
 
-If the data is *not synced*, the drawback is just showing the same flashcard to the user more than once (e.g. on mobile and desktop).
+If the data is _not synced_, the drawback is just showing the same flashcard to the user more than once (e.g. on mobile and desktop).
 See below for ideas on "skipping" cards that have been reviewed but not synced yet.
 
 It's okay if newly created flashcards are not synced to the current device yet, as we can still review the new cards later.
@@ -53,7 +53,8 @@ but with a few differences:
 
 1. Server uses a SQL relational model instead of the client's NoSQL IndexedDB.
 
-   *Reason*: SQL is faster for querying, sorting and filtering the data.
+   _Reason_: SQL is faster for querying, sorting and filtering the data.
+
 2. Server maintains a global sequence number for each user to more easily sync updates
    from server to client.
    Clients can just send their last seen sequence number and
@@ -61,16 +62,17 @@ but with a few differences:
 
 ## Assumptions
 
-1. Operations from a *single client* are ordered.
+1. Operations from a _single client_ are ordered.
 
    Example: if a client creates a card, then updates it, the update operation
    will always be synced to the server before the create operation.
-2. Operations from *different clients* are not ordered.
+
+2. Operations from _different clients_ are not ordered.
    1. Client 1 may create a card at time `t1` but is not connected to the Internet.
    2. Client 2 creates a card at time `t2` and syncs to the server.
    3. Client 1 reconnects.
    4. Client 2's card will be synced to the server first and
-   then Client 1's card will be synced.
+      then Client 1's card will be synced.
 3. Duplicate operations / state sent are ignored.
 
 What does this mean for our CRDTs?
@@ -91,7 +93,7 @@ We merge the value if the timestamp is greater than the current value for that c
 
 ### Card Content: LWW Register
 
-Each card's contents are associated with a *different* Last-Write-Wins Register,
+Each card's contents are associated with a _different_ Last-Write-Wins Register,
 to ensure that edits to the card content don't conflict with rating the card.
 
 ### Decks: Causal-Length Set (CLSet)
@@ -195,7 +197,7 @@ CREATE TABLE card_decks (
 
 The client operations are:
 
-- Create a card -> 2 operations: create a card, create card content
+- Create a card -> 2 operations: create a card, create card content, delete card
 - Update a card's contents
 - Delete a card
 - Rate a card (update card)
