@@ -2,13 +2,11 @@ import { CreateFlashcardForm } from '@/components/create-flashcard';
 import Flashcard from '@/components/flashcard';
 import { buttonVariants } from '@/components/ui/button';
 import { db } from '@/lib/db';
-import { emptyCardToOperations } from '@/lib/operation';
+import { createNewCard } from '@/lib/operation';
 import { useFlashcardReviewQuery } from '@/lib/query';
-import { CardWithContent } from '@/lib/types';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useMemo } from 'react';
 import { Link } from 'react-router';
-import { createEmptyCard } from 'ts-fsrs';
 
 function App() {
   const cards = useLiveQuery(() => db.cards.toArray());
@@ -40,19 +38,7 @@ function App() {
 
       <CreateFlashcardForm
         onSubmit={(data) => {
-          const now = Date.now();
-          const card: CardWithContent = {
-            ...createEmptyCard(),
-            id: crypto.randomUUID(),
-            question: data.question,
-            answer: data.answer,
-            created_at: now,
-            updated_at: now,
-          };
-
-          db.cards.add(card);
-          const operations = emptyCardToOperations(card);
-          db.operations.bulkAdd(operations);
+          createNewCard(data.question, data.answer);
         }}
       />
     </div>
