@@ -1,5 +1,6 @@
 import { STATE_NAME_TO_NUMBER, STATE_NUMBER_TO_NAME } from '@/lib/card-mapping';
 import { db } from '@/lib/db';
+import { getSeqNo, setSeqNo } from '@/lib/sync/meta';
 import { CardWithMetadata } from '@/lib/types';
 import { createEmptyCard } from 'ts-fsrs';
 import { z } from 'zod';
@@ -170,15 +171,6 @@ export async function createNewCard(question: string, answer: string) {
   await db.operations.bulkAdd(operations);
 }
 
-async function getSeqNo() {
-  const seqNo = await db.metadataKv.get('seqNo');
-  if (!seqNo) {
-    await db.metadataKv.put({ key: 'seqNo', value: 0 });
-    return 0;
-  }
-  return seqNo.value as number;
-}
-
 type OperationResult = {
   applied: boolean;
 };
@@ -331,7 +323,8 @@ export async function handleServerOperation(
   const result = await handleClientOperation(operation);
 
   if (result.applied) {
-    await db.metadataKv.put({ key: 'seqNo', value: operation.seqNo });
+    await setSeqNo(operation.seqNo);
+    return;
   }
 }
 
