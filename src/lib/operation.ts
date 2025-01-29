@@ -1,8 +1,9 @@
 import { STATE_NAME_TO_NUMBER, STATE_NUMBER_TO_NAME } from '@/lib/card-mapping';
 import { db } from '@/lib/db';
+import { gradeCard } from '@/lib/review';
 import { getSeqNo, setSeqNo } from '@/lib/sync/meta';
 import { CardWithMetadata } from '@/lib/types';
-import { createEmptyCard } from 'ts-fsrs';
+import { createEmptyCard, Grade } from 'ts-fsrs';
 import { z } from 'zod';
 
 export const states = ['New', 'Learning', 'Review', 'Relearning'] as const;
@@ -169,6 +170,23 @@ export async function createNewCard(question: string, answer: string) {
   }
 
   await db.operations.bulkAdd(operations);
+}
+
+export async function gradeCardOperation(card: CardWithMetadata, grade: Grade) {
+  const { nextCard } = gradeCard(card, grade);
+
+  const cardOperation: CardOperation = {
+    type: 'card',
+    payload: {
+      id: card.id,
+      ...nextCard,
+      state: STATE_NUMBER_TO_NAME[nextCard.state],
+      last_review: nextCard.last_review ?? null,
+    },
+    timestamp: Date.now(),
+  };
+  await handleClientOperation(cardOperation);
+  await db.operations.add(cardOperation);
 }
 
 type OperationResult = {

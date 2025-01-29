@@ -1,5 +1,4 @@
-import { CardWithContent } from '@/lib/types';
-import { fsrs, generatorParameters, Grade } from 'ts-fsrs';
+import { Card, fsrs, generatorParameters, Grade } from 'ts-fsrs';
 
 const params = generatorParameters({
   enable_fuzz: true,
@@ -8,11 +7,11 @@ const params = generatorParameters({
 const f = fsrs(params);
 
 export function gradeCard(
-  card: CardWithContent,
+  card: Card,
   grade: Grade,
   now = new Date()
 ): {
-  nextCard: CardWithContent;
+  nextCard: Card;
   //   reviewLog: NewReviewLog;
 } {
   const recordLog = f.repeat(card, now, (recordLog) => {

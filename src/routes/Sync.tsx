@@ -155,7 +155,6 @@ export default function SyncRoute() {
           {cards?.map((card) => (
             <li key={card.id}>
               {card.id} - {card.question} - {card.answer} -{' '}
-              {/* {card.due.toISOString()} */}
             </li>
           ))}
         </ul>
