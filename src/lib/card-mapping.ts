@@ -1,4 +1,4 @@
-import { states } from '@/lib/operation';
+import { states } from '@/lib/sync/operation';
 import { State } from 'ts-fsrs';
 
 export const STATE_NUMBER_TO_NAME = {

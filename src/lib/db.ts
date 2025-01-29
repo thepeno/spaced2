@@ -1,4 +1,4 @@
-import { OperationWithId } from '@/lib/operation';
+import { OperationWithId } from '@/lib/sync/operation';
 import { CardWithMetadata } from '@/lib/types';
 import { Dexie, type EntityTable } from 'dexie';
 

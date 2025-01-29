@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { db } from '@/lib/db';
-import { applyServerOperations } from '@/lib/operation';
+import { applyServerOperations } from '@/lib/sync/operation';
 import { setClientId, useClientId } from '@/lib/sync/meta';
 import { pullFromServer, pushToServer } from '@/lib/sync/server';
 import { useLiveQuery } from 'dexie-react-hooks';

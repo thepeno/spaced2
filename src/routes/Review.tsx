@@ -4,7 +4,7 @@ import CurrentCardBadge from '@/components/current-card-badge';
 import FlashcardContent from '@/components/flashcard-content';
 import GradeButtons from '@/components/rating-buttons';
 import { db } from '@/lib/db';
-import { gradeCardOperation } from '@/lib/operation';
+import { gradeCardOperation } from '@/lib/sync/operation';
 import { useFlashcardReviewQuery } from '@/lib/query';
 import { Fragment } from 'react/jsx-runtime';
 import { Grade } from 'ts-fsrs';

@@ -1,4 +1,4 @@
-import { Operation, operationSchema, Server2Client } from '@/lib/operation';
+import { Operation, operationSchema, Server2Client } from '@/lib/sync/operation';
 import { z } from 'zod';
 
 /**
