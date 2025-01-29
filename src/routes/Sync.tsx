@@ -1,12 +1,9 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { db } from '@/lib/db';
-import {
-  applyServerOperations,
-  Operation,
-  Server2Client,
-} from '@/lib/operation';
+import { applyServerOperations } from '@/lib/operation';
 import { setClientId, useClientId } from '@/lib/sync/meta';
+import { pullFromServer, pushToServer } from '@/lib/sync/server';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { ArrowDownIcon, ArrowUpIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -24,58 +21,23 @@ export default function SyncRoute() {
     setImpersonateClientId(clientId);
   }, [clientId]);
 
-  const pullFromServer = async () => {
+  const syncFromServer = async () => {
     if (!clientId) {
       return;
     }
 
-    const response = await fetch(
-      `${import.meta.env.VITE_BACKEND_URL}/sync?seqNo=${seqNo}`,
-      {
-        credentials: 'include',
-        headers: {
-          'X-Client-Id': clientId,
-        },
-        method: 'GET',
-      }
-    );
-    const data = await response.json();
-    const operations = data.ops as Server2Client<Operation>[];
+    const operations = await pullFromServer(clientId, seqNo);
     await applyServerOperations(operations);
     console.log('applied', operations.length, 'operations');
   };
 
-  const pushToServer = async () => {
-    if (!clientId) {
+  const syncToServer = async () => {
+    if (!clientId || !operations) {
       return;
     }
 
-    console.log(
-      'sending payload',
-      JSON.stringify(
-        {
-          ops: operations,
-        },
-        null,
-        2
-      )
-    );
-    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/sync`, {
-      credentials: 'include',
-      method: 'POST',
-      headers: {
-        'X-Client-Id': clientId,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        ops: operations,
-      }),
-    });
-
-    const data = (await response.json()) as { success: boolean };
-    console.log(data);
-
-    if (data.success) {
+    const response = await pushToServer(clientId, operations);
+    if (response.success) {
       db.operations.clear();
     }
   };
@@ -103,7 +65,7 @@ export default function SyncRoute() {
     <div className='flex flex-col items-start justify-start h-screen gap-12 px-16 py-12'>
       <section className='flex flex-col gap-2'>
         <h1 className='text-2xl font-bold mb-4'>Sync</h1>
-        <Button variant='outline' onClick={pullFromServer} disabled={!clientId}>
+        <Button variant='outline' onClick={syncFromServer} disabled={!clientId}>
           <ArrowDownIcon className='w-4 h-4 mr-2' />
           <span>Pull from server</span>
         </Button>
@@ -133,7 +95,7 @@ export default function SyncRoute() {
         <h2 className='text-2xl font-bold mb-4'>Pending Operations</h2>
         <Button
           variant='outline'
-          onClick={pushToServer}
+          onClick={syncToServer}
           className='mb-4'
           disabled={!clientId}
         >
