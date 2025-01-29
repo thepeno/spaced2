@@ -1,18 +1,34 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { db } from '@/lib/db';
-import { Server2ClientOperation } from '@/lib/operation';
+import {
+  applyServerOperations,
+  Operation,
+  Server2Client,
+} from '@/lib/operation';
+import { setClientId, useClientId } from '@/lib/sync/meta';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { ArrowDownIcon, ArrowUpIcon } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function SyncRoute() {
   const operations = useLiveQuery(() => db.operations.orderBy('id').toArray());
+  const cards = useLiveQuery(() => db.cards.toArray());
+  const clientId = useClientId();
   const [seqNo, setSeqNo] = useState(0);
 
-  const [clientId, setClientId] = useState('0Ji8JYASoRBf1dLO');
+  const [impersonateClientId, setImpersonateClientId] = useState<string | null>(
+    null
+  );
+  useEffect(() => {
+    setImpersonateClientId(clientId);
+  }, [clientId]);
 
   const pullFromServer = async () => {
+    if (!clientId) {
+      return;
+    }
+
     const response = await fetch(
       `${import.meta.env.VITE_BACKEND_URL}/sync?seqNo=${seqNo}`,
       {
@@ -24,11 +40,16 @@ export default function SyncRoute() {
       }
     );
     const data = await response.json();
-    const operations = data.ops as Server2ClientOperation[];
-    console.log(operations);
+    const operations = data.ops as Server2Client<Operation>[];
+    await applyServerOperations(operations);
+    console.log('applied', operations.length, 'operations');
   };
 
   const pushToServer = async () => {
+    if (!clientId) {
+      return;
+    }
+
     console.log(
       'sending payload',
       JSON.stringify(
@@ -60,6 +81,8 @@ export default function SyncRoute() {
   };
 
   const registerClient = async () => {
+    if (clientId) return;
+
     const response = await fetch(
       `${import.meta.env.VITE_BACKEND_URL}/clientId`,
       {
@@ -67,15 +90,20 @@ export default function SyncRoute() {
         method: 'POST',
       }
     );
-    const data = await response.json();
-    console.log(data);
+
+    if (!response.ok) {
+      throw new Error('Failed to register client');
+    }
+
+    const data: { clientId: string } = await response.json();
+    setClientId(data.clientId);
   };
 
   return (
     <div className='flex flex-col items-start justify-start h-screen gap-12 px-16 py-12'>
       <section className='flex flex-col gap-2'>
         <h1 className='text-2xl font-bold mb-4'>Sync</h1>
-        <Button variant='outline' onClick={pullFromServer}>
+        <Button variant='outline' onClick={pullFromServer} disabled={!clientId}>
           <ArrowDownIcon className='w-4 h-4 mr-2' />
           <span>Pull from server</span>
         </Button>
@@ -88,8 +116,8 @@ export default function SyncRoute() {
 
         <Input
           type='text'
-          value={clientId}
-          onChange={(e) => setClientId(e.target.value)}
+          value={impersonateClientId ?? ''}
+          onChange={(e) => setImpersonateClientId(e.target.value)}
         />
       </section>
 
@@ -103,7 +131,12 @@ export default function SyncRoute() {
 
       <section>
         <h2 className='text-2xl font-bold mb-4'>Pending Operations</h2>
-        <Button variant='outline' onClick={pushToServer} className='mb-4'>
+        <Button
+          variant='outline'
+          onClick={pushToServer}
+          className='mb-4'
+          disabled={!clientId}
+        >
           <ArrowUpIcon className='w-4 h-4 mr-2' />
           <span>Push to server</span>
         </Button>
@@ -111,6 +144,18 @@ export default function SyncRoute() {
           {operations?.map((operation) => (
             <li key={operation.id}>
               {operation.id}: {operation.type} - {operation.timestamp}
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section>
+        <h2 className='text-2xl font-bold mb-4'>Cards</h2>
+        <ul>
+          {cards?.map((card) => (
+            <li key={card.id}>
+              {card.id} - {card.question} - {card.answer} -{' '}
+              {/* {card.due.toISOString()} */}
             </li>
           ))}
         </ul>
