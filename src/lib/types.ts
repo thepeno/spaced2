@@ -2,8 +2,8 @@ import { Card } from 'ts-fsrs';
 
 export type CardWithMetadata = Card & {
   id: string;
-  question: string;
-  answer: string;
+  front: string;
+  back: string;
 
   deleted: boolean;
 

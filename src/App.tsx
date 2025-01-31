@@ -37,7 +37,7 @@ function App() {
 
       <CreateFlashcardForm
         onSubmit={(data) => {
-          createNewCard(data.question, data.answer);
+          createNewCard(data.front, data.back);
         }}
       />
     </div>

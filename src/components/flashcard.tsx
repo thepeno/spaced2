@@ -10,8 +10,8 @@ export default function Flashcard({
 }) {
   return (
     <div className={cn('flex flex-col gap-2', isReview && 'bg-green-200')}>
-      <div>{card.question}</div>
-      <div>{card.answer}</div>
+      <div>{card.front}</div>
+      <div>{card.back}</div>
     </div>
   );
 }

@@ -37,9 +37,9 @@ export default function ReviewRoute() {
       <div className='flex justify-center items-center gap-2 mb-6 w-full'>
         {nextReviewCard ? (
           <Fragment>
-            <FlashcardContent content={nextReviewCard.question} />
+            <FlashcardContent content={nextReviewCard.front} />
             <hr className='my-4' />
-            <FlashcardContent content={nextReviewCard.answer} />
+            <FlashcardContent content={nextReviewCard.back} />
           </Fragment>
         ) : (
           <div>No cards to review</div>

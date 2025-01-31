@@ -16,15 +16,15 @@ export function CreateFlashcardForm({ onSubmit }: CreateFlashcardFormProps) {
   const form = useForm<CardContentFormValues>({
     resolver: zodResolver(cardContentFormSchema),
     defaultValues: {
-      question: '',
-      answer: '',
+      front: '',
+      back: '',
     },
   });
 
   const handleSubmit = (data: CardContentFormValues) => {
     onSubmit(data);
     form.reset();
-    form.setFocus('question');
+    form.setFocus('front');
   };
 
   return (
@@ -35,13 +35,13 @@ export function CreateFlashcardForm({ onSubmit }: CreateFlashcardFormProps) {
       >
         <FormField
           control={form.control}
-          name='question'
+          name='front'
           render={({ field }) => <Input {...field} />}
         />
 
         <FormField
           control={form.control}
-          name='answer'
+          name='back'
           render={({ field }) => <Input {...field} />}
         />
 

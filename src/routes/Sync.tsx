@@ -123,7 +123,7 @@ export default function SyncRoute() {
         <ul>
           {cards?.map((card) => (
             <li key={card.id}>
-              {card.id} - {card.question} - {card.answer} -{' '}
+              {card.id} - {card.front} - {card.back} -{' '}
             </li>
           ))}
         </ul>

@@ -11,8 +11,8 @@ export const states = ['New', 'Learning', 'Review', 'Relearning'] as const;
 
 const defaultCard: Omit<CardWithMetadata, 'id'> = {
   ...createEmptyCard(),
-  question: '',
-  answer: '',
+  front: '',
+  back: '',
   deleted: false,
 
   // CRDT metadata
@@ -151,14 +151,12 @@ export function emptyCardToOperations(card: CardWithMetadata): Operation[] {
     timestamp: now,
   };
 
-  // TODO: standardise to use question and answer instead of front and
-  // back
   const cardContentOperation: CardContentOperation = {
     type: 'cardContent',
     payload: {
       cardId: card.id,
-      front: card.question,
-      back: card.answer,
+      front: card.front,
+      back: card.back,
     },
     timestamp: now,
   };
@@ -182,12 +180,12 @@ export function emptyCardToOperations(card: CardWithMetadata): Operation[] {
  * Doing so simplifies the implementation of the client side and ensures
  * consistency when updating the database.
  */
-export async function createNewCard(question: string, answer: string) {
+export async function createNewCard(front: string, back: string) {
   const card: CardWithMetadata = {
     ...createEmptyCard(),
     id: crypto.randomUUID(),
-    question,
-    answer,
+    front,
+    back,
 
     // CRDT metadata
     cardLastModified: 0,
@@ -288,8 +286,8 @@ function handleCardContentOperation(
     memoryDb.cards[operation.payload.cardId] = {
       ...defaultCard,
       id: operation.payload.cardId,
-      question: operation.payload.front,
-      answer: operation.payload.back,
+      front: operation.payload.front,
+      back: operation.payload.back,
 
       cardContentLastModified: operation.timestamp,
     };
@@ -302,8 +300,8 @@ function handleCardContentOperation(
 
   const updatedCard = {
     ...card,
-    question: operation.payload.front,
-    answer: operation.payload.back,
+    front: operation.payload.front,
+    back: operation.payload.back,
     cardContentLastModified: operation.timestamp,
   };
 
