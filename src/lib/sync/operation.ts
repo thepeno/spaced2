@@ -1,5 +1,6 @@
 import { STATE_NAME_TO_NUMBER, STATE_NUMBER_TO_NAME } from '@/lib/card-mapping';
-import { db } from '@/lib/db';
+import { memoryDb } from '@/lib/db/memory';
+import { db } from '@/lib/db/persistence';
 import { gradeCard } from '@/lib/review';
 import { getSeqNo, setSeqNo } from '@/lib/sync/meta';
 import { CardWithMetadata } from '@/lib/types';
@@ -195,9 +196,9 @@ export async function createNewCard(question: string, answer: string) {
   };
 
   const operations = emptyCardToOperations(card);
-  // TODO: should be handled as a single transaction
+
   for (const operation of operations) {
-    const result = await handleClientOperation(operation);
+    const result = handleClientOperation(operation);
     if (!result.applied) {
       throw new Error(
         'SHOULD NOT HAPPEN - there should not be conflict when creating new cards'
@@ -206,6 +207,7 @@ export async function createNewCard(question: string, answer: string) {
   }
 
   await db.operations.bulkAdd(operations);
+  await db.pendingOperations.bulkAdd(operations);
 }
 
 export async function gradeCardOperation(card: CardWithMetadata, grade: Grade) {
@@ -221,7 +223,7 @@ export async function gradeCardOperation(card: CardWithMetadata, grade: Grade) {
     },
     timestamp: Date.now(),
   };
-  await handleClientOperation(cardOperation);
+  handleClientOperation(cardOperation);
   await db.operations.add(cardOperation);
 }
 
@@ -229,40 +231,13 @@ type OperationResult = {
   applied: boolean;
 };
 
-async function handleCardOperation(
-  operation: CardOperation
-): Promise<OperationResult> {
-  return db.transaction('rw', db.cards, db.metadataKv, async () => {
-    const card = await db.cards.get(operation.payload.id);
+function handleCardOperation(operation: CardOperation): OperationResult {
+  const card = memoryDb.cards[operation.payload.id];
 
-    if (!card) {
-      await db.cards.add({
-        ...defaultCard,
-        id: operation.payload.id,
-        due: operation.payload.due,
-        stability: operation.payload.stability,
-        difficulty: operation.payload.difficulty,
-        elapsed_days: operation.payload.elapsed_days,
-        scheduled_days: operation.payload.scheduled_days,
-        reps: operation.payload.reps,
-        lapses: operation.payload.lapses,
-        state: STATE_NAME_TO_NUMBER[operation.payload.state],
-        last_review: operation.payload.last_review ?? undefined,
-
-        createdAt: operation.timestamp,
-        // CRDT metadata
-        cardLastModified: operation.timestamp,
-      });
-      return { applied: true };
-    }
-
-    // Unlike the server side, we don't have to bother with client timestamps as tiebreakers
-    // as the operations applied are idempotent
-    if (card.cardLastModified > operation.timestamp) {
-      return { applied: false };
-    }
-
-    await db.cards.update(card.id, {
+  if (!card) {
+    memoryDb.cards[operation.payload.id] = {
+      ...defaultCard,
+      id: operation.payload.id,
       due: operation.payload.due,
       stability: operation.payload.stability,
       difficulty: operation.payload.difficulty,
@@ -273,76 +248,100 @@ async function handleCardOperation(
       state: STATE_NAME_TO_NUMBER[operation.payload.state],
       last_review: operation.payload.last_review ?? undefined,
 
-      cardLastModified: operation.timestamp,
-    });
+      createdAt: operation.timestamp,
 
+      // CRDT metadata
+      cardLastModified: operation.timestamp,
+    };
     return { applied: true };
-  });
+  }
+
+  if (card.cardLastModified > operation.timestamp) {
+    return { applied: false };
+  }
+
+  const updatedCard = {
+    ...card,
+
+    due: operation.payload.due,
+    stability: operation.payload.stability,
+    difficulty: operation.payload.difficulty,
+    elapsed_days: operation.payload.elapsed_days,
+    scheduled_days: operation.payload.scheduled_days,
+    reps: operation.payload.reps,
+    lapses: operation.payload.lapses,
+    state: STATE_NAME_TO_NUMBER[operation.payload.state],
+    last_review: operation.payload.last_review ?? undefined,
+
+    cardLastModified: operation.timestamp,
+  };
+
+  memoryDb.cards[operation.payload.id] = updatedCard;
+  return { applied: true };
 }
 
-async function handleCardContentOperation(
+function handleCardContentOperation(
   operation: CardContentOperation
-): Promise<OperationResult> {
-  return db.transaction('rw', db.cards, async () => {
-    const card = await db.cards.get(operation.payload.cardId);
-    if (!card) {
-      await db.cards.add({
-        ...defaultCard,
-        id: operation.payload.cardId,
-        question: operation.payload.front,
-        answer: operation.payload.back,
-
-        cardContentLastModified: operation.timestamp,
-      });
-      return { applied: true };
-    }
-
-    if (card.cardContentLastModified > operation.timestamp) {
-      return { applied: false };
-    }
-
-    await db.cards.update(card.id, {
+): OperationResult {
+  const card = memoryDb.cards[operation.payload.cardId];
+  if (!card) {
+    memoryDb.cards[operation.payload.cardId] = {
+      ...defaultCard,
+      id: operation.payload.cardId,
       question: operation.payload.front,
       answer: operation.payload.back,
+
       cardContentLastModified: operation.timestamp,
-    });
-
+    };
     return { applied: true };
-  });
+  }
+
+  if (card.cardContentLastModified > operation.timestamp) {
+    return { applied: false };
+  }
+
+  const updatedCard = {
+    ...card,
+    question: operation.payload.front,
+    answer: operation.payload.back,
+    cardContentLastModified: operation.timestamp,
+  };
+
+  memoryDb.cards[operation.payload.cardId] = updatedCard;
+  return { applied: true };
 }
 
-async function handleCardDeletedOperation(
+function handleCardDeletedOperation(
   operation: CardDeletedOperation
-): Promise<OperationResult> {
-  return db.transaction('rw', db.cards, async () => {
-    const card = await db.cards.get(operation.payload.cardId);
-    if (!card) {
-      await db.cards.add({
-        ...defaultCard,
-        id: operation.payload.cardId,
-        deleted: operation.payload.deleted,
+): OperationResult {
+  const card = memoryDb.cards[operation.payload.cardId];
 
-        cardDeletedLastModified: operation.timestamp,
-      });
-      return { applied: true };
-    }
-
-    if (card.cardDeletedLastModified > operation.timestamp) {
-      return { applied: false };
-    }
-
-    await db.cards.update(card.id, {
+  if (!card) {
+    memoryDb.cards[operation.payload.cardId] = {
+      ...defaultCard,
+      id: operation.payload.cardId,
       deleted: operation.payload.deleted,
-      cardDeletedLastModified: operation.timestamp,
-    });
 
+      cardDeletedLastModified: operation.timestamp,
+    };
     return { applied: true };
-  });
+  }
+
+  if (card.cardDeletedLastModified > operation.timestamp) {
+    return { applied: false };
+  }
+
+  const updatedCard = {
+    ...card,
+    deleted: operation.payload.deleted,
+    cardDeletedLastModified: operation.timestamp,
+  };
+
+  memoryDb.cards[operation.payload.cardId] = updatedCard;
+  return { applied: true };
 }
 
-export async function handleClientOperation(
-  operation: Operation
-): Promise<OperationResult> {
+export function handleClientOperation(operation: Operation): OperationResult {
   switch (operation.type) {
     case 'card':
       return handleCardOperation(operation);
@@ -377,10 +376,17 @@ export async function applyServerOperations(
     return;
   }
 
-  const operationsToApply = operations.filter((op) => op.seqNo > seqNo);
-  for (let i = 0; i < operationsToApply.length; i++) {
-    await handleClientOperation(operationsToApply[i]);
-  }
+  const operationsApplied = operations
+    .filter((op) => op.seqNo > seqNo)
+    .map((op) => {
+      const result = handleClientOperation(op);
+      if (result.applied) {
+        return op;
+      }
+      return null;
+    })
+    .filter((op) => op !== null);
 
   await setSeqNo(highestSeqNo);
+  await db.operations.bulkAdd(operationsApplied);
 }

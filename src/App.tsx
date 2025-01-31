@@ -1,7 +1,7 @@
 import { CreateFlashcardForm } from '@/components/create-flashcard';
 import Flashcard from '@/components/flashcard';
 import { buttonVariants } from '@/components/ui/button';
-import { db } from '@/lib/db';
+import { db } from '@/lib/db/persistence';
 import { createNewCard } from '@/lib/sync/operation';
 import { useFlashcardReviewQuery } from '@/lib/query';
 import { useLiveQuery } from 'dexie-react-hooks';

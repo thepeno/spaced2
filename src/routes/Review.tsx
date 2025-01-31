@@ -3,7 +3,7 @@ import CardCountBadges from '@/components/card-count-badges';
 import CurrentCardBadge from '@/components/current-card-badge';
 import FlashcardContent from '@/components/flashcard-content';
 import GradeButtons from '@/components/rating-buttons';
-import { db } from '@/lib/db';
+import { db } from '@/lib/db/persistence';
 import { gradeCardOperation } from '@/lib/sync/operation';
 import { useFlashcardReviewQuery } from '@/lib/query';
 import { Fragment } from 'react/jsx-runtime';

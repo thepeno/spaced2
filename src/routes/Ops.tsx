@@ -1,4 +1,4 @@
-import { db } from '@/lib/db';
+import { db } from '@/lib/db/persistence';
 import { useLiveQuery } from 'dexie-react-hooks';
 
 export default function OpsRoute() {

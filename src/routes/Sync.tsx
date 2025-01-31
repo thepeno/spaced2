@@ -1,8 +1,8 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { db } from '@/lib/db';
-import { applyServerOperations } from '@/lib/sync/operation';
+import { db } from '@/lib/db/persistence';
 import { setClientId, useClientId } from '@/lib/sync/meta';
+import { applyServerOperations } from '@/lib/sync/operation';
 import { pullFromServer, pushToServer } from '@/lib/sync/server';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { ArrowDownIcon, ArrowUpIcon } from 'lucide-react';
@@ -10,7 +10,7 @@ import { useEffect, useState } from 'react';
 
 export default function SyncRoute() {
   const operations = useLiveQuery(() => db.operations.orderBy('id').toArray());
-  const cards = useLiveQuery(() => db.cards.toArray());
+  // const cards = useLiveQuery(() => db.cards.limit(100).toArray());
   const clientId = useClientId();
   const [seqNo, setSeqNo] = useState(0);
 
@@ -27,7 +27,10 @@ export default function SyncRoute() {
     }
 
     const operations = await pullFromServer(clientId, seqNo);
+    console.log('pulled', operations.length, 'operations');
+    console.time('apply');
     await applyServerOperations(operations);
+    console.timeEnd('apply');
     console.log('applied', operations.length, 'operations');
   };
 
@@ -114,11 +117,11 @@ export default function SyncRoute() {
       <section>
         <h2 className='text-2xl font-bold mb-4'>Cards</h2>
         <ul>
-          {cards?.map((card) => (
+          {/* {cards?.map((card) => (
             <li key={card.id}>
               {card.id} - {card.question} - {card.answer} -{' '}
             </li>
-          ))}
+          ))} */}
         </ul>
       </section>
     </div>
