@@ -206,6 +206,7 @@ export async function createNewCard(front: string, back: string) {
 
   await db.operations.bulkAdd(operations);
   await db.pendingOperations.bulkAdd(operations);
+  notify();
 }
 
 export async function gradeCardOperation(card: CardWithMetadata, grade: Grade) {
@@ -221,8 +222,8 @@ export async function gradeCardOperation(card: CardWithMetadata, grade: Grade) {
     },
     timestamp: Date.now(),
   };
-  handleClientOperation(cardOperation);
-  await db.operations.add(cardOperation);
+
+  await handleClientOperationWithPersistence(cardOperation);
 }
 
 type OperationResult = {
@@ -361,11 +362,34 @@ export async function handleClientOperationWithPersistence(
   operation: Operation
 ): Promise<OperationResult> {
   const result = handleClientOperation(operation);
+
   if (result.applied) {
     await db.operations.add(operation);
     await db.pendingOperations.add(operation);
+    notify();
   }
+
   return result;
+}
+
+export async function updateDeletedClientSide(
+  cardId: string,
+  deleted: boolean
+) {
+  const card = memoryDb.cards[cardId];
+  if (!card) {
+    return;
+  }
+
+  const cardOperation: CardDeletedOperation = {
+    type: 'cardDeleted',
+    payload: {
+      cardId,
+      deleted,
+    },
+    timestamp: Date.now(),
+  };
+  handleClientOperationWithPersistence(cardOperation);
 }
 
 // We assume that the updates are being applied sequentially

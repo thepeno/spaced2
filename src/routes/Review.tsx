@@ -5,9 +5,8 @@ import FlashcardContent from '@/components/flashcard-content';
 import { useReviewCards } from '@/components/hooks/db';
 import GradeButtons from '@/components/rating-buttons';
 import {
-  CardDeletedOperation,
   gradeCardOperation,
-  handleClientOperationWithPersistence,
+  updateDeletedClientSide
 } from '@/lib/sync/operation';
 import { Fragment } from 'react/jsx-runtime';
 import { Grade } from 'ts-fsrs';
@@ -24,15 +23,7 @@ export default function ReviewRoute() {
 
   async function handleDelete() {
     if (!nextReviewCard) return;
-    const deleteOperation: CardDeletedOperation = {
-      type: 'cardDeleted',
-      payload: {
-        cardId: nextReviewCard.id,
-        deleted: true,
-      },
-      timestamp: Date.now(),
-    };
-    await handleClientOperationWithPersistence(deleteOperation);
+    await updateDeletedClientSide(nextReviewCard.id, true);
   }
 
   return (

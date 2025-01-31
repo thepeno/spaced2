@@ -35,6 +35,7 @@ async function init() {
     handleClientOperation(operation);
   }
   notify();
+  console.log('Spaced Database initialized');
 }
 
 await init();
