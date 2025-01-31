@@ -1,4 +1,8 @@
-import { Operation, operationSchema, Server2Client } from '@/lib/sync/operation';
+import {
+    Operation,
+    Server2Client,
+    server2ClientSyncSchema,
+} from '@/lib/sync/operation';
 import { z } from 'zod';
 
 /**
@@ -24,13 +28,8 @@ export async function pullFromServer(
 
   const data = await response.json();
 
-  // Necessary to coerce the date strings in Card payloads to Date objects
-  const parsedData = z
-    .object({
-      ops: z.array(operationSchema),
-    })
-    .parse(data);
-  const operations = parsedData.ops as Server2Client<Operation>[];
+  const parsedData = server2ClientSyncSchema.parse(data);
+  const operations = parsedData.ops satisfies Server2Client<Operation>[];
 
   return operations;
 }

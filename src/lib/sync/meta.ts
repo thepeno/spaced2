@@ -2,12 +2,17 @@ import { db } from '@/lib/db';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useEffect, useState } from 'react';
 
-export async function getSeqNo() {
+export async function getSeqNo(): Promise<number> {
   const seqNo = await db.metadataKv.get('seqNo');
   if (!seqNo) {
     await db.metadataKv.put({ key: 'seqNo', value: 0 });
     return 0;
   }
+
+  if (typeof seqNo.value !== 'number') {
+    throw new Error('seqNo is not a number');
+  }
+
   return seqNo.value as number;
 }
 

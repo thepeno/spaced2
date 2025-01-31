@@ -8,71 +8,81 @@ import { z } from 'zod';
 
 export const states = ['New', 'Learning', 'Review', 'Relearning'] as const;
 
-export const cardOperationSchema = z.object({
-  type: z.literal('card'),
-  payload: z.object({
-    id: z.string(),
-    // card variables
-    due: z.coerce.date(),
-    stability: z.number(),
-    difficulty: z.number(),
-    elapsed_days: z.number(),
-    scheduled_days: z.number(),
-    reps: z.number(),
-    lapses: z.number(),
-    state: z.enum(states),
-    last_review: z.coerce.date().nullable(),
-  }),
-  timestamp: z.number(),
-});
+export const cardOperationSchema = z
+  .object({
+    type: z.literal('card'),
+    payload: z.object({
+      id: z.string(),
+      // card variables
+      due: z.coerce.date(),
+      stability: z.number(),
+      difficulty: z.number(),
+      elapsed_days: z.number(),
+      scheduled_days: z.number(),
+      reps: z.number(),
+      lapses: z.number(),
+      state: z.enum(states),
+      last_review: z.coerce.date().nullable(),
+    }),
+    timestamp: z.number(),
+  })
+  .passthrough();
 
 export type CardOperation = z.infer<typeof cardOperationSchema>;
 
-export const cardContentOperationSchema = z.object({
-  type: z.literal('cardContent'),
-  payload: z.object({
-    cardId: z.string(),
-    front: z.string(),
-    back: z.string(),
-  }),
-  timestamp: z.number(),
-});
+export const cardContentOperationSchema = z
+  .object({
+    type: z.literal('cardContent'),
+    payload: z.object({
+      cardId: z.string(),
+      front: z.string(),
+      back: z.string(),
+    }),
+    timestamp: z.number(),
+  })
+  .passthrough();
 
 export type CardContentOperation = z.infer<typeof cardContentOperationSchema>;
 
-export const cardDeletedOperationSchema = z.object({
-  type: z.literal('cardDeleted'),
-  payload: z.object({
-    cardId: z.string(),
-    deleted: z.boolean(),
-  }),
-  timestamp: z.number(),
-});
+export const cardDeletedOperationSchema = z
+  .object({
+    type: z.literal('cardDeleted'),
+    payload: z.object({
+      cardId: z.string(),
+      deleted: z.boolean(),
+    }),
+    timestamp: z.number(),
+  })
+  .passthrough();
 
 export type CardDeletedOperation = z.infer<typeof cardDeletedOperationSchema>;
 
-export const deckOperationSchema = z.object({
-  type: z.literal('deck'),
-  payload: z.object({
-    id: z.string(),
-    name: z.string(),
-    deleted: z.boolean(),
-    description: z.string(),
-  }),
-  timestamp: z.number(),
-});
+export const deckOperationSchema = z
+  .object({
+    type: z.literal('deck'),
+    payload: z.object({
+      id: z.string(),
+      name: z.string(),
+      deleted: z.boolean(),
+      description: z.string(),
+    }),
+    timestamp: z.number(),
+  })
+  .passthrough();
 
 export type DeckOperation = z.infer<typeof deckOperationSchema>;
 
-export const updateDeckCardOperationSchema = z.object({
-  type: z.literal('updateDeckCard'),
-  payload: z.object({
-    deckId: z.string(),
-    cardId: z.string(),
-    clCount: z.number(),
-  }),
-  timestamp: z.number(),
-});
+export const updateDeckCardOperationSchema = z
+  .object({
+    type: z.literal('updateDeckCard'),
+    payload: z.object({
+      deckId: z.string(),
+      cardId: z.string(),
+      clCount: z.number(),
+    }),
+    timestamp: z.number(),
+  })
+  .passthrough();
 
 export type UpdateDeckCardOperation = z.infer<
   typeof updateDeckCardOperationSchema
@@ -93,6 +103,18 @@ export type Operation = z.infer<typeof operationSchema>;
  * and will not be used by the server.
  */
 export type OperationWithId = Operation & { id: number };
+
+export const server2ClientSyncSchema = z.object({
+  ops: z.array(
+    z.union([
+      cardOperationSchema.extend({ seqNo: z.number() }),
+      cardContentOperationSchema.extend({ seqNo: z.number() }),
+      cardDeletedOperationSchema.extend({ seqNo: z.number() }),
+      deckOperationSchema.extend({ seqNo: z.number() }),
+      updateDeckCardOperationSchema.extend({ seqNo: z.number() }),
+    ])
+  ),
+});
 export type Server2Client<T extends Operation> = T & { seqNo: number };
 
 export function emptyCardToOperations(card: CardWithMetadata): Operation[] {
@@ -319,6 +341,10 @@ export async function handleClientOperation(
     case 'cardDeleted':
       return handleCardDeletedOperation(operation);
     // TODO: add other operations
+    case 'deck':
+      return { applied: false };
+    case 'updateDeckCard':
+      return { applied: false };
     default:
       throw new Error(`Unknown operation type: ${JSON.stringify(operation)}`);
   }
@@ -349,7 +375,14 @@ export async function handleServerOperation(
 export async function applyServerOperations(
   operations: Server2Client<Operation>[]
 ) {
-  for (const operation of operations) {
-    await handleServerOperation(operation);
+  // for (const operation of operations) {
+  // await handleServerOperation(operation);
+  // }
+  for (let i = 0; i < operations.length; i++) {
+    console.log('applying operation', operations[i].seqNo);
+    await handleServerOperation(operations[i]);
+    if (i % 100 === 0) {
+      console.log('applied', i, 'operations');
+    }
   }
 }
