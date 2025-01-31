@@ -1,3 +1,4 @@
+import { useReviewCards } from '@/components/hooks/db';
 import { Badge } from '@/components/ui/badge';
 import {
   Tooltip,
@@ -5,11 +6,10 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { useFlashcardReviewQuery } from '@/lib/query';
 import { State } from 'ts-fsrs';
 
 export default function CardCountBadges() {
-  const reviewCards = useFlashcardReviewQuery();
+  const reviewCards = useReviewCards();
   const numNewCards = reviewCards?.filter(
     (card) => card.state === State.New
   ).length;

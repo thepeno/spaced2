@@ -1,5 +1,5 @@
 import { STATE_NAME_TO_NUMBER, STATE_NUMBER_TO_NAME } from '@/lib/card-mapping';
-import { memoryDb } from '@/lib/db/memory';
+import { memoryDb, notify } from '@/lib/db/memory';
 import { db } from '@/lib/db/persistence';
 import { gradeCard } from '@/lib/review';
 import { getSeqNo, setSeqNo } from '@/lib/sync/meta';
@@ -386,6 +386,8 @@ export async function applyServerOperations(
       return null;
     })
     .filter((op) => op !== null);
+
+  notify();
 
   await setSeqNo(highestSeqNo);
   await db.operations.bulkAdd(operationsApplied);

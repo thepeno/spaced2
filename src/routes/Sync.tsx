@@ -1,3 +1,4 @@
+import { useReadCards } from '@/components/hooks/db';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { db } from '@/lib/db/persistence';
@@ -9,8 +10,11 @@ import { ArrowDownIcon, ArrowUpIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 export default function SyncRoute() {
-  const operations = useLiveQuery(() => db.operations.orderBy('id').toArray());
-  // const cards = useLiveQuery(() => db.cards.limit(100).toArray());
+  const operations = useLiveQuery(() =>
+    db.pendingOperations.orderBy('id').toArray()
+  );
+  const cards = useReadCards();
+
   const clientId = useClientId();
   const [seqNo, setSeqNo] = useState(0);
 
@@ -115,13 +119,13 @@ export default function SyncRoute() {
       </section>
 
       <section>
-        <h2 className='text-2xl font-bold mb-4'>Cards</h2>
+      <h2 className='text-2xl font-bold mb-4'>Cards</h2>
         <ul>
-          {/* {cards?.map((card) => (
+          {cards?.map((card) => (
             <li key={card.id}>
               {card.id} - {card.question} - {card.answer} -{' '}
             </li>
-          ))} */}
+          ))}
         </ul>
       </section>
     </div>

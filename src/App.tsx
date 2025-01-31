@@ -1,16 +1,15 @@
 import { CreateFlashcardForm } from '@/components/create-flashcard';
 import Flashcard from '@/components/flashcard';
+import { useReadCards } from '@/components/hooks/db';
 import { buttonVariants } from '@/components/ui/button';
-import { db } from '@/lib/db/persistence';
 import { createNewCard } from '@/lib/sync/operation';
-import { useFlashcardReviewQuery } from '@/lib/query';
-import { useLiveQuery } from 'dexie-react-hooks';
 import { useMemo } from 'react';
 import { Link } from 'react-router';
 
 function App() {
-  const cards = useLiveQuery(() => db.cards.toArray());
-  const reviewCards = useFlashcardReviewQuery();
+  const cards = useReadCards();
+  const reviewCards = cards.filter((card) => card.due < new Date());
+
   const reviewSet = useMemo(
     () => new Set(reviewCards?.map((card) => card.id)),
     [reviewCards]

@@ -2,15 +2,14 @@ import CardActionButtons from '@/components/card-action-buttons';
 import CardCountBadges from '@/components/card-count-badges';
 import CurrentCardBadge from '@/components/current-card-badge';
 import FlashcardContent from '@/components/flashcard-content';
+import { useReviewCards } from '@/components/hooks/db';
 import GradeButtons from '@/components/rating-buttons';
-import { db } from '@/lib/db/persistence';
 import { gradeCardOperation } from '@/lib/sync/operation';
-import { useFlashcardReviewQuery } from '@/lib/query';
 import { Fragment } from 'react/jsx-runtime';
 import { Grade } from 'ts-fsrs';
 
 export default function ReviewRoute() {
-  const reviewCards = useFlashcardReviewQuery();
+  const reviewCards = useReviewCards();
   const nextReviewCard = reviewCards?.[0];
 
   async function handleGrade(grade: Grade) {
@@ -21,7 +20,8 @@ export default function ReviewRoute() {
 
   function handleDelete() {
     if (!nextReviewCard) return;
-    db.cards.delete(nextReviewCard.id);
+    // db.cards.delete(nextReviewCard.id);
+    // TODO: implement delete
   }
 
   return (
