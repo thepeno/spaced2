@@ -365,34 +365,22 @@ export async function handleClientOperation(
 // If this guarantee is violated, then we might miss out on some operations applied
 // If the updates are applied sequentially, we can just update the sequence number
 // whenever an operation succeeds in being applied
-export async function handleServerOperation(
-  operation: Server2Client<Operation>
-) {
-  const seqNo = await getSeqNo();
-
-  if (seqNo >= operation.seqNo) {
-    return;
-  }
-
-  const result = await handleClientOperation(operation);
-
-  if (result.applied) {
-    await setSeqNo(operation.seqNo);
-    return;
-  }
-}
-
 export async function applyServerOperations(
   operations: Server2Client<Operation>[]
 ) {
-  // for (const operation of operations) {
-  // await handleServerOperation(operation);
-  // }
-  for (let i = 0; i < operations.length; i++) {
-    // console.log('applying operation', operations[i].seqNo);
-    await handleServerOperation(operations[i]);
-    if (i % 100 === 0) {
-      console.log('applied', i, 'operations');
-    }
+  const seqNo = await getSeqNo();
+  const highestSeqNo = operations.reduce((max, operation) => {
+    return Math.max(max, operation.seqNo);
+  }, 0);
+
+  if (seqNo >= highestSeqNo) {
+    return;
   }
+
+  const operationsToApply = operations.filter((op) => op.seqNo > seqNo);
+  for (let i = 0; i < operationsToApply.length; i++) {
+    await handleClientOperation(operationsToApply[i]);
+  }
+
+  await setSeqNo(highestSeqNo);
 }
