@@ -8,6 +8,20 @@ import { z } from 'zod';
 
 export const states = ['New', 'Learning', 'Review', 'Relearning'] as const;
 
+const defaultCard: Omit<CardWithMetadata, 'id'> = {
+  ...createEmptyCard(),
+  question: '',
+  answer: '',
+  deleted: false,
+
+  // CRDT metadata
+  cardLastModified: 0,
+  cardContentLastModified: 0,
+  cardDeletedLastModified: 0,
+
+  createdAt: 0,
+};
+
 export const cardOperationSchema = z
   .object({
     type: z.literal('card'),
@@ -223,6 +237,7 @@ async function handleCardOperation(
 
     if (!card) {
       await db.cards.add({
+        ...defaultCard,
         id: operation.payload.id,
         due: operation.payload.due,
         stability: operation.payload.stability,
@@ -234,17 +249,9 @@ async function handleCardOperation(
         state: STATE_NAME_TO_NUMBER[operation.payload.state],
         last_review: operation.payload.last_review ?? undefined,
 
-        created_at: operation.timestamp,
-
-        // Default values for the other fields
-        question: '',
-        answer: '',
-        deleted: false,
-
+        createdAt: operation.timestamp,
         // CRDT metadata
         cardLastModified: operation.timestamp,
-        cardContentLastModified: 0,
-        cardDeletedLastModified: 0,
       });
       return { applied: true };
     }
@@ -279,13 +286,15 @@ async function handleCardContentOperation(
   return db.transaction('rw', db.cards, async () => {
     const card = await db.cards.get(operation.payload.cardId);
     if (!card) {
-      throw new Error(
-        `Card content operation should not occur before card is created: ${JSON.stringify(
-          operation,
-          null,
-          2
-        )}`
-      );
+      await db.cards.add({
+        ...defaultCard,
+        id: operation.payload.cardId,
+        question: operation.payload.front,
+        answer: operation.payload.back,
+
+        cardContentLastModified: operation.timestamp,
+      });
+      return { applied: true };
     }
 
     if (card.cardContentLastModified > operation.timestamp) {
@@ -308,13 +317,14 @@ async function handleCardDeletedOperation(
   return db.transaction('rw', db.cards, async () => {
     const card = await db.cards.get(operation.payload.cardId);
     if (!card) {
-      throw new Error(
-        `Card deleted operation should not occur before card is created: ${JSON.stringify(
-          operation,
-          null,
-          2
-        )}`
-      );
+      await db.cards.add({
+        ...defaultCard,
+        id: operation.payload.cardId,
+        deleted: operation.payload.deleted,
+
+        cardDeletedLastModified: operation.timestamp,
+      });
+      return { applied: true };
     }
 
     if (card.cardDeletedLastModified > operation.timestamp) {
@@ -379,7 +389,7 @@ export async function applyServerOperations(
   // await handleServerOperation(operation);
   // }
   for (let i = 0; i < operations.length; i++) {
-    console.log('applying operation', operations[i].seqNo);
+    // console.log('applying operation', operations[i].seqNo);
     await handleServerOperation(operations[i]);
     if (i % 100 === 0) {
       console.log('applied', i, 'operations');

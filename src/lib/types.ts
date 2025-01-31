@@ -12,5 +12,5 @@ export type CardWithMetadata = Card & {
   cardContentLastModified: number;
   cardDeletedLastModified: number;
 
-  created_at: number;
+  createdAt: number;
 };
