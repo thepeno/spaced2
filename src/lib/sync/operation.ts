@@ -357,6 +357,17 @@ export function handleClientOperation(operation: Operation): OperationResult {
   }
 }
 
+export async function handleClientOperationWithPersistence(
+  operation: Operation
+): Promise<OperationResult> {
+  const result = handleClientOperation(operation);
+  if (result.applied) {
+    await db.operations.add(operation);
+    await db.pendingOperations.add(operation);
+  }
+  return result;
+}
+
 // We assume that the updates are being applied sequentially
 // in order of seqNo (which is provided by the server)
 // If this guarantee is violated, then we might miss out on some operations applied

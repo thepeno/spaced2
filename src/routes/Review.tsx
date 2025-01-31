@@ -4,7 +4,11 @@ import CurrentCardBadge from '@/components/current-card-badge';
 import FlashcardContent from '@/components/flashcard-content';
 import { useReviewCards } from '@/components/hooks/db';
 import GradeButtons from '@/components/rating-buttons';
-import { gradeCardOperation } from '@/lib/sync/operation';
+import {
+  CardDeletedOperation,
+  gradeCardOperation,
+  handleClientOperationWithPersistence,
+} from '@/lib/sync/operation';
 import { Fragment } from 'react/jsx-runtime';
 import { Grade } from 'ts-fsrs';
 
@@ -18,10 +22,17 @@ export default function ReviewRoute() {
     await gradeCardOperation(nextReviewCard, grade);
   }
 
-  function handleDelete() {
+  async function handleDelete() {
     if (!nextReviewCard) return;
-    // db.cards.delete(nextReviewCard.id);
-    // TODO: implement delete
+    const deleteOperation: CardDeletedOperation = {
+      type: 'cardDeleted',
+      payload: {
+        cardId: nextReviewCard.id,
+        deleted: true,
+      },
+      timestamp: Date.now(),
+    };
+    await handleClientOperationWithPersistence(deleteOperation);
   }
 
   return (
