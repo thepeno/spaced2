@@ -12,14 +12,14 @@ export default function DecksRoute() {
         'grid grid-cols-12 gap-x-6 items-start',
         'col-start-1 col-end-13',
         'xl:col-start-3 xl:col-end-11 xl:grid-cols-8',
-        'h-full grid-rows-[min-content_1fr] px-0 pb-12 pt-6 sm:px-4'
+        'h-full grid-rows-[min-content_1fr] px-0 pb-12 sm:px-4'
       )}
     >
-      <div className='flex items-center pl-2 sm:mb-4'>
+      <div className='flex items-center mb-8 mt-2'>
         <h1 className='text-4xl md:text-4xl'>Decks</h1>
         <Separator className='ml-2 shrink' />
       </div>
-      <section className='col-span-12 flex flex-wrap gap-x-4 gap-y-4 justify-start items-stretch mt-6 px-2'>
+      <section className='col-span-12 flex flex-wrap gap-x-4 gap-y-4 justify-start items-stretch px-2'>
         {decks.map((deck) => (
           <DeckCard key={deck.id} id={deck.id} />
         ))}

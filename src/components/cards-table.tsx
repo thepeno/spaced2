@@ -2,6 +2,7 @@ import {
     Table,
     TableBody,
     TableCell,
+    TableFooter,
     TableHead,
     TableHeader,
     TableRow,
@@ -14,8 +15,8 @@ const FlashcardTable = ({ cards }: { cards: CardWithMetadata[] }) => {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className='w-48'>Front</TableHead>
-            <TableHead className='w-48'>Back</TableHead>
+            <TableHead className='w-48'>Question</TableHead>
+            <TableHead className='w-48'>Answer</TableHead>
             <TableHead className='w-32'>Created</TableHead>
           </TableRow>
         </TableHeader>
@@ -30,6 +31,18 @@ const FlashcardTable = ({ cards }: { cards: CardWithMetadata[] }) => {
             </TableRow>
           ))}
         </TableBody>
+        {cards.length === 0 && (
+          <TableFooter>
+            <TableRow>
+              <TableCell
+                colSpan={3}
+                className='text-muted-foreground text-center'
+              >
+                No cards found
+              </TableCell>
+            </TableRow>
+          </TableFooter>
+        )}
       </Table>
     </div>
   );
