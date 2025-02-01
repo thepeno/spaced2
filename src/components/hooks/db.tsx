@@ -1,21 +1,11 @@
-import { memoryDb, subscribe } from '@/lib/db/memory';
-import { CardWithMetadata } from '@/lib/types';
-import { useEffect, useState } from 'react';
+import MemoryDB from '@/lib/db/memory';
+import { useSyncExternalStore } from 'react';
 
 export function useReadCards() {
-  const [state, setState] = useState<CardWithMetadata[]>(
-    Object.values(memoryDb.cards)
+  const cards = useSyncExternalStore(MemoryDB.subscribe, () =>
+    MemoryDB.getCards()
   );
-
-  useEffect(() => {
-    const unsubscribe = subscribe(() => {
-      setState(Object.values(memoryDb.cards));
-    });
-
-    return () => unsubscribe();
-  }, []);
-
-  return state;
+  return Object.values(cards);
 }
 
 export function useReviewCards() {

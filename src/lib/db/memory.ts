@@ -8,7 +8,7 @@ type MemoryDb = {
   metadataKv: Record<string, unknown>;
 };
 
-export const memoryDb: MemoryDb = {
+const memoryDb: MemoryDb = {
   cards: {},
   operations: {},
   metadataKv: {},
@@ -16,17 +16,29 @@ export const memoryDb: MemoryDb = {
 
 const subscribers = new Set<() => void>();
 
-export const subscribe = (callback: () => void): (() => void) => {
+const subscribe = (callback: () => void): (() => void) => {
   subscribers.add(callback);
   return () => {
     subscribers.delete(callback);
   };
 };
 
-export const notify = () => {
+const notify = () => {
   for (const callback of subscribers) {
     callback();
   }
+};
+
+const putCard = (card: CardWithMetadata) => {
+  memoryDb.cards[card.id] = card;
+};
+
+const getCardById = (id: string) => {
+  return memoryDb.cards[id];
+};
+
+const getCards = () => {
+  return memoryDb.cards;
 };
 
 async function init() {
@@ -38,4 +50,14 @@ async function init() {
   console.log('Spaced Database initialized');
 }
 
-await init();
+init();
+
+const MemoryDB = {
+  subscribe,
+  notify,
+  putCard,
+  getCards,
+  getCardById,
+};
+
+export default MemoryDB;

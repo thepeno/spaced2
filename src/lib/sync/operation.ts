@@ -1,5 +1,5 @@
 import { STATE_NAME_TO_NUMBER, STATE_NUMBER_TO_NAME } from '@/lib/card-mapping';
-import { memoryDb, notify } from '@/lib/db/memory';
+import MemoryDB from '@/lib/db/memory';
 import { db } from '@/lib/db/persistence';
 import { gradeCard } from '@/lib/review';
 import { getSeqNo, setSeqNo } from '@/lib/sync/meta';
@@ -206,7 +206,7 @@ export async function createNewCard(front: string, back: string) {
 
   await db.operations.bulkAdd(operations);
   await db.pendingOperations.bulkAdd(operations);
-  notify();
+  MemoryDB.notify();
 }
 
 export async function gradeCardOperation(card: CardWithMetadata, grade: Grade) {
@@ -231,10 +231,10 @@ type OperationResult = {
 };
 
 function handleCardOperation(operation: CardOperation): OperationResult {
-  const card = memoryDb.cards[operation.payload.id];
+  const card = MemoryDB.getCardById(operation.payload.id);
 
   if (!card) {
-    memoryDb.cards[operation.payload.id] = {
+    MemoryDB.putCard({
       ...defaultCard,
       id: operation.payload.id,
       due: operation.payload.due,
@@ -251,7 +251,7 @@ function handleCardOperation(operation: CardOperation): OperationResult {
 
       // CRDT metadata
       cardLastModified: operation.timestamp,
-    };
+    });
     return { applied: true };
   }
 
@@ -275,23 +275,23 @@ function handleCardOperation(operation: CardOperation): OperationResult {
     cardLastModified: operation.timestamp,
   };
 
-  memoryDb.cards[operation.payload.id] = updatedCard;
+  MemoryDB.putCard(updatedCard);
   return { applied: true };
 }
 
 function handleCardContentOperation(
   operation: CardContentOperation
 ): OperationResult {
-  const card = memoryDb.cards[operation.payload.cardId];
+  const card = MemoryDB.getCardById(operation.payload.cardId);
   if (!card) {
-    memoryDb.cards[operation.payload.cardId] = {
+    MemoryDB.putCard({
       ...defaultCard,
       id: operation.payload.cardId,
       front: operation.payload.front,
       back: operation.payload.back,
 
       cardContentLastModified: operation.timestamp,
-    };
+    });
     return { applied: true };
   }
 
@@ -306,23 +306,23 @@ function handleCardContentOperation(
     cardContentLastModified: operation.timestamp,
   };
 
-  memoryDb.cards[operation.payload.cardId] = updatedCard;
+  MemoryDB.putCard(updatedCard);
   return { applied: true };
 }
 
 function handleCardDeletedOperation(
   operation: CardDeletedOperation
 ): OperationResult {
-  const card = memoryDb.cards[operation.payload.cardId];
+  const card = MemoryDB.getCardById(operation.payload.cardId);
 
   if (!card) {
-    memoryDb.cards[operation.payload.cardId] = {
+    MemoryDB.putCard({
       ...defaultCard,
       id: operation.payload.cardId,
       deleted: operation.payload.deleted,
 
       cardDeletedLastModified: operation.timestamp,
-    };
+    });
     return { applied: true };
   }
 
@@ -336,7 +336,7 @@ function handleCardDeletedOperation(
     cardDeletedLastModified: operation.timestamp,
   };
 
-  memoryDb.cards[operation.payload.cardId] = updatedCard;
+  MemoryDB.putCard(updatedCard);
   return { applied: true };
 }
 
@@ -366,7 +366,7 @@ export async function handleClientOperationWithPersistence(
   if (result.applied) {
     await db.operations.add(operation);
     await db.pendingOperations.add(operation);
-    notify();
+    MemoryDB.notify();
   }
 
   return result;
@@ -376,7 +376,7 @@ export async function updateDeletedClientSide(
   cardId: string,
   deleted: boolean
 ) {
-  const card = memoryDb.cards[cardId];
+  const card = MemoryDB.getCardById(cardId);
   if (!card) {
     return;
   }
@@ -420,7 +420,7 @@ export async function applyServerOperations(
     })
     .filter((op) => op !== null);
 
-  notify();
+  MemoryDB.notify();
 
   await setSeqNo(highestSeqNo);
   await db.operations.bulkAdd(operationsApplied);
