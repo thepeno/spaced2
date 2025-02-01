@@ -1,14 +1,16 @@
 import LoginScreen from '@/components/login.tsx';
+import SyncEngine from '@/lib/sync/engine.ts';
 import MeRoute from '@/routes/Me.tsx';
 import OpsRoute from '@/routes/Ops.tsx';
 import ReviewRoute from '@/routes/Review.tsx';
+import SyncRoute from '@/routes/Sync.tsx';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Route, Routes } from 'react-router';
 import App from './App.tsx';
 import './index.css';
-import SyncRoute from '@/routes/Sync.tsx';
 
+SyncEngine.start();
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <BrowserRouter>
