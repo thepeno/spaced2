@@ -10,8 +10,7 @@ export default function NavBar() {
     <div className={
       cn(
         'fixed bottom-0 full flex z-10 bg-muted w-full',
-        'md:left-4 md:h-full md:flex-col md:justify-center md:w-16'
-
+        'md:left-4 md:h-full md:flex-col md:justify-center md:w-16 -mx-2'
       )
 
     }>
