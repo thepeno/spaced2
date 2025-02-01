@@ -2,7 +2,7 @@ import CardActionButtons from '@/components/card-action-buttons';
 import CardCountBadges from '@/components/card-count-badges';
 import CurrentCardBadge from '@/components/current-card-badge';
 import FlashcardContent from '@/components/flashcard-content';
-import { useReviewCards } from '@/components/hooks/db';
+import { useReviewCards } from '@/components/hooks/query';
 import GradeButtons from '@/components/rating-buttons';
 import {
   gradeCardOperation,

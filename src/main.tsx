@@ -1,5 +1,6 @@
 import LoginScreen from '@/components/login.tsx';
 import SyncEngine from '@/lib/sync/engine.ts';
+import DecksRoute from '@/routes/DecksRoute.tsx';
 import MeRoute from '@/routes/Me.tsx';
 import OpsRoute from '@/routes/Ops.tsx';
 import ReviewRoute from '@/routes/Review.tsx';
@@ -21,6 +22,7 @@ createRoot(document.getElementById('root')!).render(
         <Route path='/login' element={<LoginScreen />} />
         <Route path='/me' element={<MeRoute />} />
         <Route path='/sync' element={<SyncRoute />} />
+        <Route path='/decks' element={<DecksRoute />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>

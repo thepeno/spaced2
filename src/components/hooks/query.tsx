@@ -15,3 +15,11 @@ export function useReviewCards() {
 
   return reviewCards;
 }
+
+export function useDecks() {
+  const snapshot = useSyncExternalStore(
+    MemoryDB.subscribe,
+    MemoryDB.getSnapshot
+  );
+  return snapshot.getDecks();
+}

@@ -1,4 +1,4 @@
-import { useReviewCards } from '@/components/hooks/db';
+import { useReviewCards } from '@/components/hooks/query';
 import { Badge } from '@/components/ui/badge';
 import {
   Tooltip,

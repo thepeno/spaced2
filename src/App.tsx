@@ -1,6 +1,6 @@
 import { CreateFlashcardForm } from '@/components/create-flashcard';
 import Flashcard from '@/components/flashcard';
-import { useReadCards } from '@/components/hooks/db';
+import { useReadCards } from '@/components/hooks/query';
 import { buttonVariants } from '@/components/ui/button';
 import { createNewCard } from '@/lib/sync/operation';
 import { useMemo } from 'react';

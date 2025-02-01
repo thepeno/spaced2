@@ -1,4 +1,4 @@
-import { useReadCards } from '@/components/hooks/db';
+import { useReadCards } from '@/components/hooks/query';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { db } from '@/lib/db/persistence';

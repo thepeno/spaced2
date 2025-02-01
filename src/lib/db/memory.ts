@@ -52,31 +52,52 @@ const putCard = (card: CardWithMetadata) => {
   memoryDb.cards[card.id] = Object.assign({}, card);
 };
 
+/**
+ * Returns a card by its id.
+ * Includes deleted cards.
+ */
 const getCardById = (id: string) => {
   return memoryDb.cards[id];
 };
 
+/**
+ * Returns all cards.
+ * Does not include deleted cards.
+ */
 const getCards = () => {
-  return Object.values(memoryDb.cards);
+  return Object.values(memoryDb.cards).filter((card) => !card.deleted);
 };
 
 const putDeck = (deck: Deck) => {
   memoryDb.decks[deck.id] = Object.assign({}, deck);
 };
 
+/**
+ * Returns a deck by its id.
+ * Includes deleted decks.
+ */
 const getDeckById = (id: string) => {
   return memoryDb.decks[id];
 };
 
+/**
+ * Returns all decks.
+ * Does not include deleted decks.
+ */
 const getDecks = () => {
-  return Object.values(memoryDb.decks);
+  return Object.values(memoryDb.decks).filter((deck) => !deck.deleted);
 };
 
+/**
+ * Returns all cards for a deck.
+ * Does not include deleted cards.
+ */
 const getCardsForDeck = (deckId: string) => {
   const cardsMap = memoryDb.decksToCards[deckId];
   const cards = Object.entries(cardsMap)
     .filter(([, count]) => count % 2 == 1)
-    .map(([cardId]) => memoryDb.cards[cardId]);
+    .map(([cardId]) => memoryDb.cards[cardId])
+    .filter((card) => !card.deleted);
 
   return cards;
 };
