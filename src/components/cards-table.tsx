@@ -36,7 +36,7 @@ const FlashcardTable = ({ cards }: { cards: CardWithMetadata[] }) => {
             <TableRow>
               <TableCell
                 colSpan={3}
-                className='text-muted-foreground text-center'
+                className='text-muted-foreground text-center h-16'
               >
                 No cards found
               </TableCell>

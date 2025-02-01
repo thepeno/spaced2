@@ -1,7 +1,7 @@
 import MemoryDB from '@/lib/db/memory';
 import { useSyncExternalStore } from 'react';
 
-export function useReadCards() {
+export function useCards() {
   const snapshot = useSyncExternalStore(
     MemoryDB.subscribe,
     MemoryDB.getSnapshot
@@ -10,7 +10,7 @@ export function useReadCards() {
 }
 
 export function useReviewCards() {
-  const cards = useReadCards();
+  const cards = useCards();
   const reviewCards = cards
     .filter((card) => card.due < new Date())
     .filter((card) => !card.suspended || card.suspended < new Date());

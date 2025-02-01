@@ -3,6 +3,7 @@ import NavBar from '@/components/nav/nav-bar.tsx';
 import { SpacedIcon } from '@/components/nav/spaced-icon.tsx';
 import SyncEngine from '@/lib/sync/engine.ts';
 import { cn } from '@/lib/utils.ts';
+import BookmarksRoute from '@/routes/BookmarksRoute.tsx';
 import DeckRoute from '@/routes/DeckRoute.tsx';
 import DecksRoute from '@/routes/DecksRoute.tsx';
 import ReviewRoute from '@/routes/Review.tsx';
@@ -33,6 +34,7 @@ createRoot(document.getElementById('root')!).render(
           <Route path='/login' element={<LoginScreen />} />
           <Route path='/decks' element={<DecksRoute />} />
           <Route path='/decks/:deckId' element={<DeckRoute />} />
+          <Route path='/bookmarks' element={<BookmarksRoute />} />
           <Route path='/debug' element={<DebugRoute />} />
         </Routes>
       </div>

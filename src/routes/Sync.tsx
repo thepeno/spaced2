@@ -1,4 +1,4 @@
-import { useReadCards } from '@/components/hooks/query';
+import { useCards } from '@/components/hooks/query';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { db } from '@/lib/db/persistence';
@@ -13,7 +13,7 @@ export default function DebugRoute() {
   const operations = useLiveQuery(() =>
     db.pendingOperations.orderBy('id').toArray()
   );
-  const cards = useReadCards();
+  const cards = useCards();
 
   const clientId = useClientId();
   const [seqNo, setSeqNo] = useState(0);
