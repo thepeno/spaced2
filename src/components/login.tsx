@@ -18,7 +18,6 @@ const LoginScreen = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log('Login attempt with:', { email, password });
 
     const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/login`, {
       method: 'POST',
@@ -32,11 +31,9 @@ const LoginScreen = () => {
       credentials: 'include',
     });
 
-    if (response.ok) {
-      const data = await response.json();
-      console.log('Login successful:', data);
-    } else {
-      console.error('Login failed:', response.statusText);
+    // TODO: add alert for login failed
+    if (!response.ok) {
+      throw new Error('Login failed');
     }
   };
 

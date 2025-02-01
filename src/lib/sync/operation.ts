@@ -2,26 +2,13 @@ import { STATE_NAME_TO_NUMBER, STATE_NUMBER_TO_NAME } from '@/lib/card-mapping';
 import MemoryDB from '@/lib/db/memory';
 import { db } from '@/lib/db/persistence';
 import { gradeCard } from '@/lib/review';
+import { defaultCard, defaultDeck } from '@/lib/sync/default';
 import { getSeqNo, setSeqNo } from '@/lib/sync/meta';
-import { CardWithMetadata } from '@/lib/types';
+import { CardWithMetadata, Deck } from '@/lib/types';
 import { createEmptyCard, Grade } from 'ts-fsrs';
 import { z } from 'zod';
 
 export const states = ['New', 'Learning', 'Review', 'Relearning'] as const;
-
-const defaultCard: Omit<CardWithMetadata, 'id'> = {
-  ...createEmptyCard(),
-  front: '',
-  back: '',
-  deleted: false,
-
-  // CRDT metadata
-  cardLastModified: 0,
-  cardContentLastModified: 0,
-  cardDeletedLastModified: 0,
-
-  createdAt: 0,
-};
 
 export const cardOperationSchema = z
   .object({
@@ -340,6 +327,58 @@ function handleCardDeletedOperation(
   return { applied: true };
 }
 
+function handleDeckOperation(operation: DeckOperation): OperationResult {
+  const deck = MemoryDB.getDeckById(operation.payload.id);
+
+  if (!deck) {
+    MemoryDB.putDeck({
+      ...defaultDeck,
+      id: operation.payload.id,
+      name: operation.payload.name,
+      description: operation.payload.description,
+      deleted: operation.payload.deleted,
+      lastModified: operation.timestamp,
+    });
+    return { applied: true };
+  }
+
+  if (deck.lastModified > operation.timestamp) {
+    return { applied: false };
+  }
+
+  const updatedDeck: Deck = {
+    ...deck,
+    name: operation.payload.name,
+    description: operation.payload.description,
+    deleted: operation.payload.deleted,
+    lastModified: operation.timestamp,
+  };
+  MemoryDB.putDeck(updatedDeck);
+  return { applied: true };
+}
+
+function handleUpdateDeckCardOperation(
+  operation: UpdateDeckCardOperation
+): OperationResult {
+  const cardsMap = MemoryDB._db.decksToCards[operation.payload.deckId];
+
+  if (!cardsMap) {
+    MemoryDB._db.decksToCards[operation.payload.deckId] = {
+      [operation.payload.cardId]: operation.payload.clCount,
+    };
+    return { applied: false };
+  }
+
+  const existingClCount = cardsMap[operation.payload.cardId];
+
+  if (operation.payload.clCount <= existingClCount) {
+    return { applied: false };
+  }
+
+  cardsMap[operation.payload.cardId] = operation.payload.clCount;
+  return { applied: true };
+}
+
 export function handleClientOperation(operation: Operation): OperationResult {
   switch (operation.type) {
     case 'card':
@@ -348,11 +387,10 @@ export function handleClientOperation(operation: Operation): OperationResult {
       return handleCardContentOperation(operation);
     case 'cardDeleted':
       return handleCardDeletedOperation(operation);
-    // TODO: add other operations
     case 'deck':
-      return { applied: false };
+      return handleDeckOperation(operation);
     case 'updateDeckCard':
-      return { applied: false };
+      return handleUpdateDeckCardOperation(operation);
     default:
       throw new Error(`Unknown operation type: ${JSON.stringify(operation)}`);
   }

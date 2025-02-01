@@ -3,16 +3,30 @@
 // An in-memory database is faster than fetching from IndexeDB whenever we need cards.
 import { db } from '@/lib/db/persistence';
 import { handleClientOperation, OperationWithId } from '@/lib/sync/operation';
-import { CardWithMetadata } from '@/lib/types';
+import { CardWithMetadata, Deck } from '@/lib/types';
 
-type MemoryDb = {
+type InternalMemoryDB = {
   cards: Record<string, CardWithMetadata>;
+  decks: Record<string, Deck>;
+  decksToCards: Record<string, Record<string, number>>;
   operations: Record<string, OperationWithId>;
   metadataKv: Record<string, unknown>;
 };
 
-const memoryDb: MemoryDb = {
+export type Snapshot = {
+  putCard: (card: CardWithMetadata) => void;
+  getCardById: (id: string) => CardWithMetadata | undefined;
+  getCards: () => CardWithMetadata[];
+  putDeck: (deck: Deck) => void;
+  getDeckById: (id: string) => Deck | undefined;
+  getDecks: () => Deck[];
+  getCardsForDeck: (deckId: string) => CardWithMetadata[];
+};
+
+const memoryDb: InternalMemoryDB = {
   cards: {},
+  decks: {},
+  decksToCards: {},
   operations: {},
   metadataKv: {},
 };
@@ -26,17 +40,16 @@ const subscribe = (callback: () => void = () => {}): (() => void) => {
   };
 };
 
-let cardsArray: CardWithMetadata[] = [];
-
 const notify = () => {
-  cardsArray = Object.values(memoryDb.cards);
+  // Create a new object reference so that we can pass it to the `useSyncExternalStore` hook
+  snapshot = Object.assign({}, snapshot);
   for (const callback of subscribers) {
     callback();
   }
 };
 
 const putCard = (card: CardWithMetadata) => {
-  memoryDb.cards[card.id] = card;
+  memoryDb.cards[card.id] = Object.assign({}, card);
 };
 
 const getCardById = (id: string) => {
@@ -44,15 +57,62 @@ const getCardById = (id: string) => {
 };
 
 const getCards = () => {
-  return cardsArray;
+  return Object.values(memoryDb.cards);
+};
+
+const putDeck = (deck: Deck) => {
+  memoryDb.decks[deck.id] = Object.assign({}, deck);
+};
+
+const getDeckById = (id: string) => {
+  return memoryDb.decks[id];
+};
+
+const getDecks = () => {
+  return Object.values(memoryDb.decks);
+};
+
+const getCardsForDeck = (deckId: string) => {
+  const cardsMap = memoryDb.decksToCards[deckId];
+  const cards = Object.entries(cardsMap)
+    .filter(([, count]) => count % 2 == 1)
+    .map(([cardId]) => memoryDb.cards[cardId]);
+
+  return cards;
+};
+
+let snapshot: Snapshot = {
+  putCard,
+  getCardById,
+  getCards,
+  putDeck,
+  getDeckById,
+  getDecks,
+  getCardsForDeck,
+};
+
+/**
+ * Returns a snapshot of the current state of the database.
+ *
+ * This is used by the `useSyncExternalStore` hook to subscribe to changes.
+ */
+const getSnapshot = () => {
+  return snapshot;
 };
 
 const MemoryDB = {
   subscribe,
   notify,
+  getSnapshot,
+  _db: memoryDb,
+
   putCard,
   getCards,
   getCardById,
+  putDeck,
+  getDeckById,
+  getDecks,
+  getCardsForDeck,
 };
 
 export default MemoryDB;
@@ -64,7 +124,6 @@ async function init() {
   }
 
   console.log('Spaced Database initialized');
-  console.log(memoryDb.cards);
   notify();
 }
 

@@ -14,3 +14,11 @@ export type CardWithMetadata = Card & {
 
   createdAt: number;
 };
+
+export type Deck = {
+  id: string;
+  name: string;
+  description: string;
+  deleted: boolean;
+  lastModified: number;
+};
