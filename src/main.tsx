@@ -10,7 +10,7 @@ import DebugRoute from '@/routes/Sync.tsx';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Route, Routes } from 'react-router';
-import App from './App.tsx';
+import HomeRoute from './App.tsx';
 import './index.css';
 
 SyncEngine.start();
@@ -26,7 +26,7 @@ createRoot(document.getElementById('root')!).render(
       >
         <NavigationBar />
         <Routes>
-          <Route path='/' element={<App />} />
+          <Route path='/' element={<HomeRoute />} />
           <Route path='/review' element={<ReviewRoute />} />
           <Route path='/login' element={<LoginScreen />} />
           <Route path='/decks' element={<DecksRoute />} />
