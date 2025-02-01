@@ -13,7 +13,7 @@ export function DeckSkeleton() {
   return <Skeleton className='h-24 w-full sm:h-36 sm:w-72' />;
 }
 
-export default function Deck({ id }: Props) {
+export default function DeckCard({ id }: Props) {
   const deck = useDeck(id);
   const cards = useCardsForDeck(id);
 
@@ -22,16 +22,16 @@ export default function Deck({ id }: Props) {
   }
 
   return (
-    <Link to={`/decks/${id}`} className=''>
+    // z-0 is to ensure that border div is rendered above the background but below the card
+    <Link to={`/decks/${id}`} className='z-0'>
       <Card className='group relative flex h-full w-full cursor-pointer flex-col items-start justify-start gap-y-1 border-background bg-muted px-4 py-3 pb-10 text-background shadow-lg transition duration-300 hover:shadow-md sm:h-36 sm:w-72 sm:gap-y-2 sm:py-6 sm:pb-6'>
-        <div className='absolute inset-0 -right-[0.65rem] -top-2 -z-10 h-[103%] scale-[98%] rounded-xl border border-background bg-muted/70 transition duration-200 ease-in group-hover:border group-hover:border-primary'></div>
+        <div className='-z-10 absolute inset-0 -right-[0.65rem] -top-2 h-[103%] scale-[98%] rounded-xl border border-background bg-muted/70 transition duration-200 ease-in group-hover:border group-hover:border-primary'></div>
         <CardTitle className='text-lg text-primary sm:text-xl'>
           {deck.name}
         </CardTitle>
         <CardDescription className='line-clamp-1'>
           {deck.description}
         </CardDescription>
-        (
         <>
           <div className='absolute bottom-3 left-4 flex items-center text-muted-foreground'>
             <Clock className='mr-1 h-3 w-3 sm:h-4 sm:w-4' />
@@ -50,4 +50,4 @@ export default function Deck({ id }: Props) {
   );
 }
 
-Deck.displayName = 'Deck';
+DeckCard.displayName = 'Deck';
