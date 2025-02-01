@@ -9,7 +9,7 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import { ArrowDownIcon, ArrowUpIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
-export default function SyncRoute() {
+export default function DebugRoute() {
   const operations = useLiveQuery(() =>
     db.pendingOperations.orderBy('id').toArray()
   );
@@ -69,7 +69,7 @@ export default function SyncRoute() {
   };
 
   return (
-    <div className='flex flex-col items-start justify-start h-screen gap-12 px-16 py-12'>
+    <div className='flex flex-col items-start justify-start h-screen gap-12 px-16 py-12 col-span-12'>
       <section className='flex flex-col gap-2'>
         <h1 className='text-2xl font-bold mb-4'>Sync</h1>
         <Button variant='outline' onClick={syncFromServer} disabled={!clientId}>
