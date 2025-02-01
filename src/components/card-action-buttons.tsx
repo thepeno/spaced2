@@ -1,38 +1,64 @@
 import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { buttonVariants } from '@/components/ui/button';
 import { Kbd } from '@/components/ui/kbd';
 import {
-    Tooltip,
-    TooltipContent,
-    TooltipProvider,
-    TooltipTrigger,
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
-import { ChevronsRight, TrashIcon, Undo } from 'lucide-react';
+import { Bookmark, ChevronsRight, TrashIcon, Undo } from 'lucide-react';
 
 type CardActionButtonsProps = {
   onUndo?: () => void;
   onSkip?: () => void;
   onDelete?: () => void;
+  onBookmark?: (bookmarked: boolean) => void;
+  bookmarked?: boolean;
 };
 
 export default function CardActionButtons({
   onUndo,
   onSkip,
   onDelete,
+  onBookmark,
+  bookmarked = false,
 }: CardActionButtonsProps) {
   return (
     <div className='flex gap-2'>
+      {/* Bookmark Button */}
+      <TooltipProvider delayDuration={100}>
+        <Tooltip>
+          <TooltipTrigger
+            onClick={() => onBookmark?.(!bookmarked)}
+            className={cn(
+              buttonVariants({ variant: 'ghost', size: 'icon' }),
+              'group'
+            )}
+          >
+            <Bookmark
+              className={cn(
+                'h-6 w-6 transition-all duration-300 ease-out group-active:scale-110'
+              )}
+              strokeWidth={1.5}
+              fill={bookmarked ? 'cornflowerblue' : 'none'}
+              stroke={bookmarked ? 'cornflowerblue' : 'black'}
+            />
+          </TooltipTrigger>
+        </Tooltip>
+      </TooltipProvider>
+
       {/* Undo Button */}
       <TooltipProvider delayDuration={100}>
         <Tooltip>

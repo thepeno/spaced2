@@ -11,7 +11,9 @@ export function useReadCards() {
 
 export function useReviewCards() {
   const cards = useReadCards();
-  const reviewCards = cards.filter((card) => card.due < new Date());
+  const reviewCards = cards
+    .filter((card) => card.due < new Date())
+    .filter((card) => !card.suspended || card.suspended < new Date());
 
   return reviewCards;
 }

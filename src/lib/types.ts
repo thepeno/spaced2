@@ -6,11 +6,15 @@ export type CardWithMetadata = Card & {
   back: string;
 
   deleted: boolean;
+  bookmarked: boolean;
+  suspended?: Date;
 
   // CRDT metadata
   cardLastModified: number;
   cardContentLastModified: number;
   cardDeletedLastModified: number;
+  cardBookmarkedLastModified: number;
+  cardSuspendedLastModified: number;
 
   createdAt: number;
 };

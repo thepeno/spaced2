@@ -6,11 +6,18 @@ import { useReviewCards } from '@/components/hooks/query';
 import GradeButtons from '@/components/rating-buttons';
 import {
   gradeCardOperation,
+  updateBookmarkedClientSide,
   updateDeletedClientSide,
+  updateSuspendedClientSide,
 } from '@/lib/sync/operation';
 import { cn } from '@/lib/utils';
 import { Fragment } from 'react/jsx-runtime';
 import { Grade } from 'ts-fsrs';
+
+function tenMinutesFromNow(): Date {
+  const now = new Date();
+  return new Date(now.getTime() + 10 * 60 * 1000);
+}
 
 export default function ReviewRoute() {
   const reviewCards = useReviewCards();
@@ -25,6 +32,16 @@ export default function ReviewRoute() {
   async function handleDelete() {
     if (!nextReviewCard) return;
     await updateDeletedClientSide(nextReviewCard.id, true);
+  }
+
+  async function handleSuspend() {
+    if (!nextReviewCard) return;
+    await updateSuspendedClientSide(nextReviewCard.id, tenMinutesFromNow());
+  }
+
+  async function handleBookmark(bookmarked: boolean) {
+    if (!nextReviewCard) return;
+    await updateBookmarkedClientSide(nextReviewCard.id, bookmarked);
   }
 
   return (
@@ -42,7 +59,12 @@ export default function ReviewRoute() {
             <CardCountBadges />
             {nextReviewCard && <CurrentCardBadge card={nextReviewCard} />}
           </div>
-          <CardActionButtons onDelete={handleDelete} />
+          <CardActionButtons
+            onDelete={handleDelete}
+            onSkip={handleSuspend}
+            onBookmark={handleBookmark}
+            bookmarked={nextReviewCard?.bookmarked}
+          />
         </div>
 
         <div className='flex flex-col md:flex-row justify-stretch md:justify-center items-center gap-1 md:gap-2 md:mb-6 w-full h-[70vh] md:h-full'>

@@ -7,10 +7,14 @@ export const defaultCard: Omit<CardWithMetadata, 'id'> = {
   back: '',
   deleted: false,
 
+  bookmarked: false,
+
   // CRDT metadata
   cardLastModified: 0,
   cardContentLastModified: 0,
   cardDeletedLastModified: 0,
+  cardBookmarkedLastModified: 0,
+  cardSuspendedLastModified: 0,
 
   createdAt: 0,
 };

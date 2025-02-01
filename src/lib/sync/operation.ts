@@ -59,6 +59,36 @@ export const cardDeletedOperationSchema = z
 
 export type CardDeletedOperation = z.infer<typeof cardDeletedOperationSchema>;
 
+export const cardBookmarkedOperationSchema = z
+  .object({
+    type: z.literal('cardBookmarked'),
+    payload: z.object({
+      cardId: z.string(),
+      bookmarked: z.boolean(),
+    }),
+    timestamp: z.number(),
+  })
+  .passthrough();
+
+export type CardBookmarkedOperation = z.infer<
+  typeof cardBookmarkedOperationSchema
+>;
+
+export const cardSuspendedOperationSchema = z
+  .object({
+    type: z.literal('cardSuspended'),
+    payload: z.object({
+      cardId: z.string(),
+      suspended: z.coerce.date(),
+    }),
+    timestamp: z.number(),
+  })
+  .passthrough();
+
+export type CardSuspendedOperation = z.infer<
+  typeof cardSuspendedOperationSchema
+>;
+
 export const deckOperationSchema = z
   .object({
     type: z.literal('deck'),
@@ -94,6 +124,8 @@ export const operationSchema = z.union([
   cardOperationSchema,
   cardContentOperationSchema,
   cardDeletedOperationSchema,
+  cardBookmarkedOperationSchema,
+  cardSuspendedOperationSchema,
   deckOperationSchema,
   updateDeckCardOperationSchema,
 ]);
@@ -112,6 +144,8 @@ export const server2ClientSyncSchema = z.object({
       cardOperationSchema.extend({ seqNo: z.number() }),
       cardContentOperationSchema.extend({ seqNo: z.number() }),
       cardDeletedOperationSchema.extend({ seqNo: z.number() }),
+      cardBookmarkedOperationSchema.extend({ seqNo: z.number() }),
+      cardSuspendedOperationSchema.extend({ seqNo: z.number() }),
       deckOperationSchema.extend({ seqNo: z.number() }),
       updateDeckCardOperationSchema.extend({ seqNo: z.number() }),
     ])
@@ -327,6 +361,64 @@ function handleCardDeletedOperation(
   return { applied: true };
 }
 
+function handleCardBookmarkedOperation(
+  operation: CardBookmarkedOperation
+): OperationResult {
+  const card = MemoryDB.getCardById(operation.payload.cardId);
+
+  if (!card) {
+    MemoryDB.putCard({
+      ...defaultCard,
+      id: operation.payload.cardId,
+      bookmarked: operation.payload.bookmarked,
+      cardBookmarkedLastModified: operation.timestamp,
+    });
+    return { applied: true };
+  }
+
+  if (card.cardBookmarkedLastModified > operation.timestamp) {
+    return { applied: false };
+  }
+
+  const updatedCard = {
+    ...card,
+    bookmarked: operation.payload.bookmarked,
+    cardBookmarkedLastModified: operation.timestamp,
+  };
+
+  MemoryDB.putCard(updatedCard);
+  return { applied: true };
+}
+
+function handleCardSuspendedOperation(
+  operation: CardSuspendedOperation
+): OperationResult {
+  const card = MemoryDB.getCardById(operation.payload.cardId);
+
+  if (!card) {
+    MemoryDB.putCard({
+      ...defaultCard,
+      id: operation.payload.cardId,
+      suspended: operation.payload.suspended,
+      cardSuspendedLastModified: operation.timestamp,
+    });
+    return { applied: true };
+  }
+
+  if (card.cardSuspendedLastModified > operation.timestamp) {
+    return { applied: false };
+  }
+
+  const updatedCard = {
+    ...card,
+    suspended: operation.payload.suspended,
+    cardSuspendedLastModified: operation.timestamp,
+  };
+
+  MemoryDB.putCard(updatedCard);
+  return { applied: true };
+}
+
 function handleDeckOperation(operation: DeckOperation): OperationResult {
   const deck = MemoryDB.getDeckById(operation.payload.id);
 
@@ -387,6 +479,10 @@ export function handleClientOperation(operation: Operation): OperationResult {
       return handleCardContentOperation(operation);
     case 'cardDeleted':
       return handleCardDeletedOperation(operation);
+    case 'cardBookmarked':
+      return handleCardBookmarkedOperation(operation);
+    case 'cardSuspended':
+      return handleCardSuspendedOperation(operation);
     case 'deck':
       return handleDeckOperation(operation);
     case 'updateDeckCard':
@@ -424,6 +520,46 @@ export async function updateDeletedClientSide(
     payload: {
       cardId,
       deleted,
+    },
+    timestamp: Date.now(),
+  };
+  handleClientOperationWithPersistence(cardOperation);
+}
+
+export async function updateSuspendedClientSide(
+  cardId: string,
+  suspended: Date
+) {
+  const card = MemoryDB.getCardById(cardId);
+  if (!card) {
+    return;
+  }
+
+  const cardOperation: CardSuspendedOperation = {
+    type: 'cardSuspended',
+    payload: {
+      cardId,
+      suspended,
+    },
+    timestamp: Date.now(),
+  };
+  handleClientOperationWithPersistence(cardOperation);
+}
+
+export async function updateBookmarkedClientSide(
+  cardId: string,
+  bookmarked: boolean
+) {
+  const card = MemoryDB.getCardById(cardId);
+  if (!card) {
+    return;
+  }
+
+  const cardOperation: CardBookmarkedOperation = {
+    type: 'cardBookmarked',
+    payload: {
+      cardId,
+      bookmarked,
     },
     timestamp: Date.now(),
   };
