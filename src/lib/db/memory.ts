@@ -1,3 +1,6 @@
+// This in-memory database is the data store for cards.
+// We only persist operations, which are applied again every time we restart the app.
+// An in-memory database is faster than fetching from IndexeDB whenever we need cards.
 import { db } from '@/lib/db/persistence';
 import { handleClientOperation, OperationWithId } from '@/lib/sync/operation';
 import { CardWithMetadata } from '@/lib/types';
