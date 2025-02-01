@@ -94,6 +94,10 @@ const getDecks = () => {
  */
 const getCardsForDeck = (deckId: string) => {
   const cardsMap = memoryDb.decksToCards[deckId];
+  if (!cardsMap) {
+    return [];
+  }
+
   const cards = Object.entries(cardsMap)
     .filter(([, count]) => count % 2 == 1)
     .map(([cardId]) => memoryDb.cards[cardId])

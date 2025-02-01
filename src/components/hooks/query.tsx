@@ -23,3 +23,19 @@ export function useDecks() {
   );
   return snapshot.getDecks();
 }
+
+export function useDeck(id: string) {
+  const snapshot = useSyncExternalStore(
+    MemoryDB.subscribe,
+    MemoryDB.getSnapshot
+  );
+  return snapshot.getDeckById(id);
+}
+
+export function useCardsForDeck(deckId: string) {
+  const snapshot = useSyncExternalStore(
+    MemoryDB.subscribe,
+    MemoryDB.getSnapshot
+  );
+  return snapshot.getCardsForDeck(deckId);
+}
