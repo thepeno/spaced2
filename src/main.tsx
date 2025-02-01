@@ -20,7 +20,7 @@ createRoot(document.getElementById('root')!).render(
       <div
         className={cn(
           'grid grid-cols-12 gap-x-6 items-start',
-          'px-2 md:px-0 pb-12 pt-16 md:pt-0',
+          'px-2 md:px-0 pb-12 pt-20 md:pt-0',
           'min-h-screen grid-rows-[min-content_1fr] bg-background font-sans antialiased',
           'bg-muted'
         )}
