@@ -91,7 +91,7 @@ export default function GradeButtons({ onGrade, card }: GradeButtonsProps) {
   return (
     <div
       className={cn(
-        'grid h-full grid-cols-2 gap-x-3 gap-y-2 sm:h-12 sm:w-96 md:grid-cols-4'
+        'grid h-full grid-cols-2 gap-x-1 md:gap-x-3 gap-y-1 md:gap-y-2 sm:h-12 sm:w-96 md:grid-cols-4'
       )}
     >
       {gradesToShow.map((grade) => (

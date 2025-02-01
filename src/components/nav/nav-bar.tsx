@@ -102,7 +102,7 @@ export function NavigationBar() {
 
         <NavigationMenuItem>
           <NavigationMenuLink className={navigationMenuTriggerStyle()} asChild>
-            <Link to='/'>Review</Link>
+            <Link to='/review'>Review</Link>
           </NavigationMenuLink>
         </NavigationMenuItem>
 
