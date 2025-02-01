@@ -30,8 +30,8 @@ export default function NavBar() {
 
       <NavButton
         icon={<Home className={cn('scale-x-110')} strokeWidth={2.5} />}
-        href={'/'}
-        focused={path.pathname === '/'}
+        href={'/review'}
+        focused={path.pathname === '/review'}
       />
 
       <NavButton

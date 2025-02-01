@@ -11,6 +11,7 @@ import {
   updateSuspendedClientSide,
 } from '@/lib/sync/operation';
 import { cn } from '@/lib/utils';
+import { Separator } from '@radix-ui/react-dropdown-menu';
 import { Fragment } from 'react/jsx-runtime';
 import { Grade } from 'ts-fsrs';
 
@@ -49,12 +50,12 @@ export default function ReviewRoute() {
       className={cn(
         'grid grid-cols-12 gap-x-6 items-start',
         'col-start-1 col-end-13',
-        'xl:col-start-3 xl:col-end-11 xl:grid-cols-8',
-        'md:mt-12 px-2'
+        'md:col-start-3 md:col-end-11 md:grid-cols-8',
+        'md:mt-12 mb-6'
       )}
     >
-      <div className='relative col-span-12 flex flex-col gap-x-4 gap-y-2 overflow-hidden'>
-        <div className='w-full flex justify-between'>
+      <div className='relative col-span-12 flex flex-col gap-x-4 gap-y-2 bg-background rounded-xl px-1 md:px-4 pt-4 h-full'>
+        <div className='w-full flex flex-col-reverse sm:flex-row justify-between items-center gap-4'>
           <div className='flex gap-2'>
             <CardCountBadges />
             {nextReviewCard && <CurrentCardBadge card={nextReviewCard} />}
@@ -67,10 +68,11 @@ export default function ReviewRoute() {
           />
         </div>
 
-        <div className='flex flex-col md:flex-row justify-stretch md:justify-center items-center gap-1 md:gap-2 md:mb-6 w-full h-[70vh] md:h-full'>
+        <div className='flex flex-col md:flex-row justify-stretch md:justify-center items-center gap-2 lg:gap-4 w-full h-full'>
           {nextReviewCard ? (
             <Fragment>
               <FlashcardContent content={nextReviewCard.front} />
+              <Separator className='sm:hidden bg-muted w-[95%] h-0.5' />
               <FlashcardContent content={nextReviewCard.back} />
             </Fragment>
           ) : (
@@ -78,7 +80,7 @@ export default function ReviewRoute() {
           )}
         </div>
 
-        <div className='z-20 mb-6 w-full sm:static sm:mx-auto sm:mt-2 sm:w-max'>
+        <div className='w-full sm:static sm:mx-auto sm:mt-2 sm:w-max mb-4'>
           {nextReviewCard && (
             <GradeButtons onGrade={handleGrade} card={nextReviewCard} />
           )}

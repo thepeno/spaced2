@@ -51,7 +51,7 @@ export default function CardActionButtons({
               className={cn(
                 'h-6 w-6 transition-all duration-300 ease-out group-active:scale-110'
               )}
-              strokeWidth={1.5}
+              strokeWidth={1.8}
               fill={bookmarked ? 'cornflowerblue' : 'none'}
               stroke={bookmarked ? 'cornflowerblue' : 'black'}
             />
@@ -71,7 +71,7 @@ export default function CardActionButtons({
               })
             )}
           >
-            <Undo className='h-6 w-6' strokeWidth={1.5} />
+            <Undo className='h-6 w-6' strokeWidth={1.8} />
           </TooltipTrigger>
           <TooltipContent className='flex flex-col items-center'>
             <p>Undo</p>
@@ -92,7 +92,7 @@ export default function CardActionButtons({
               })
             )}
           >
-            <ChevronsRight className='h-6 w-6' strokeWidth={1.5} />
+            <ChevronsRight className='h-6 w-6' strokeWidth={1.8} />
           </TooltipTrigger>
           <TooltipContent className='flex flex-col items-center'>
             <p>Suspend</p>
@@ -111,7 +111,7 @@ export default function CardActionButtons({
                   buttonVariants({ variant: 'ghost', size: 'icon' })
                 )}
               >
-                <TrashIcon className='h-4 w-4' strokeWidth={1.5} />
+                <TrashIcon className='h-4 w-4' strokeWidth={1.8} />
               </AlertDialogTrigger>
             </TooltipTrigger>
             <TooltipContent className='flex flex-col items-center'>

@@ -58,8 +58,8 @@ function GradeButton({
       <Tooltip>
         <TooltipTrigger asChild>
           <Button
-            className='flex h-16 flex-col gap-0 transition sm:h-full'
-            variant={beforeGrade === grade ? 'secondary' : 'outline'}
+            className='flex h-16 flex-col gap-0 transition sm:h-full bg-transparent sm:ring-1'
+            variant={beforeGrade === grade ? 'secondary' : 'ghost'}
             onClick={() => onGrade(grade)}
           >
             <div>{RATING_TO_NAME[grade]}</div>
@@ -91,7 +91,7 @@ export default function GradeButtons({ onGrade, card }: GradeButtonsProps) {
   return (
     <div
       className={cn(
-        'grid h-full grid-cols-2 gap-x-1 md:gap-x-3 gap-y-1 md:gap-y-2 sm:h-12 sm:w-96 md:grid-cols-4'
+        'grid h-full grid-cols-2 gap-x-1 md:gap-x-3 gap-y-1 md:gap-y-2 sm:w-96 md:grid-cols-4'
       )}
     >
       {gradesToShow.map((grade) => (
