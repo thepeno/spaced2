@@ -6,7 +6,7 @@ import { useReviewCards } from '@/components/hooks/db';
 import GradeButtons from '@/components/rating-buttons';
 import {
   gradeCardOperation,
-  updateDeletedClientSide
+  updateDeletedClientSide,
 } from '@/lib/sync/operation';
 import { Fragment } from 'react/jsx-runtime';
 import { Grade } from 'ts-fsrs';

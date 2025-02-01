@@ -16,14 +16,17 @@ const memoryDb: MemoryDb = {
 
 const subscribers = new Set<() => void>();
 
-const subscribe = (callback: () => void): (() => void) => {
+const subscribe = (callback: () => void = () => {}): (() => void) => {
   subscribers.add(callback);
   return () => {
     subscribers.delete(callback);
   };
 };
 
+let cardsArray: CardWithMetadata[] = [];
+
 const notify = () => {
+  cardsArray = Object.values(memoryDb.cards);
   for (const callback of subscribers) {
     callback();
   }
@@ -38,19 +41,8 @@ const getCardById = (id: string) => {
 };
 
 const getCards = () => {
-  return memoryDb.cards;
+  return cardsArray;
 };
-
-async function init() {
-  const operations = await db.operations.toArray();
-  for (const operation of operations) {
-    handleClientOperation(operation);
-  }
-  notify();
-  console.log('Spaced Database initialized');
-}
-
-init();
 
 const MemoryDB = {
   subscribe,
@@ -61,3 +53,16 @@ const MemoryDB = {
 };
 
 export default MemoryDB;
+
+async function init() {
+  const operations = await db.operations.toArray();
+  for (const operation of operations) {
+    handleClientOperation(operation);
+  }
+
+  console.log('Spaced Database initialized');
+  console.log(memoryDb.cards);
+  notify();
+}
+
+await init();

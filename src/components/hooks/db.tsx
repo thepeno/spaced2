@@ -2,10 +2,8 @@ import MemoryDB from '@/lib/db/memory';
 import { useSyncExternalStore } from 'react';
 
 export function useReadCards() {
-  const cards = useSyncExternalStore(MemoryDB.subscribe, () =>
-    MemoryDB.getCards()
-  );
-  return Object.values(cards);
+  const cards = useSyncExternalStore(MemoryDB.subscribe, MemoryDB.getCards);
+  return cards;
 }
 
 export function useReviewCards() {
