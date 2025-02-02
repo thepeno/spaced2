@@ -97,7 +97,7 @@ export function LoginButton() {
           </BouncyButton>
         </button>
       </DialogTrigger>
-      <DialogContent className='w-80 h-80'>
+      <DialogContent className='w-full h-max'>
         <DialogHeader>
           <DialogTitle>Sign in</DialogTitle>
           <DialogDescription>
