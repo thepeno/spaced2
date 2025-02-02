@@ -11,7 +11,7 @@ import { CardWithMetadata } from '@/lib/types';
 
 const FlashcardTable = ({ cards }: { cards: CardWithMetadata[] }) => {
   return (
-    <div className='rounded-md border'>
+    <div className='rounded-md border animate-fade-in'>
       <Table>
         <TableHeader>
           <TableRow>

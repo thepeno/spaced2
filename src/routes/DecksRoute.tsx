@@ -27,7 +27,12 @@ export default function DecksRoute() {
         setSearch={setSearch}
         placeholder='Search decks...'
       />
-      <section className='col-span-12 flex flex-wrap gap-x-4 gap-y-4 justify-center items-start min-[900px]:px-24 xl:px-0'>
+      <section
+        className={cn(
+          'col-span-12 flex flex-wrap gap-x-4 gap-y-4 justify-center items-start min-[900px]:px-24 xl:px-0',
+          'animate-fade-in slide-in-from-left-1/4 sm:slide-in-from-left-0'
+        )}
+      >
         {filteredDecks.map((deck) => (
           <DeckCard key={deck.id} id={deck.id} />
         ))}

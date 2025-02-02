@@ -10,7 +10,7 @@ export default function ProfileRoute() {
   const loggedIn = useLoggedInStatus();
 
   return (
-    <div className='flex flex-col h-full min-h-[90vh] col-start-1 col-end-13 xl:col-start-3 xl:col-end-11 md:px-24 pb-6 gap-2'>
+    <div className='flex flex-col h-full col-start-1 col-end-13 xl:col-start-3 xl:col-end-11 md:px-24 pb-6 gap-2'>
       <h1 className='mt-10 scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight transition-colors first:mt-0'>
         Profile
       </h1>

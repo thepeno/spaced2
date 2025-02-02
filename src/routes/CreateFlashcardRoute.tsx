@@ -90,7 +90,7 @@ export default function CreateFlashcardRoute() {
   const [createDeckDialogOpen, setCreateDeckDialogOpen] = useState(false);
 
   return (
-    <div className='col-span-12 xl:col-start-4 xl:col-end-10 md:px-24 xl:px-0 h-full animate-fade-in pb-40'>
+    <div className='col-span-12 xl:col-start-4 xl:col-end-10 md:px-24 xl:px-0 h-full pb-40'>
       <SearchBar
         search={search}
         setSearch={setSearch}
@@ -111,55 +111,56 @@ export default function CreateFlashcardRoute() {
           }
         }}
       />
+      <div className='animate-fade-in'>
+        <CreateDeckForm
+          open={createDeckDialogOpen}
+          onOpenChange={setCreateDeckDialogOpen}
+        />
 
-      <CreateDeckForm
-        open={createDeckDialogOpen}
-        onOpenChange={setCreateDeckDialogOpen}
-      />
-
-      <div className='flex gap-4 overflow-x-scroll mb-2 bg-background p-4 rounded-xl h-48'>
-        {search.trim() === '' && (
-          <CreateNewDeckCard
-            onClick={() => {
-              setCreateDeckDialogOpen(true);
-            }}
-          />
-        )}
-
-        {shownDecks.map((deck) => {
-          const selected = selectedDecks.includes(deck.id);
-          return (
-            <DeckSelectionCard
-              key={deck.id}
-              title={deck.name}
-              backgroundType={selected ? 'cool-mint' : 'plain'}
-              selected={selected}
-              onSelect={() => {
-                if (selected) {
-                  setSelectedDecks(
-                    selectedDecks.filter((id) => id !== deck.id)
-                  );
-                } else {
-                  setSelectedDecks([...selectedDecks, deck.id]);
-                }
+        <div className='flex gap-4 overflow-x-scroll mb-2 bg-background p-4 rounded-xl h-48'>
+          {search.trim() === '' && (
+            <CreateNewDeckCard
+              onClick={() => {
+                setCreateDeckDialogOpen(true);
               }}
             />
-          );
-        })}
+          )}
 
-        {shownDecks.length === 0 && search.trim() !== '' && (
-          <div className='flex items-center justify-center h-full w-full'>
-            <p className='text-muted-foreground'>No decks found</p>
-          </div>
-        )}
+          {shownDecks.map((deck) => {
+            const selected = selectedDecks.includes(deck.id);
+            return (
+              <DeckSelectionCard
+                key={deck.id}
+                title={deck.name}
+                backgroundType={selected ? 'cool-mint' : 'plain'}
+                selected={selected}
+                onSelect={() => {
+                  if (selected) {
+                    setSelectedDecks(
+                      selectedDecks.filter((id) => id !== deck.id)
+                    );
+                  } else {
+                    setSelectedDecks([...selectedDecks, deck.id]);
+                  }
+                }}
+              />
+            );
+          })}
+
+          {shownDecks.length === 0 && search.trim() !== '' && (
+            <div className='flex items-center justify-center h-full w-full'>
+              <p className='text-muted-foreground'>No decks found</p>
+            </div>
+          )}
+        </div>
+
+        <CreateFlashcardForm
+          onSubmit={async (values) => {
+            await createNewCard(values.front, values.back, selectedDecks);
+          }}
+          numDecks={selectedDecks.length}
+        />
       </div>
-
-      <CreateFlashcardForm
-        onSubmit={async (values) => {
-          await createNewCard(values.front, values.back, selectedDecks);
-        }}
-        numDecks={selectedDecks.length}
-      />
     </div>
   );
 }
