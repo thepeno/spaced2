@@ -490,7 +490,7 @@ function handleUpdateDeckCardOperation(
     MemoryDB._db.decksToCards[operation.payload.deckId] = {
       [operation.payload.cardId]: operation.payload.clCount,
     };
-    return { applied: false };
+    return { applied: true };
   }
 
   const existingClCount = cardsMap[operation.payload.cardId];
