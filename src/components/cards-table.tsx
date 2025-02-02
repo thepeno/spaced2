@@ -1,17 +1,47 @@
+import EditFlashcardResponsive from '@/components/card-actions/edit-flashcard-responsive';
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableFooter,
-    TableHead,
-    TableHeader,
-    TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableFooter,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from '@/components/ui/table';
+import { CardContentFormValues } from '@/lib/form-schema';
+import { updateCardContentOperation } from '@/lib/sync/operation';
 import { CardWithMetadata } from '@/lib/types';
+import { useState } from 'react';
 
 const FlashcardTable = ({ cards }: { cards: CardWithMetadata[] }) => {
+  const [selectedCard, setSelectedCard] = useState<CardWithMetadata | null>(
+    null
+  );
+  const [open, setOpen] = useState(false);
+
+  const handleEdit = (values: CardContentFormValues) => {
+    if (!selectedCard) {
+      return;
+    }
+    const hasChanged =
+      selectedCard.front !== values.front || selectedCard.back !== values.back;
+    if (hasChanged) {
+      updateCardContentOperation(selectedCard.id, values.front, values.back);
+    }
+    setSelectedCard(null);
+    setOpen(false);
+  };
+
   return (
     <div className='rounded-md border animate-fade-in'>
+      {selectedCard && (
+        <EditFlashcardResponsive
+          card={selectedCard}
+          onEdit={handleEdit}
+          open={open}
+          onOpenChange={setOpen}
+        />
+      )}
       <Table>
         <TableHeader>
           <TableRow>
@@ -22,7 +52,13 @@ const FlashcardTable = ({ cards }: { cards: CardWithMetadata[] }) => {
         </TableHeader>
         <TableBody>
           {cards.map((card) => (
-            <TableRow key={card.id}>
+            <TableRow
+              key={card.id}
+              onClick={() => {
+                setSelectedCard(card);
+                setOpen(true);
+              }}
+            >
               <TableCell className='font-medium'>{card.front}</TableCell>
               <TableCell>{card.back}</TableCell>
               <TableCell>
