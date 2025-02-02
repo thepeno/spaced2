@@ -29,8 +29,8 @@ export default function DeckRoute() {
         setSearch={setSearch}
         placeholder='Search cards...'
       />
-      <div className='mb-4'>
-        <h1 className='text-4xl md:text-4xl'>{deck.name}</h1>
+      <div className='mb-4 px-2'>
+        <h1 className='text-2xl md:text-4xl font-bold tracking-wide'>{deck.name}</h1>
         <p className='text-sm text-muted-foreground'>{deck.description}</p>
       </div>
       <Separator className='my-4' />
