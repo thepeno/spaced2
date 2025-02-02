@@ -4,10 +4,11 @@ import CurrentCardBadge from '@/components/current-card-badge';
 import FlashcardContent from '@/components/flashcard-content';
 import { useReviewCards } from '@/components/hooks/query';
 import GradeButtons from '@/components/rating-buttons';
+import EmptyReviewUi from '@/components/review/empty';
 import {
   Carousel,
   CarouselContent,
-  CarouselItem
+  CarouselItem,
 } from '@/components/ui/carousel';
 import {
   gradeCardOperation,
@@ -64,12 +65,15 @@ export default function ReviewRoute() {
             <CardCountBadges />
             {nextReviewCard && <CurrentCardBadge card={nextReviewCard} />}
           </div>
-          <CardActionButtons
-            onDelete={handleDelete}
-            onSkip={handleSuspend}
-            onBookmark={handleBookmark}
-            bookmarked={nextReviewCard?.bookmarked}
-          />
+
+          {nextReviewCard && (
+            <CardActionButtons
+              onDelete={handleDelete}
+              onSkip={handleSuspend}
+              onBookmark={handleBookmark}
+              bookmarked={nextReviewCard?.bookmarked}
+            />
+          )}
         </div>
 
         <div className='flex flex-col md:flex-row justify-stretch md:justify-center items-center gap-2 lg:gap-4 w-full h-full'>
@@ -80,7 +84,7 @@ export default function ReviewRoute() {
               <FlashcardContent content={nextReviewCard.back} />
             </div>
           ) : (
-            <div>No cards to review</div>
+            <EmptyReviewUi />
           )}
           {nextReviewCard && (
             <Carousel className='w-full max-w-xs sm:hidden'>
