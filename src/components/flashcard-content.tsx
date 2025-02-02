@@ -3,7 +3,7 @@ import { markdownToHtml } from '@/lib/utils';
 export default function FlashcardContent({ content }: { content: string }) {
   return (
     <article
-      className='prose min-h-72 md:min-h-96 h-full flex-1 p-2 rounded-lg flex flex-col items-center justify-center sm:shadow-xs w-full sm:ring-1'
+      className='prose min-h-96 h-full flex-1 p-2 rounded-lg flex flex-col items-center justify-center sm:shadow-xs w-full sm:border'
       dangerouslySetInnerHTML={{
         __html: markdownToHtml(content),
       }}

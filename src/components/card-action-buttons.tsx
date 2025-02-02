@@ -18,7 +18,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
-import { Bookmark, ChevronsRight, TrashIcon, Undo } from 'lucide-react';
+import { Bookmark, ChevronsRight, TrashIcon } from 'lucide-react';
 
 type CardActionButtonsProps = {
   onUndo?: () => void;
@@ -36,71 +36,12 @@ export default function CardActionButtons({
   bookmarked = false,
 }: CardActionButtonsProps) {
   return (
-    <div className='flex gap-2'>
-      {/* Bookmark Button */}
-      <TooltipProvider delayDuration={100}>
-        <Tooltip>
-          <TooltipTrigger
-            onClick={() => onBookmark?.(!bookmarked)}
-            className={cn(
-              buttonVariants({ variant: 'ghost', size: 'icon' }),
-              'group'
-            )}
-          >
-            <Bookmark
-              className={cn(
-                'h-6 w-6 transition-all duration-300 ease-out group-active:scale-110'
-              )}
-              strokeWidth={1.8}
-              fill={bookmarked ? 'cornflowerblue' : 'none'}
-              stroke={bookmarked ? 'cornflowerblue' : 'black'}
-            />
-          </TooltipTrigger>
-        </Tooltip>
-      </TooltipProvider>
-
-      {/* Undo Button */}
-      <TooltipProvider delayDuration={100}>
-        <Tooltip>
-          <TooltipTrigger
-            onClick={onUndo}
-            className={cn(
-              buttonVariants({
-                variant: 'ghost',
-                size: 'icon',
-              })
-            )}
-          >
-            <Undo className='h-6 w-6' strokeWidth={1.8} />
-          </TooltipTrigger>
-          <TooltipContent className='flex flex-col items-center'>
-            <p>Undo</p>
-            <Kbd>Ctrl+Z</Kbd>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-
-      {/* Suspend Button */}
-      <TooltipProvider delayDuration={100}>
-        <Tooltip>
-          <TooltipTrigger
-            onClick={onSkip}
-            className={cn(
-              buttonVariants({
-                variant: 'ghost',
-                size: 'icon',
-              })
-            )}
-          >
-            <ChevronsRight className='h-6 w-6' strokeWidth={1.8} />
-          </TooltipTrigger>
-          <TooltipContent className='flex flex-col items-center'>
-            <p>Suspend</p>
-            <Kbd className='mx-auto'>Shift+→</Kbd>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-
+    <div
+      className={cn(
+        'absolute left-2 right-auto top-2 flex flex-col gap-4 bg-muted rounded-md px-1 py-4 text-muted-foreground',
+        'sm:left-auto sm:right-2 sm:flex-row-reverse sm:gap-2 sm:px-2 sm:py-0'
+      )}
+    >
       {/* Delete Button */}
       <AlertDialog>
         <TooltipProvider delayDuration={100}>
@@ -108,10 +49,14 @@ export default function CardActionButtons({
             <TooltipTrigger asChild>
               <AlertDialogTrigger
                 className={cn(
-                  buttonVariants({ variant: 'ghost', size: 'icon' })
+                  buttonVariants({ variant: 'ghost', size: 'icon' }),
+                  'group'
                 )}
               >
-                <TrashIcon className='h-4 w-4' strokeWidth={1.8} />
+                <TrashIcon
+                  className='!h-5 !w-5 sm:!h-4 sm:!w-4 transition-all duration-300 ease-out group-active:scale-110'
+                  strokeWidth={2}
+                />
               </AlertDialogTrigger>
             </TooltipTrigger>
             <TooltipContent className='flex flex-col items-center'>
@@ -121,18 +66,94 @@ export default function CardActionButtons({
           </Tooltip>
         </TooltipProvider>
 
+        {/* Undo Button */}
+        {/* <TooltipProvider delayDuration={100}>
+        <Tooltip>
+          <TooltipTrigger
+            onClick={onUndo}
+            className={cn(
+              buttonVariants({
+                variant: 'ghost',
+                size: 'icon',
+              }),
+              'group'
+            )}
+          >
+            <Undo
+              className='!h-5 !w-5 sm:!h-4 sm:!w-4 transition-all duration-300 ease-out group-active:scale-110'
+              strokeWidth={1.8}
+            />
+          </TooltipTrigger>
+          <TooltipContent className='flex flex-col items-center'>
+            <p>Undo</p>
+            <Kbd>Ctrl+Z</Kbd>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+ */}
+        {/* Suspend Button */}
+        <TooltipProvider delayDuration={100}>
+          <Tooltip>
+            <TooltipTrigger
+              onClick={onSkip}
+              className={cn(
+                buttonVariants({
+                  variant: 'ghost',
+                  size: 'icon',
+                }),
+                'group'
+              )}
+            >
+              <ChevronsRight
+                className='!h-5 !w-5 sm:!h-4 sm:!w-4 transition-all duration-300 ease-out group-active:scale-110'
+                strokeWidth={2}
+              />
+            </TooltipTrigger>
+            <TooltipContent className='flex flex-col items-center'>
+              <p>Suspend</p>
+              <Kbd className='mx-auto'>Shift+→</Kbd>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+
+        {/* Bookmark button */}
+        <TooltipProvider delayDuration={100}>
+          <Tooltip>
+            <TooltipTrigger
+              onClick={() => onBookmark?.(!bookmarked)}
+              className={cn(
+                buttonVariants({ variant: 'ghost', size: 'icon' }),
+                'group'
+              )}
+            >
+              <Bookmark
+                className={cn(
+                  '!h-5 !w-5 sm:!h-4 sm:!w-4 transition-all duration-300 ease-out group-active:scale-110'
+                )}
+                strokeWidth={2}
+                fill={bookmarked ? 'cornflowerblue' : 'none'}
+                stroke={bookmarked ? 'cornflowerblue' : 'currentColor'}
+              />
+            </TooltipTrigger>
+          </Tooltip>
+        </TooltipProvider>
+
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Confirmation</AlertDialogTitle>
+            <AlertDialogTitle>Delete card</AlertDialogTitle>
             <AlertDialogDescription>
               Are you sure you want to delete this card?
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel
+              className={cn(buttonVariants({ variant: 'outline' }), 'h-12')}
+            >
+              Cancel
+            </AlertDialogCancel>
             <AlertDialogAction
               onClick={onDelete}
-              className={cn(buttonVariants({ variant: 'destructive' }))}
+              className={cn(buttonVariants({ variant: 'destructive' }), 'h-12')}
             >
               Continue
             </AlertDialogAction>

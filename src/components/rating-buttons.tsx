@@ -58,7 +58,7 @@ function GradeButton({
       <Tooltip>
         <TooltipTrigger asChild>
           <Button
-            className='flex h-16 flex-col gap-0 transition sm:h-full bg-transparent sm:ring-1'
+            className='flex h-16 flex-col gap-0 transition sm:h-full bg-transparent border'
             variant={beforeGrade === grade ? 'secondary' : 'ghost'}
             onClick={() => onGrade(grade)}
           >

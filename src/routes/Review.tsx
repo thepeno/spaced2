@@ -5,6 +5,11 @@ import FlashcardContent from '@/components/flashcard-content';
 import { useReviewCards } from '@/components/hooks/query';
 import GradeButtons from '@/components/rating-buttons';
 import {
+  Carousel,
+  CarouselContent,
+  CarouselItem
+} from '@/components/ui/carousel';
+import {
   gradeCardOperation,
   updateBookmarkedClientSide,
   updateDeletedClientSide,
@@ -12,7 +17,6 @@ import {
 } from '@/lib/sync/operation';
 import { cn } from '@/lib/utils';
 import { Separator } from '@radix-ui/react-dropdown-menu';
-import { Fragment } from 'react/jsx-runtime';
 import { Grade } from 'ts-fsrs';
 
 function tenMinutesFromNow(): Date {
@@ -70,13 +74,29 @@ export default function ReviewRoute() {
 
         <div className='flex flex-col md:flex-row justify-stretch md:justify-center items-center gap-2 lg:gap-4 w-full h-full'>
           {nextReviewCard ? (
-            <Fragment>
+            <div className='w-full hidden sm:flex gap-2'>
               <FlashcardContent content={nextReviewCard.front} />
               <Separator className='sm:hidden bg-muted w-[95%] h-0.5' />
               <FlashcardContent content={nextReviewCard.back} />
-            </Fragment>
+            </div>
           ) : (
             <div>No cards to review</div>
+          )}
+          {nextReviewCard && (
+            <Carousel className='w-full max-w-xs sm:hidden'>
+              <CarouselContent>
+                <CarouselItem>
+                  <div className='p-1'>
+                    <FlashcardContent content={nextReviewCard.front} />
+                  </div>
+                </CarouselItem>
+                <CarouselItem>
+                  <div className='p-1'>
+                    <FlashcardContent content={nextReviewCard.back} />
+                  </div>
+                </CarouselItem>
+              </CarouselContent>
+            </Carousel>
           )}
         </div>
 

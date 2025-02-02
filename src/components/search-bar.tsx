@@ -18,7 +18,7 @@ export default function SearchBar({
       <Button
         variant='ghost'
         size='icon'
-        className='absolute left-1 top-1/2 -translate-y-1/2 h-8 w-8 hover:bg-transparent'
+        className='absolute left-1 top-1/2 -translate-y-1/2 h-8 w-8 hover:bg-transparent shadow-none'
       >
         <Search className='h-4 w-4' />
       </Button>

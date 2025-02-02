@@ -13,7 +13,7 @@ export default function CurrentCardBadge({ card }: { card: Card }) {
   return (
     <Badge
       variant='dot'
-      className={cn('h-8 rounded-sm', {
+      className={cn('hidden sm:inline-flex h-8 rounded-sm', {
         'before:bg-blue-500': card?.state === State.New,
         'before:bg-red-500':
           card?.state === State.Relearning || card?.state === State.Learning,
