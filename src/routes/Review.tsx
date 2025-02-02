@@ -58,7 +58,7 @@ export default function ReviewRoute() {
         'md:mt-12 mb-6'
       )}
     >
-      <div className='relative col-span-12 flex flex-col gap-x-4 gap-y-2 bg-background rounded-xl px-1 md:px-4 pt-4 h-full'>
+      <div className='relative col-span-12 flex flex-col gap-x-4 gap-y-2 bg-background rounded-3xl px-1 md:px-4 pt-4 h-full animate-fade-in'>
         <div className='w-full flex flex-col-reverse sm:flex-row justify-between items-center gap-4'>
           <div className='flex gap-2'>
             <CardCountBadges />
@@ -100,7 +100,7 @@ export default function ReviewRoute() {
           )}
         </div>
 
-        <div className='w-full sm:static sm:mx-auto sm:mt-2 sm:w-max mb-4'>
+        <div className='w-full sm:static sm:mx-auto sm:mt-2 sm:w-max mb-4 px-4 pb-2'>
           {nextReviewCard && (
             <GradeButtons onGrade={handleGrade} card={nextReviewCard} />
           )}

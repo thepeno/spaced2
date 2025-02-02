@@ -51,6 +51,22 @@ export default {
           5: 'hsl(var(--chart-5))',
         },
       },
+      keyframes: {
+        scale: {
+          '0%': { transform: 'scale(0.95)' },
+          '30%': { transform: 'scale(1.1)' },
+          '100%': { transform: 'scale(1)' },
+        },
+        fadeIn: {
+          '0%': { opacity: '0', transform: 'scale(0.95)' },
+          '100%': { opacity: '1', transform: 'scale(1)' },
+        },
+      },
+      animation: {
+        scale: 'scale 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
+        //  scale: 'scale 0.3s ease-out forwards',
+        fadeIn: 'fadeIn 0.3s ease-out forwards',
+      },
     },
   },
   plugins: [

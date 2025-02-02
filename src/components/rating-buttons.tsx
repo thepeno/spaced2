@@ -35,11 +35,13 @@ function GradeButton({
   onGrade,
   dateString,
   beforeGrade,
+  pos,
 }: {
   beforeGrade?: Grade;
   grade: Grade;
   onGrade: (grade: Grade) => void;
   dateString: string;
+  pos: 'top-right' | 'bottom-right' | 'top-left' | 'bottom-left' | 'center';
 }) {
   const key = RATING_TO_KEY[grade] ?? '';
 
@@ -58,12 +60,19 @@ function GradeButton({
       <Tooltip>
         <TooltipTrigger asChild>
           <Button
-            className='flex h-16 flex-col gap-0 transition sm:h-full bg-transparent border'
+            className={cn(
+              'flex h-16 flex-col gap-0 transition sm:h-full bg-muted text-muted-foreground border rounded-none sm:rounded-xl',
+              pos === 'top-right' && 'rounded-tr-2xl',
+              pos === 'bottom-right' && 'rounded-br-2xl',
+              pos === 'top-left' && 'rounded-tl-2xl',
+              pos === 'bottom-left' && 'rounded-bl-2xl'
+              // pos === 'center' && 'rounded-2xl'
+            )}
             variant={beforeGrade === grade ? 'secondary' : 'ghost'}
             onClick={() => onGrade(grade)}
           >
-            <div>{RATING_TO_NAME[grade]}</div>
-            <div className='sm:hidden'>{dateString}</div>
+            <div className='text-base'>{RATING_TO_NAME[grade]}</div>
+            {/* <div className='sm:hidden'>{dateString}</div> */}
           </Button>
         </TooltipTrigger>
         <TooltipContent className='flex items-center'>
@@ -94,17 +103,49 @@ export default function GradeButtons({ onGrade, card }: GradeButtonsProps) {
         'grid h-full grid-cols-2 gap-x-1 md:gap-x-3 gap-y-1 md:gap-y-2 sm:w-96 md:grid-cols-4'
       )}
     >
-      {gradesToShow.map((grade) => (
-        <GradeButton
-          key={grade}
-          grade={grade}
-          onGrade={() => onGrade(grade)}
-          dateString={intlFormatDistance(
-            schedulingCards[grade].card.due,
-            new Date()
-          )}
-        />
-      ))}
+      <GradeButton
+        key={Rating.Again}
+        grade={Rating.Again}
+        onGrade={() => onGrade(Rating.Again)}
+        dateString={intlFormatDistance(
+          schedulingCards[Rating.Again].card.due,
+          new Date()
+        )}
+        pos='top-left'
+      />
+
+      <GradeButton
+        key={Rating.Hard}
+        grade={Rating.Hard}
+        onGrade={() => onGrade(Rating.Hard)}
+        dateString={intlFormatDistance(
+          schedulingCards[Rating.Hard].card.due,
+          new Date()
+        )}
+        pos='top-right'
+      />
+
+      <GradeButton
+        key={Rating.Good}
+        grade={Rating.Good}
+        onGrade={() => onGrade(Rating.Good)}
+        dateString={intlFormatDistance(
+          schedulingCards[Rating.Good].card.due,
+          new Date()
+        )}
+        pos='bottom-left'
+      />
+
+      <GradeButton
+        key={Rating.Easy}
+        grade={Rating.Easy}
+        onGrade={() => onGrade(Rating.Easy)}
+        dateString={intlFormatDistance(
+          schedulingCards[Rating.Easy].card.due,
+          new Date()
+        )}
+        pos='bottom-right'
+      />
     </div>
   );
 }

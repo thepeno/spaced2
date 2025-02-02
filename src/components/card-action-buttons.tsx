@@ -38,7 +38,7 @@ export default function CardActionButtons({
   return (
     <div
       className={cn(
-        'absolute left-2 right-auto top-2 flex flex-col gap-4 bg-muted rounded-md px-1 py-4 text-muted-foreground',
+        'absolute left-auto right-auto top-3 flex gap-4 bg-muted rounded-3xl px-4 py-1 text-muted-foreground z-10',
         'sm:left-auto sm:right-2 sm:flex-row-reverse sm:gap-2 sm:px-2 sm:py-0'
       )}
     >
