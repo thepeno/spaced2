@@ -36,7 +36,7 @@ export function CreateFlashcardForm({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(handleSubmit)}
-        className='flex flex-col gap-4 bg-background rounded-xl p-4 h-full max-h-96 justify-center'
+        className='flex flex-col gap-4 bg-background rounded-xl p-4 h-full justify-center'
       >
         <div className='grow'>
           <FormTextareaImageUpload
