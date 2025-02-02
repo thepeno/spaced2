@@ -3,12 +3,13 @@ import NavBar from '@/components/nav/nav-bar.tsx';
 import { SpacedIcon } from '@/components/nav/spaced-icon';
 import SyncEngine from '@/lib/sync/engine.ts';
 import { cn } from '@/lib/utils.ts';
+import AllCardsRoute from '@/routes/AllCardsRoute';
 import BookmarksRoute from '@/routes/BookmarksRoute.tsx';
 import CreateFlashcardRoute from '@/routes/CreateFlashcardRoute.tsx';
 import DeckRoute from '@/routes/DeckRoute.tsx';
 import DecksRoute from '@/routes/DecksRoute.tsx';
-import ReviewRoute from '@/routes/Review.tsx';
 import ProfileRoute from '@/routes/ProfileRoute';
+import ReviewRoute from '@/routes/Review.tsx';
 import DebugRoute from '@/routes/Sync.tsx';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
@@ -33,6 +34,7 @@ createRoot(document.getElementById('root')!).render(
           <Route path='/' element={<ReviewRoute />} />
           <Route path='/login' element={<LoginScreen />} />
           <Route path='/decks' element={<DecksRoute />} />
+          <Route path='/decks/_all' element={<AllCardsRoute />} />
           <Route path='/decks/:deckId' element={<DeckRoute />} />
           <Route path='/bookmarks' element={<BookmarksRoute />} />
           <Route path='/debug' element={<DebugRoute />} />

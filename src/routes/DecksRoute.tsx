@@ -1,4 +1,5 @@
-import DeckCard from '@/components/deck-card';
+import AllDecksCardContainer from '@/components/deck/all-decks-card-container';
+import DeckCardContainer from '@/components/deck/deck-card-container';
 import { useDecks } from '@/components/hooks/query';
 import SearchBar from '@/components/search-bar';
 import { cn } from '@/lib/utils';
@@ -33,8 +34,9 @@ export default function DecksRoute() {
           'animate-fade-in slide-in-from-left-1/4 sm:slide-in-from-left-0'
         )}
       >
+        <AllDecksCardContainer />
         {filteredDecks.map((deck) => (
-          <DeckCard key={deck.id} id={deck.id} />
+          <DeckCardContainer key={deck.id} id={deck.id} />
         ))}
       </section>
     </div>
