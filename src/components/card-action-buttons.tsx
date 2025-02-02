@@ -29,7 +29,7 @@ type CardActionButtonsProps = {
 };
 
 export default function CardActionButtons({
-  onUndo,
+  // onUndo,
   onSkip,
   onDelete,
   onBookmark,

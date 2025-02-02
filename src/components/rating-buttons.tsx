@@ -88,12 +88,6 @@ function GradeButton({
  * The buttons to rate a flashcard.
  */
 export default function GradeButtons({ onGrade, card }: GradeButtonsProps) {
-  const gradesToShow: Grade[] = [
-    Rating.Again,
-    Rating.Hard,
-    Rating.Good,
-    Rating.Easy,
-  ];
   const f = new FSRS({});
   const schedulingCards = f.repeat(card, new Date());
 

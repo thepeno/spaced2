@@ -7,7 +7,7 @@ export function SpacedIcon() {
   const reviewCards = useReviewCards();
 
   return (
-    <Link to='/review'>
+    <Link to='/'>
       <div className='absolute top-4 md:top-4 left-1/2 -translate-x-1/2 md:translate-x-0 md:left-4 w-16 h-12 z-30 flex items-center justify-center cursor-pointer'>
         <Telescope className={cn('h-10 w-10')} strokeWidth={1.8} />
 
