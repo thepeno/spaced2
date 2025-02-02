@@ -113,7 +113,7 @@ export function LoginButton() {
                 name='email'
                 render={({ field }) => (
                   <FormItem className='flex flex-col items-start'>
-                    <FormLabel className='text-primary'>Email</FormLabel>
+                    <FormLabel className='text-foreground'>Email</FormLabel>
                     <FormControl>
                       <div className='relative items-center gap-2 w-full'>
                         <Mail className='absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400' />
@@ -129,7 +129,7 @@ export function LoginButton() {
                 name='password'
                 render={({ field }) => (
                   <FormItem className='flex flex-col items-start'>
-                    <FormLabel className='text-primary'>Password</FormLabel>
+                    <FormLabel className='text-foreground'>Password</FormLabel>
                     <FormControl>
                       <div className='relative items-center gap-2 w-full'>
                         <Lock className='absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400' />
