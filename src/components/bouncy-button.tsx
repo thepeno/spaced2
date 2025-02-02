@@ -25,11 +25,12 @@ export default function BouncyButton({
   }, []);
 
   const handleRelease = useCallback(() => {
+    if (!isPressed) return;
     setIsPressed(false);
     setIsReleased(true);
     // Reset the release state after the animation
     setTimeout(() => setIsReleased(false), 150);
-  }, []);
+  }, [isPressed]);
 
   useEffect(() => {
     if (!isPressed) return;

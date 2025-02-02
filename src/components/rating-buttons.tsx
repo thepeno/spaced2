@@ -1,4 +1,4 @@
-import { Button } from '@/components/ui/button';
+import BouncyButton from '@/components/bouncy-button';
 import { Kbd } from '@/components/ui/kbd';
 import {
   Tooltip,
@@ -8,7 +8,7 @@ import {
 } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import { intlFormatDistance } from 'date-fns';
-import { useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Card, FSRS, Grade, Rating } from 'ts-fsrs';
 
 type GradeButtonsProps = {
@@ -30,53 +30,82 @@ const RATING_TO_NAME = {
   [Rating.Easy]: 'Easy',
 } as Record<Rating, string>;
 
+const HOLD_TO_CANCEL_THRESHOLD_MS = 250;
+
 function GradeButton({
   grade,
   onGrade,
   dateString,
-  beforeGrade,
   pos,
 }: {
-  beforeGrade?: Grade;
   grade: Grade;
   onGrade: (grade: Grade) => void;
   dateString: string;
   pos: 'top-right' | 'bottom-right' | 'top-left' | 'bottom-left' | 'center';
 }) {
   const key = RATING_TO_KEY[grade] ?? '';
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const [pressed, setPressed] = useState<boolean | undefined>(undefined);
+  const [timePressed, setTimePressed] = useState(0);
 
+  // Allow for "cancelling the press" by holding the key down for a while
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.repeat) return;
+
       if (e.key === key) {
-        onGrade(grade);
+        // onGrade(grade);
+        // buttonRef.current?.click();
+        setPressed(true);
+        setTimePressed(Date.now());
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [grade, key, onGrade]);
 
+  useEffect(() => {
+    const handleKeyUp = (e: KeyboardEvent) => {
+      if (e.key === key) {
+        if (Date.now() - timePressed < HOLD_TO_CANCEL_THRESHOLD_MS) {
+          onGrade(grade);
+        }
+
+        setPressed(false);
+      }
+    };
+    window.addEventListener('keyup', handleKeyUp);
+    return () => window.removeEventListener('keyup', handleKeyUp);
+  }, [grade, key, onGrade, timePressed]);
+
   return (
     <TooltipProvider key={grade} delayDuration={100}>
       <Tooltip>
-        <TooltipTrigger asChild>
-          <Button
+        {/* Pretty hacky way of handling the presses, will probably need to refactor the BouncyButton */}
+        <TooltipTrigger
+          ref={buttonRef}
+          onMouseDown={() => setPressed(undefined)}
+          onClick={() => {
+            onGrade(grade);
+          }}
+        >
+          <BouncyButton
             className={cn(
-              'flex h-16 flex-col gap-0 transition sm:h-full bg-muted text-foreground border rounded-none sm:rounded-xl',
+              'flex h-16 w-full flex-col justify-center gap-0 transition sm:h-12 bg-muted text-foreground border rounded-none sm:rounded-xl',
               pos === 'top-right' && 'rounded-tr-2xl',
               pos === 'bottom-right' && 'rounded-br-2xl',
               pos === 'top-left' && 'rounded-tl-2xl',
               pos === 'bottom-left' && 'rounded-bl-2xl'
               // pos === 'center' && 'rounded-2xl'
             )}
-            variant={beforeGrade === grade ? 'secondary' : 'ghost'}
-            onClick={() => onGrade(grade)}
+            pressed={pressed}
           >
             <div className='text-base sm:text-sm'>{RATING_TO_NAME[grade]}</div>
             {/* <div className='sm:hidden'>{dateString}</div> */}
-          </Button>
+          </BouncyButton>
         </TooltipTrigger>
         <TooltipContent className='flex items-center'>
-          <Kbd className='text-md mr-2'>{key}</Kbd>
+          <Kbd className='text-md mr-2 text-background'>{key}</Kbd>
           <p>{dateString}</p>
         </TooltipContent>
       </Tooltip>
