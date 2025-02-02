@@ -42,8 +42,8 @@ export default function NavBar() {
       {/* Settings */}
       <NavButton
         icon={<UserRound />}
-        href={'/settings'}
-        focused={path.pathname === '/settings'}
+        href={'/profile'}
+        focused={path.pathname === '/profile'}
       />
     </div>
   );
