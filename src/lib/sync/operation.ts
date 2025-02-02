@@ -264,6 +264,21 @@ export async function gradeCardOperation(card: CardWithMetadata, grade: Grade) {
   await handleClientOperationWithPersistence(cardOperation);
 }
 
+export async function createNewDeck(name: string, description: string) {
+  const deckOperation: DeckOperation = {
+    type: 'deck',
+    payload: {
+      id: crypto.randomUUID(),
+      name,
+      description,
+      deleted: false,
+    },
+    timestamp: Date.now(),
+  };
+
+  await handleClientOperationWithPersistence(deckOperation);
+}
+
 type OperationResult = {
   applied: boolean;
 };

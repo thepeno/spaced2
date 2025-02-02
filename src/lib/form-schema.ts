@@ -24,3 +24,17 @@ export const cardContentFormSchema = z.object({
 });
 
 export type CardContentFormValues = z.infer<typeof cardContentFormSchema>;
+
+export const deckFormSchema = z.object({
+  name: z
+    .string()
+    .min(1, { message: 'Name is required.' })
+    .max(30, { message: 'Name must be less than 30 characters.' }),
+  description: z
+    .string()
+    .min(1, { message: 'Description is required.' })
+    .max(300, { message: 'Description is too long.' })
+    .optional(),
+});
+
+export type DeckFormValues = z.infer<typeof deckFormSchema>;
