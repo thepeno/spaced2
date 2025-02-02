@@ -50,7 +50,7 @@ export function CreateFlashcardForm({
 
         <div className='grow'>
           <FormTextareaImageUpload
-            className='text-sm border-none shadow-none h-4/5'
+            className='text-sm border-none shadow-none h-32'
             form={form}
             name='back'
             // label='Answer'

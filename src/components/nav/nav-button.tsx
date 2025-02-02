@@ -29,7 +29,7 @@ export default function NavButton({
           )}
         ></div>
         {React.cloneElement(icon, {
-          className: cn('!w-8 !h-6', 'group-active:scale-115 transition-all duration-200', icon.props.className),
+          className: cn('!w-8 !h-6', 'group-active:scale-115 transition-all ease-out duration-200', icon.props.className),
           fill: focused ? 'currentColor' : 'none',
           strokeWidth: icon.props.strokeWidth || 2.5,
         })}
