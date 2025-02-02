@@ -138,7 +138,7 @@ export default function CardActionButtons({
           </Tooltip>
         </TooltipProvider>
 
-        <AlertDialogContent>
+        <AlertDialogContent className='rounded-2xl'>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete card</AlertDialogTitle>
             <AlertDialogDescription>
@@ -147,13 +147,21 @@ export default function CardActionButtons({
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel
-              className={cn(buttonVariants({ variant: 'outline' }), 'h-12')}
+              className={cn(
+                buttonVariants({ variant: 'outline' }),
+                'h-14',
+                'rounded-xl'
+              )}
             >
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={onDelete}
-              className={cn(buttonVariants({ variant: 'destructive' }), 'h-12')}
+              className={cn(
+                buttonVariants({ variant: 'default' }),
+                'h-14',
+                'rounded-xl'
+              )}
             >
               Continue
             </AlertDialogAction>
