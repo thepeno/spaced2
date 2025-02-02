@@ -6,15 +6,17 @@ type SearchBarProps = {
   search: string;
   setSearch: (search: string) => void;
   placeholder?: string;
+  onEnter?: () => void;
 };
 
 export default function SearchBar({
   search,
   setSearch,
   placeholder = 'Search...',
+  onEnter,
 }: SearchBarProps) {
   return (
-    <div className='relative w-full max-w-sm col-span-12 mb-6 sm:mb-8 mx-auto'>
+    <div className='relative w-full max-w-md col-span-12 mb-2 sm:mb-8 mx-auto'>
       <Button
         variant='ghost'
         size='icon'
@@ -23,11 +25,16 @@ export default function SearchBar({
         <Search className='h-4 w-4' />
       </Button>
       <Input
-        className='px-12 h-12'
+        className='px-12 h-12 rounded-xl'
         type='text'
         placeholder={placeholder}
         value={search}
         onChange={(e) => setSearch(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') {
+            onEnter?.();
+          }
+        }}
       />
 
       {search && (

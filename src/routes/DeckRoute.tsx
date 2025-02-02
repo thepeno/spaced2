@@ -23,7 +23,7 @@ export default function DeckRoute() {
   }
 
   return (
-    <div className='md:px-24 col-span-12'>
+    <div className='md:px-24 xl:px-0 col-span-12 xl:col-start-3 xl:col-end-11'>
       <SearchBar
         search={search}
         setSearch={setSearch}

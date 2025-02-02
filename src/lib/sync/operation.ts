@@ -194,6 +194,17 @@ export function emptyCardToOperations(card: CardWithMetadata): Operation[] {
   return [cardOperation, cardContentOperation, cardDeletedOperation];
 }
 
+function cardDeckOperations(
+  cardId: string,
+  decks: string[]
+): UpdateDeckCardOperation[] {
+  return decks.map((deckId) => ({
+    type: 'updateDeckCard',
+    payload: { deckId, cardId, clCount: 1 },
+    timestamp: Date.now(),
+  }));
+}
+
 /**
  * Creates a new card in the database
  *
@@ -201,7 +212,11 @@ export function emptyCardToOperations(card: CardWithMetadata): Operation[] {
  * Doing so simplifies the implementation of the client side and ensures
  * consistency when updating the database.
  */
-export async function createNewCard(front: string, back: string) {
+export async function createNewCard(
+  front: string,
+  back: string,
+  decks: string[] = []
+) {
   const card: CardWithMetadata = {
     ...createEmptyCard(),
     id: crypto.randomUUID(),
@@ -214,7 +229,9 @@ export async function createNewCard(front: string, back: string) {
     cardDeletedLastModified: 0,
   };
 
-  const operations = emptyCardToOperations(card);
+  const cardOperations = emptyCardToOperations(card);
+  const deckOperations = cardDeckOperations(card.id, decks);
+  const operations = [...cardOperations, ...deckOperations];
 
   for (const operation of operations) {
     const result = handleClientOperation(operation);

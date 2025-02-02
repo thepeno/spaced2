@@ -65,7 +65,7 @@ export default {
       animation: {
         scale: 'scale 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
         //  scale: 'scale 0.3s ease-out forwards',
-        fadeIn: 'fadeIn 0.3s ease-out forwards',
+        fadeIn: 'fadeIn 0.2s ease-out forwards',
       },
     },
   },

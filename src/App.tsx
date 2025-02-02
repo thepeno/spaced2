@@ -1,6 +1,7 @@
 import { useDecks, useReviewCards } from '@/components/hooks/query';
 import { Card } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
+import { DeckSelectionCard } from '@/routes/CreateFlashcardRoute';
 import { Link } from 'react-router';
 import { State } from 'ts-fsrs';
 

@@ -4,6 +4,7 @@ import { SpacedIcon } from '@/components/nav/spaced-icon.tsx';
 import SyncEngine from '@/lib/sync/engine.ts';
 import { cn } from '@/lib/utils.ts';
 import BookmarksRoute from '@/routes/BookmarksRoute.tsx';
+import CreateFlashcardRoute from '@/routes/CreateFlashcardRoute.tsx';
 import DeckRoute from '@/routes/DeckRoute.tsx';
 import DecksRoute from '@/routes/DecksRoute.tsx';
 import ReviewRoute from '@/routes/Review.tsx';
@@ -36,6 +37,7 @@ createRoot(document.getElementById('root')!).render(
           <Route path='/decks/:deckId' element={<DeckRoute />} />
           <Route path='/bookmarks' element={<BookmarksRoute />} />
           <Route path='/debug' element={<DebugRoute />} />
+          <Route path='/create' element={<CreateFlashcardRoute />} />
         </Routes>
       </div>
     </BrowserRouter>

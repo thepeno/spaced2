@@ -1,6 +1,6 @@
+import { FormTextareaImageUpload } from '@/components/form/form-textarea-image-upload';
 import { Button } from '@/components/ui/button';
-import { Form, FormField } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
+import { Form } from '@/components/ui/form';
 import {
   cardContentFormSchema,
   CardContentFormValues,
@@ -31,21 +31,31 @@ export function CreateFlashcardForm({ onSubmit }: CreateFlashcardFormProps) {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(handleSubmit)}
-        className='flex flex-col gap-4'
+        className='flex flex-col gap-4 bg-background rounded-xl p-4 h-full max-h-80 justify-center'
       >
-        <FormField
-          control={form.control}
-          name='front'
-          render={({ field }) => <Input {...field} />}
-        />
+        <div className='grow'>
+          <FormTextareaImageUpload
+            className='text-sm border-none shadow-none h-full'
+            form={form}
+            name='front'
+            // label='Question'
+            placeholder='Enter the question'
+          />
+        </div>
 
-        <FormField
-          control={form.control}
-          name='back'
-          render={({ field }) => <Input {...field} />}
-        />
+        <div className='grow'>
+          <FormTextareaImageUpload
+            className='text-sm border-none shadow-none h-full'
+            form={form}
+            name='back'
+            // label='Answer'
+            placeholder='Enter the answer'
+          />
+        </div>
 
-        <Button type='submit'>Create</Button>
+        <Button type='submit' size='lg' className='ml-auto bg-cyan-500'>
+          Create
+        </Button>
       </form>
     </Form>
   );
