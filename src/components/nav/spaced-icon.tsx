@@ -23,7 +23,7 @@ export function SpacedIcon() {
           />
         </BouncyButton>
 
-        <div className='absolute -bottom-1 -right-2 font-bold text-xs text-muted-foreground rounded-xl bg-muted px-2 sm:hidden'>
+        <div className='absolute -bottom-1 left-9 font-bold text-xs text-muted-foreground rounded-xl px-2 sm:hidden'>
           {reviewCards.length}
         </div>
       </div>
