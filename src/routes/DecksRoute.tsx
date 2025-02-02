@@ -1,6 +1,7 @@
 import AllDecksCardContainer from '@/components/deck/all-decks-card-container';
 import DeckCardContainer from '@/components/deck/deck-card-container';
 import { useDecks } from '@/components/hooks/query';
+import ReturnToTop from '@/components/return-to-top';
 import SearchBar from '@/components/search-bar';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
@@ -23,6 +24,7 @@ export default function DecksRoute() {
         'h-full grid-rows-[min-content_1fr] px-0 pb-12 sm:px-4 items-start'
       )}
     >
+      <ReturnToTop />
       <SearchBar
         search={search}
         setSearch={setSearch}

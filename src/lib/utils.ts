@@ -20,3 +20,13 @@ export function markdownToHtml(markdown: string) {
 
   return result.toString();
 }
+
+export function debounce(func: () => void, delay: number = 300) {
+  let timeout: NodeJS.Timeout;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return function (...args: any[]) {
+    clearTimeout(timeout);
+    // @ts-expect-error basic debounce implementation
+    timeout = setTimeout(() => func.apply(this, args), delay);
+  };
+}

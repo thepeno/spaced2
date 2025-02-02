@@ -1,5 +1,6 @@
 import CardsTable from '@/components/cards-table';
 import { useCards } from '@/components/hooks/query';
+import ReturnToTop from '@/components/return-to-top';
 import SearchBar from '@/components/search-bar';
 import { useState } from 'react';
 
@@ -16,6 +17,7 @@ export default function BookmarksRoute() {
 
   return (
     <div className='md:px-24 xl:px-0 col-span-12 xl:col-start-3 xl:col-end-11'>
+      <ReturnToTop />
       <SearchBar
         search={search}
         setSearch={setSearch}
