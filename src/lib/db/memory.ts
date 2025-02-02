@@ -152,4 +152,4 @@ async function init() {
   notify();
 }
 
-await init();
+init();
