@@ -5,11 +5,7 @@ import FlashcardContent from '@/components/flashcard-content';
 import { useReviewCards } from '@/components/hooks/query';
 import GradeButtons from '@/components/rating-buttons';
 import EmptyReviewUi from '@/components/review/empty';
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-} from '@/components/ui/carousel';
+import ReviewCarousel from '@/components/review/review-carousel';
 import {
   gradeCardOperation,
   updateBookmarkedClientSide,
@@ -86,22 +82,7 @@ export default function ReviewRoute() {
           ) : (
             <EmptyReviewUi />
           )}
-          {nextReviewCard && (
-            <Carousel className='w-full max-w-xs sm:hidden'>
-              <CarouselContent>
-                <CarouselItem>
-                  <div className='p-1'>
-                    <FlashcardContent content={nextReviewCard.front} />
-                  </div>
-                </CarouselItem>
-                <CarouselItem>
-                  <div className='p-1'>
-                    <FlashcardContent content={nextReviewCard.back} />
-                  </div>
-                </CarouselItem>
-              </CarouselContent>
-            </Carousel>
-          )}
+          {nextReviewCard && <ReviewCarousel card={nextReviewCard} />}
         </div>
 
         <div className='w-full sm:static sm:mx-auto sm:mt-2 sm:w-max mb-4 px-4 pb-2'>
