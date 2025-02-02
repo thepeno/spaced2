@@ -11,7 +11,43 @@ export default defineConfig({
       registerType: 'autoUpdate',
       manifest: {
         name: 'Spaced',
-        theme_color: '#000000',
+        theme_color: '#06B6D4',
+        icons: [
+          {
+            src: 'pwa-64x64.png',
+            sizes: '64x64',
+            type: 'image/png',
+          },
+          {
+            src: 'pwa-192x192.png',
+            sizes: '192x192',
+            type: 'image/png',
+          },
+          {
+            src: 'pwa-512x512.png',
+            sizes: '512x512',
+            type: 'image/png',
+          },
+          {
+            src: 'maskable-icon-512x512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'maskable',
+          },
+        ],
+        screenshots: [
+          {
+            src: '/screenshots/desktop.png',
+            sizes: '3024x1890',
+            type: 'image/png',
+            form_factor: 'wide',
+          },
+          {
+            src: '/screenshots/mobile.png',
+            sizes: '852x1724',
+            type: 'image/png',
+          },
+        ],
       },
     }),
   ],
