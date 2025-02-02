@@ -26,7 +26,7 @@ export default function DeckCard({ id }: Props) {
     <Link to={`/decks/${id}`} className='z-0 w-full sm:w-max'>
       <Card className='group relative flex h-full w-full cursor-pointer flex-col items-start justify-start gap-y-1 border-background bg-muted px-4 py-3 pb-10 text-background shadow-sm sm:shadow-md transition duration-300 hover:shadow-sm sm:h-36 sm:w-72 sm:gap-y-2 sm:py-6 sm:pb-6'>
         <div className='-z-10 absolute inset-0 -right-[0.65rem] -top-2 h-[103%] scale-[98%] rounded-xl border border-background bg-muted/70 transition duration-200 ease-in group-hover:border group-hover:border-primary'></div>
-        <CardTitle className='text-lg text-primary sm:text-xl'>
+        <CardTitle className='text-lg text-foreground sm:text-xl'>
           {deck.name}
         </CardTitle>
         <CardDescription className='line-clamp-1'>

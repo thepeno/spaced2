@@ -96,7 +96,7 @@ export default function CreateDeckForm({
             <DialogFooter>
               <Button
                 type='submit'
-                className='rounded-lg bg-cyan-500'
+                className='rounded-lg'
                 size={'lg'}
               >
                 Create Deck

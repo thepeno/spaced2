@@ -68,7 +68,7 @@ export function CreateFlashcardForm({
           <Button
             type='submit'
             size='lg'
-            className='ml-auto bg-cyan-500 self-end'
+            className='ml-auto self-end'
           >
             Create
           </Button>

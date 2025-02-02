@@ -147,7 +147,7 @@ export function LoginButton() {
 
               <Button
                 type='submit'
-                className='w-full bg-cyan-500 active:scale-95 transition-all duration-100 ease-out hover:bg-cyan-600 mt-4'
+                className='w-full active:scale-95 transition-all duration-100 ease-out mt-4'
                 size={'lg'}
                 disabled={isLoading}
               >

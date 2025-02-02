@@ -23,9 +23,11 @@ export default function ProfileRoute() {
         className='mx-auto mt-auto'
         target='_blank'
       >
-        <div className='group flex text-muted-foreground gap-2'>
-          <SiGithub className='group-hover:text-primary transition-all ease-out' />
-          <span>made by zsh-eng</span>
+        <div className='group flex text-muted-foreground gap-2 mt-24'>
+          <SiGithub className='' />
+          <span className='group-hover:text-primary transition-all ease-out'>
+            made by zsh-eng
+          </span>
         </div>
       </Link>
     </div>
