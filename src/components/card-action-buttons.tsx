@@ -1,3 +1,4 @@
+import EditFlashcardAction from '@/components/card-actions/edit-flashcard-action';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -137,6 +138,9 @@ export default function CardActionButtons({
             </TooltipTrigger>
           </Tooltip>
         </TooltipProvider>
+
+        {/* Edit Button */}
+        <EditFlashcardAction />
 
         <AlertDialogContent className='rounded-2xl'>
           <AlertDialogHeader>

@@ -41,3 +41,8 @@ export function useCardsForDeck(deckId: string) {
   );
   return snapshot.getCardsForDeck(deckId);
 }
+
+export function useCurrentCard() {
+  const cards = useReviewCards();
+  return cards[0];
+}

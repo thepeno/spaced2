@@ -7,24 +7,38 @@ import {
 } from '@/lib/form-schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Book } from 'lucide-react';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 
 type CreateFlashcardFormProps = {
   onSubmit: (values: CardContentFormValues) => void;
   numDecks?: number;
+  initialFront?: string;
+  initialBack?: string;
 };
 
-export function CreateFlashcardForm({
+export function CreateUpdateFlashcardForm({
   onSubmit,
   numDecks,
+  initialFront,
+  initialBack,
 }: CreateFlashcardFormProps) {
   const form = useForm<CardContentFormValues>({
     resolver: zodResolver(cardContentFormSchema),
     defaultValues: {
-      front: '',
-      back: '',
+      front: initialFront || '',
+      back: initialBack || '',
     },
   });
+
+  useEffect(() => {
+    if (initialFront) {
+      form.setValue('front', initialFront);
+    }
+    if (initialBack) {
+      form.setValue('back', initialBack);
+    }
+  }, [initialFront, initialBack, form]);
 
   const handleSubmit = (data: CardContentFormValues) => {
     onSubmit(data);
@@ -58,19 +72,17 @@ export function CreateFlashcardForm({
           />
         </div>
         <div className='flex justify-start'>
-          <div className='flex gap-1 text-muted-foreground justify-center items-center font-semibold ml-2'>
-            <Book className='w-5 h-5' />
-            <span className='text-sm'>
-              {numDecks} {numDecks === 1 ? 'deck' : 'decks'} selected
-            </span>
-          </div>
+          {numDecks && (
+            <div className='flex gap-1 text-muted-foreground justify-center items-center font-semibold ml-2'>
+              <Book className='w-5 h-5' />
+              <span className='text-sm'>
+                {numDecks} {numDecks === 1 ? 'deck' : 'decks'} selected
+              </span>
+            </div>
+          )}
 
-          <Button
-            type='submit'
-            size='lg'
-            className='ml-auto self-end'
-          >
-            Create
+          <Button type='submit' size='lg' className='ml-auto self-end'>
+            {initialFront || initialBack ? 'Update' : 'Create'}
           </Button>
         </div>
       </form>

@@ -247,6 +247,24 @@ export async function createNewCard(
   MemoryDB.notify();
 }
 
+export async function updateCardContentOperation(
+  cardId: string,
+  front: string,
+  back: string
+) {
+  const cardOperation: CardContentOperation = {
+    type: 'cardContent',
+    payload: {
+      cardId,
+      front,
+      back,
+    },
+    timestamp: Date.now(),
+  };
+
+  await handleClientOperationWithPersistence(cardOperation);
+}
+
 export async function gradeCardOperation(card: CardWithMetadata, grade: Grade) {
   const { nextCard } = gradeCard(card, grade);
 

@@ -1,6 +1,6 @@
 import BouncyButton from '@/components/bouncy-button';
 import CreateDeckForm from '@/components/create-deck-form';
-import { CreateFlashcardForm } from '@/components/create-flashcard';
+import { CreateUpdateFlashcardForm } from '@/components/create-flashcard';
 import { useDecks } from '@/components/hooks/query';
 import SearchBar from '@/components/search-bar';
 import { Card } from '@/components/ui/card';
@@ -154,7 +154,7 @@ export default function CreateFlashcardRoute() {
           )}
         </div>
 
-        <CreateFlashcardForm
+        <CreateUpdateFlashcardForm
           onSubmit={async (values) => {
             await createNewCard(values.front, values.back, selectedDecks);
           }}
