@@ -1,6 +1,7 @@
+import BouncyButton from '@/components/bouncy-button';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import React, { SVGProps } from 'react';
+import React, { SVGProps, useState } from 'react';
 import { Link } from 'react-router';
 
 export default function NavButton({
@@ -12,9 +13,16 @@ export default function NavButton({
   href: string;
   focused?: boolean;
 }) {
+  const [pressed, setPressed] = useState(false);
+
   return (
-    <Link to={href} className='w-full py-1'>
+    <Link to={href} className='w-full py-1' draggable={false}>
       <Button
+        onMouseDown={() => setPressed(true)}
+        onMouseUp={() => setPressed(false)}
+        onMouseLeave={() => setPressed(false)}
+        onTouchStart={() => setPressed(true)}
+        onTouchEnd={() => setPressed(false)}
         variant={'nav'}
         size={'nav'}
         className={cn(
@@ -28,11 +36,13 @@ export default function NavButton({
             focused && 'bg-muted-foreground/10 scale-100 md:bg-transparent'
           )}
         ></div>
-        {React.cloneElement(icon, {
-          className: cn('!w-8 !h-6', 'group-active:scale-115 transition-all ease-out duration-200', icon.props.className),
-          fill: focused ? 'currentColor' : 'none',
-          strokeWidth: icon.props.strokeWidth || 2.5,
-        })}
+        <BouncyButton pressed={pressed}>
+          {React.cloneElement(icon, {
+            className: cn('!w-8 !h-6', icon.props.className),
+            fill: focused ? 'currentColor' : 'none',
+            strokeWidth: icon.props.strokeWidth || 2.5,
+          })}
+        </BouncyButton>
       </Button>
     </Link>
   );

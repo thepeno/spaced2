@@ -7,12 +7,14 @@ export default function BouncyButton({
   className,
   pressed,
   asButton = false,
+  disabled = false,
 }: {
   children: React.ReactNode;
-  variant?: 'default' | 'medium';
+  variant?: 'default' | 'medium' | 'large';
   className?: string;
   pressed?: boolean;
   asButton?: boolean;
+  disabled?: boolean;
 }) {
   const [isPressed, setIsPressed] = useState(false);
   const [isReleased, setIsReleased] = useState(false);
@@ -40,7 +42,6 @@ export default function BouncyButton({
     return () => document.removeEventListener('mouseup', handleMouseUp);
   }, [isPressed, handleRelease]);
 
-  // To handle the case where the button is pressed but we drag the mouse away
   useEffect(() => {
     if (pressed === undefined) return;
 
@@ -57,14 +58,20 @@ export default function BouncyButton({
     <Comp
       className={cn(
         'h-max w-max cursor-pointer transition-transform duration-150 active:duration-100',
-        isPressed && 'scale-90',
-        isReleased && 'scale-105',
-        variant == 'medium' && isPressed && 'scale-95',
-        variant == 'medium' && 'duration-200 active:duration-150',
-        variant == 'medium' && isReleased && 'scale-102',
-        className,
+        !disabled && isPressed && 'scale-90',
+        !disabled && isReleased && 'scale-105',
+        variant == 'medium' && !disabled && isPressed && 'scale-95',
+        variant == 'medium' && !disabled && 'duration-200 active:duration-150',
+        variant == 'medium' && !disabled && isReleased && 'scale-102',
+        variant == 'large' && !disabled && isPressed && 'scale-98',
+        variant == 'large' && !disabled && 'duration-300 active:duration-200',
+        variant == 'large' && !disabled && isReleased && 'scale-101',
+        disabled && 'cursor-not-allowed',
+        className
       )}
       onMouseDown={handlePress}
+      onMouseUp={handleRelease}
+      onMouseLeave={handleRelease}
       onDragEnd={handleRelease}
       onTouchStart={handlePress}
       onTouchEnd={handleRelease}

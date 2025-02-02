@@ -1,3 +1,4 @@
+import BouncyButton from '@/components/bouncy-button';
 import { emitChange } from '@/components/hooks/logged-in-status';
 import { useOnlineStatus } from '@/components/hooks/online-status';
 import { Button } from '@/components/ui/button';
@@ -30,18 +31,18 @@ export function LogoutButton() {
   const online = useOnlineStatus();
 
   return (
-    <div
+    <BouncyButton
+      asButton={true}
       className={cn(
         'bg-background w-full rounded-xl py-4 px-6  cursor-pointer transition-all duration-100 ease-out',
-        !online && 'cursor-not-allowed text-muted-foreground',
-        online && 'active:scale-95'
+        !online && 'cursor-not-allowed text-muted-foreground'
       )}
     >
       <div className='flex justify-between'>
         <span>Sign out</span>
         <LogOut className='w-6 h-6 text-muted-foreground' />
       </div>
-    </div>
+    </BouncyButton>
   );
 }
 
@@ -80,18 +81,21 @@ export function LoginButton() {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <div
-          className={cn(
-            'bg-background w-full rounded-xl py-4 px-6 cursor-pointer transition-all duration-100 ease-out',
-            !online && 'cursor-not-allowed text-muted-foreground',
-            online && 'active:scale-95'
-          )}
-        >
-          <div className='flex justify-between'>
-            <span>Sign in</span>
-            <LogIn className='w-6 h-6 text-muted-foreground' />
-          </div>
-        </div>
+        <button>
+          <BouncyButton
+            variant='large'
+            className={cn(
+              'bg-background w-full rounded-xl py-4 px-6',
+              !online && 'cursor-not-allowed text-muted-foreground'
+            )}
+            disabled={!online}
+          >
+            <div className='flex justify-between'>
+              <span>Sign in</span>
+              <LogIn className='w-6 h-6 text-muted-foreground' />
+            </div>
+          </BouncyButton>
+        </button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>

@@ -1,3 +1,4 @@
+import BouncyButton from '@/components/bouncy-button';
 import CreateDeckForm from '@/components/create-deck-form';
 import { CreateFlashcardForm } from '@/components/create-flashcard';
 import { useDecks } from '@/components/hooks/query';
@@ -20,11 +21,10 @@ export function DeckSelectionCard({
   selected: boolean;
 }) {
   return (
-    <div>
+    <BouncyButton variant='medium'>
       <Card
         className={cn(
           'h-40 w-32 relative cursor-pointer border-3 border-background',
-          'hover:scale-105 transition-all duration-300',
           backgroundType === 'cool-mint'
             ? 'bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-500'
             : backgroundType === 'cyan'
@@ -50,18 +50,16 @@ export function DeckSelectionCard({
           {title}
         </h2>
       </Card>
-    </div>
+    </BouncyButton>
   );
 }
 
 function CreateNewDeckCard({ onClick }: { onClick: () => void }) {
   return (
-    <div>
+    <BouncyButton variant='medium'>
       <Card
         className={cn(
           'h-40 w-32 relative cursor-pointer border-3 border-background',
-          'hover:scale-105 transition-all duration-300 ease-out',
-          'active:scale-95',
           'bg-gradient-to-br from-cyan-500 via-blue-400 to-indigo-400'
         )}
         onClick={onClick}
@@ -75,7 +73,7 @@ function CreateNewDeckCard({ onClick }: { onClick: () => void }) {
           New Deck
         </h2>
       </Card>
-    </div>
+    </BouncyButton>
   );
 }
 
