@@ -27,7 +27,7 @@ export default function CardCountBadges() {
           <TooltipTrigger className='cursor-text'>
             <Badge
               variant='dot'
-              className='h-full rounded-md before:bg-blue-500'
+              className='h-full before:bg-blue-500'
             >
               {numNewCards}
             </Badge>
@@ -43,7 +43,7 @@ export default function CardCountBadges() {
           <TooltipTrigger className='cursor-text'>
             <Badge
               variant='dot'
-              className='h-full rounded-sm before:bg-red-500'
+              className='h-full before:bg-red-500'
             >
               {numLearningCards}
             </Badge>
@@ -59,7 +59,7 @@ export default function CardCountBadges() {
           <TooltipTrigger className='cursor-text'>
             <Badge
               variant='dot'
-              className='h-full rounded-sm before:bg-green-500'
+              className='h-full before:bg-green-500'
             >
               {numReviewCards}
             </Badge>

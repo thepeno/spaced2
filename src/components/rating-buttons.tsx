@@ -61,7 +61,7 @@ function GradeButton({
         <TooltipTrigger asChild>
           <Button
             className={cn(
-              'flex h-16 flex-col gap-0 transition sm:h-full bg-muted text-muted-foreground border rounded-none sm:rounded-xl',
+              'flex h-16 flex-col gap-0 transition sm:h-full bg-muted text-foreground border rounded-none sm:rounded-xl',
               pos === 'top-right' && 'rounded-tr-2xl',
               pos === 'bottom-right' && 'rounded-br-2xl',
               pos === 'top-left' && 'rounded-tl-2xl',
@@ -71,7 +71,7 @@ function GradeButton({
             variant={beforeGrade === grade ? 'secondary' : 'ghost'}
             onClick={() => onGrade(grade)}
           >
-            <div className='text-base'>{RATING_TO_NAME[grade]}</div>
+            <div className='text-base sm:text-sm'>{RATING_TO_NAME[grade]}</div>
             {/* <div className='sm:hidden'>{dateString}</div> */}
           </Button>
         </TooltipTrigger>
