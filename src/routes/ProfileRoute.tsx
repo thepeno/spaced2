@@ -1,6 +1,7 @@
 import { useLoggedInStatus } from '@/components/hooks/logged-in-status';
 import { useOnlineStatus } from '@/components/hooks/online-status';
-import { LoginButton, LogoutButton } from '@/components/profile/loginout';
+import { LoginButton } from '@/components/profile/loginout';
+import { LogoutButton } from '@/components/profile/logout-button';
 import OfflineUsageDialog from '@/components/profile/offline-usage-dialog';
 import { StatsLinkButton } from '@/components/profile/stats-link-button';
 import { SiGithub } from '@icons-pack/react-simple-icons';

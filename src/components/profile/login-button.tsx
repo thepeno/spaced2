@@ -13,28 +13,8 @@ import {
 import { login, registerClient } from '@/lib/auth';
 import { LoginFormValues } from '@/lib/form-schema';
 import { cn } from '@/lib/utils';
-import { LogIn, LogOut } from 'lucide-react';
+import { LogIn } from 'lucide-react';
 import { useState } from 'react';
-
-export function LogoutButton() {
-  const online = useOnlineStatus();
-
-  return (
-    <BouncyButton
-      asButton={true}
-      variant='large'
-      className={cn(
-        'bg-background w-full rounded-xl py-4 px-6  cursor-pointer transition-all duration-100 ease-out',
-        !online && 'cursor-not-allowed text-muted-foreground'
-      )}
-    >
-      <div className='flex justify-between'>
-        <span>Sign out</span>
-        <LogOut className='w-6 h-6 text-muted-foreground' />
-      </div>
-    </BouncyButton>
-  );
-}
 
 export function LoginButton() {
   const [isOpen, setIsOpen] = useState(false);
