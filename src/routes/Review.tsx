@@ -2,7 +2,7 @@ import CardActionButtons from '@/components/card-action-buttons';
 import CardCountBadges from '@/components/card-count-badges';
 import CurrentCardBadge from '@/components/current-card-badge';
 import FlashcardContent from '@/components/flashcard-content';
-import { useReviewCards } from '@/components/hooks/query';
+import { useCards, useReviewCards } from '@/components/hooks/query';
 import GradeButtons from '@/components/rating-buttons';
 import EmptyReviewUi from '@/components/review/empty';
 import ReviewCarousel from '@/components/review/review-carousel';
@@ -24,6 +24,9 @@ function tenMinutesFromNow(): Date {
 }
 
 export default function ReviewRoute() {
+  const allCards = useCards();
+  const noCardsCreatedYet = allCards.length === 0;
+
   const reviewCards = useReviewCards();
   const nextReviewCard = reviewCards?.[0];
 
@@ -89,7 +92,7 @@ export default function ReviewRoute() {
               <FlashcardContent content={nextReviewCard.back} />
             </div>
           ) : (
-            <EmptyReviewUi />
+            <EmptyReviewUi noCardsCreatedYet={noCardsCreatedYet} />
           )}
           {nextReviewCard && <ReviewCarousel card={nextReviewCard} />}
         </div>
