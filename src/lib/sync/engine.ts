@@ -114,10 +114,19 @@ function start() {
   });
 }
 
+async function wipeDatabase() {
+  syncToServerInProgress = false;
+  syncFromServerInProgress = false;
+  promise = null;
+
+  await db.delete();
+}
+
 const SyncEngine = {
   syncToServer,
   syncFromServer: syncFromServerCached,
   start,
+  wipeDatabase,
 };
 
 export default SyncEngine;

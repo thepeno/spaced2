@@ -76,3 +76,27 @@ export async function registerAndSync(): Promise<void> {
 
   return SyncEngine.syncFromServer() || Promise.resolve();
 }
+
+type LogoutResponse = {
+  success: boolean;
+  message?: string;
+};
+
+export async function logout(): Promise<LogoutResponse> {
+  const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/logout`, {
+    method: 'POST',
+    credentials: 'include',
+  });
+
+  if (!response.ok) {
+    console.error('Failed to logout', response);
+    return {
+      success: false,
+      message: UNKNOWN_ERROR_MESSAGE,
+    };
+  }
+
+  return {
+    success: true,
+  };
+}
