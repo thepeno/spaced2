@@ -57,7 +57,8 @@ export function reviewLogOperationToReviewLog(
 
 export function reviewLogToReviewLogOperation(
   reviewLog: ReviewLog,
-  cardId: string
+  cardId: string,
+  duration: number = 0
 ): ReviewLogOperation {
   return {
     type: 'reviewLog',
@@ -67,7 +68,7 @@ export function reviewLogToReviewLogOperation(
       id: crypto.randomUUID(),
       grade: RATING_NUMBER_TO_NAME[reviewLog.rating],
       state: STATE_NUMBER_TO_NAME[reviewLog.state],
-      duration: 0,
+      duration,
       createdAt: new Date(),
     },
     timestamp: Date.now(),

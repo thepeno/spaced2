@@ -312,7 +312,11 @@ export async function updateCardContentOperation(
   await handleClientOperationWithPersistence(cardOperation);
 }
 
-export async function gradeCardOperation(card: CardWithMetadata, grade: Grade) {
+export async function gradeCardOperation(
+  card: CardWithMetadata,
+  grade: Grade,
+  duration: number = 0
+) {
   const { nextCard, reviewLog } = gradeCard(card, grade);
 
   const cardOperation: CardOperation = {
@@ -326,7 +330,11 @@ export async function gradeCardOperation(card: CardWithMetadata, grade: Grade) {
     timestamp: Date.now(),
   };
 
-  const reviewLogOperation = reviewLogToReviewLogOperation(reviewLog, card.id);
+  const reviewLogOperation = reviewLogToReviewLogOperation(
+    reviewLog,
+    card.id,
+    duration
+  );
   const cardOperationResult = handleCardOperation(cardOperation);
   if (!cardOperationResult.applied) {
     throw new Error(

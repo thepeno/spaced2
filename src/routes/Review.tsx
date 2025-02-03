@@ -2,6 +2,7 @@ import CardActionButtons from '@/components/card-action-buttons';
 import CardCountBadges from '@/components/card-count-badges';
 import CurrentCardBadge from '@/components/current-card-badge';
 import FlashcardContent from '@/components/flashcard-content';
+import { useActiveStartTime } from '@/components/hooks/inactivity';
 import { useCards, useReviewCards } from '@/components/hooks/query';
 import GradeButtons from '@/components/rating-buttons';
 import EmptyReviewUi from '@/components/review/empty';
@@ -30,6 +31,8 @@ export default function ReviewRoute() {
   const reviewCards = useReviewCards();
   const nextReviewCard = reviewCards?.[0];
 
+  const start = useActiveStartTime();
+
   async function handleGrade(grade: Grade) {
     if (!nextReviewCard) return;
 
@@ -51,7 +54,9 @@ export default function ReviewRoute() {
     await updateBookmarkedClientSide(nextReviewCard.id, bookmarked);
     if (bookmarked) {
       toast('Bookmarked', {
-        icon: <BookmarkIcon className='size-4 text-primary' fill='currentColor' />,
+        icon: (
+          <BookmarkIcon className='size-4 text-primary' fill='currentColor' />
+        ),
       });
     } else {
       toast('Bookmark removed');
