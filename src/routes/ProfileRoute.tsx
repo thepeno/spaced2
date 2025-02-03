@@ -2,6 +2,7 @@ import { useLoggedInStatus } from '@/components/hooks/logged-in-status';
 import { useOnlineStatus } from '@/components/hooks/online-status';
 import { LoginButton, LogoutButton } from '@/components/profile/loginout';
 import OfflineUsageDialog from '@/components/profile/offline-usage-dialog';
+import { StatsLinkButton } from '@/components/profile/stats-link-button';
 import { SiGithub } from '@icons-pack/react-simple-icons';
 import { Link } from 'react-router';
 
@@ -14,6 +15,7 @@ export default function ProfileRoute() {
       <h1 className='mt-10 scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight transition-colors first:mt-0'>
         Profile
       </h1>
+      <StatsLinkButton />
 
       {!online && <OfflineUsageDialog />}
       {loggedIn.isLoggedIn ? <LogoutButton /> : <LoginButton />}

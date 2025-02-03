@@ -33,6 +33,7 @@ export function LogoutButton() {
   return (
     <BouncyButton
       asButton={true}
+      variant='large'
       className={cn(
         'bg-background w-full rounded-xl py-4 px-6  cursor-pointer transition-all duration-100 ease-out',
         !online && 'cursor-not-allowed text-muted-foreground'

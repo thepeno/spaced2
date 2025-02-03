@@ -10,6 +10,7 @@ import DeckRoute from '@/routes/DeckRoute.tsx';
 import DecksRoute from '@/routes/DecksRoute.tsx';
 import ProfileRoute from '@/routes/ProfileRoute';
 import ReviewRoute from '@/routes/Review.tsx';
+import StatsRoute from '@/routes/StatsRoute';
 import DebugRoute from '@/routes/Sync.tsx';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
@@ -40,6 +41,7 @@ createRoot(document.getElementById('root')!).render(
           <Route path='/debug' element={<DebugRoute />} />
           <Route path='/create' element={<CreateFlashcardRoute />} />
           <Route path='/profile' element={<ProfileRoute />} />
+          <Route path='/stats' element={<StatsRoute />} />
         </Routes>
       </div>
     </BrowserRouter>

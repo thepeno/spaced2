@@ -1,4 +1,13 @@
-import { Card, fsrs, generatorParameters, Grade } from 'ts-fsrs';
+import {
+  RATING_NAME_TO_NUMBER,
+  STATE_NAME_TO_NUMBER,
+} from '@/lib/card-mapping';
+import {
+  OperationWithId,
+  ReviewLogDeletedOperation,
+  ReviewLogOperation,
+} from '@/lib/sync/operation';
+import { Card, fsrs, generatorParameters, Grade, ReviewLog } from 'ts-fsrs';
 
 const params = generatorParameters({
   enable_fuzz: true,
@@ -38,4 +47,53 @@ export function gradeCard(
   });
 
   return recordLog;
+}
+
+/**
+ * Converts a review log operation to a review log.
+ */
+export function reviewLogOperationToReviewLog(
+  operation: ReviewLogOperation
+): ReviewLog {
+  return {
+    ...operation.payload,
+    rating: RATING_NAME_TO_NUMBER[operation.payload.grade],
+    state: STATE_NAME_TO_NUMBER[operation.payload.state],
+  };
+}
+
+/**
+ * Processes review log operations and returns a list of review logs.
+ */
+export function processReviewLogOperations(
+  operations: OperationWithId[]
+): ReviewLog[] {
+  const reviewLogMap: Record<string, ReviewLog> = {};
+
+  const reviewLogOperations = operations.filter(
+    (op): op is ReviewLogOperation & { id: number } => op.type === 'reviewLog'
+  );
+
+  reviewLogOperations.forEach((op) => {
+    reviewLogMap[op.id] = reviewLogOperationToReviewLog(op);
+  });
+
+  const reviewLogDeletedOperations = operations.filter(
+    (op): op is ReviewLogDeletedOperation & { id: number } =>
+      op.type === 'reviewLogDeleted'
+  );
+  const reviewLogsToDeleteSet = new Set<string>();
+  reviewLogDeletedOperations.forEach((op) => {
+    if (op.payload.deleted) {
+      reviewLogsToDeleteSet.add(op.payload.reviewLogId);
+    } else {
+      reviewLogsToDeleteSet.delete(op.payload.reviewLogId);
+    }
+  });
+
+  const reviewLogs = Object.entries(reviewLogMap)
+    .filter(([id]) => !reviewLogsToDeleteSet.has(id))
+    .map(([, log]) => log);
+
+  return reviewLogs;
 }
