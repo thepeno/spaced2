@@ -1,3 +1,4 @@
+import SessionExpiredBanner from '@/components/session-expired-banner';
 import NavBar from '@/components/nav/nav-bar.tsx';
 import { SpacedIcon } from '@/components/nav/spaced-icon';
 import { Toaster } from '@/components/ui/sonner.tsx';
@@ -32,6 +33,7 @@ createRoot(document.getElementById('root')!).render(
       >
         <SpacedIcon />
         <NavBar />
+        <SessionExpiredBanner />
         <Toaster
           position='top-center'
           icons={{

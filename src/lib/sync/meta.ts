@@ -1,6 +1,4 @@
 import { db } from '@/lib/db/persistence';
-import { useLiveQuery } from 'dexie-react-hooks';
-import { useEffect, useState } from 'react';
 
 export async function getSeqNo(): Promise<number> {
   const seqNo = await db.metadataKv.get('seqNo');
@@ -33,13 +31,15 @@ export async function getClientId(): Promise<string | null> {
   return clientId.value as string;
 }
 
-export function useClientId() {
-  const clientId = useLiveQuery(() => db.metadataKv.get('clientId'));
-  const [clientIdState, setClientIdState] = useState<string | null>(null);
+export async function setSessionExpiry(expiry: Date): Promise<void> {
+  await db.metadataKv.put({ key: 'sessionExpiry', value: expiry.getTime() });
+}
 
-  useEffect(() => {
-    setClientIdState(clientId?.value as string);
-  }, [clientId]);
+export async function getSessionExpiry(): Promise<Date | null> {
+  const sessionExpiry = await db.metadataKv.get('sessionExpiry');
+  if (!sessionExpiry) {
+    return null;
+  }
 
-  return clientIdState;
+  return new Date(sessionExpiry.value as number);
 }

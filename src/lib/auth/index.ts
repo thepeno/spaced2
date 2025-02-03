@@ -1,5 +1,7 @@
 import SyncEngine from '@/lib/sync/engine';
-import { setClientId } from '@/lib/sync/meta';
+import { setClientId, setSessionExpiry } from '@/lib/sync/meta';
+
+const SESSION_DURATION_MS = 1000 * 60 * 60 * 24 * 30 - 1000 * 60; // 30 days with leeway
 
 type LoginResponse = {
   success: boolean;
@@ -36,6 +38,10 @@ export async function login(
     };
   }
 
+  const now = new Date();
+  const sessionExpiry = new Date(now.getTime() + SESSION_DURATION_MS);
+  await setSessionExpiry(sessionExpiry);
+
   return {
     success: true,
   };
@@ -70,6 +76,12 @@ export async function register(
     success: boolean;
     error?: string;
   };
+
+  if (data.success) {
+    const now = new Date();
+    const sessionExpiry = new Date(now.getTime() + SESSION_DURATION_MS);
+    await setSessionExpiry(sessionExpiry);
+  }
 
   return {
     success: data.success,

@@ -22,7 +22,7 @@ type LoginFormDialogContentProps = {
   onSuccess: () => void;
 };
 
-function LoginFormDialogContent({ onSuccess }: LoginFormDialogContentProps) {
+export function LoginFormDialogContent({ onSuccess }: LoginFormDialogContentProps) {
   const [formType, setFormType] = useState<'login' | 'register'>('login');
 
   const handleLogin = async (data: LoginFormValues) => {
