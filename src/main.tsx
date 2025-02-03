@@ -1,6 +1,7 @@
 import LoginScreen from '@/components/login.tsx';
 import NavBar from '@/components/nav/nav-bar.tsx';
 import { SpacedIcon } from '@/components/nav/spaced-icon';
+import { Toaster } from '@/components/ui/sonner.tsx';
 import SyncEngine from '@/lib/sync/engine.ts';
 import { cn } from '@/lib/utils.ts';
 import AllCardsRoute from '@/routes/AllCardsRoute';
@@ -12,6 +13,7 @@ import ProfileRoute from '@/routes/ProfileRoute';
 import ReviewRoute from '@/routes/Review.tsx';
 import StatsRoute from '@/routes/StatsRoute';
 import DebugRoute from '@/routes/Sync.tsx';
+import { CircleAlert, CircleCheck } from 'lucide-react';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Route, Routes } from 'react-router';
@@ -31,6 +33,25 @@ createRoot(document.getElementById('root')!).render(
       >
         <SpacedIcon />
         <NavBar />
+        <Toaster
+          position='top-center'
+          icons={{
+            success: <CircleCheck className='text-primary size-5' />,
+            error: <CircleAlert className='text-destructive size-5' />,
+          }}
+          toastOptions={{
+            unstyled: true,
+            classNames: {
+              toast:
+                'bg-background rounded-xl w-80 py-4 pl-5 pr-4 shadow-sm flex gap-2 items-center',
+              title: 'text-base',
+              description: 'text-sm',
+              icon: 'size-4',
+              actionButton:
+                'text-xs font-semibold px-3 py-2 bg-primary text-primary-foreground rounded-md cursor-pointer active:scale-95 transition-all',
+            },
+          }}
+        />
         <Routes>
           <Route path='/' element={<ReviewRoute />} />
           <Route path='/login' element={<LoginScreen />} />
