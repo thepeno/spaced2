@@ -21,6 +21,7 @@ import {
 } from './ui/form';
 import { Input } from './ui/input';
 import { Textarea } from './ui/textarea';
+import { toast } from 'sonner';
 
 export default function CreateDeckForm({
   open,
@@ -39,9 +40,10 @@ export default function CreateDeckForm({
 
   const handleSubmit = (data: DeckFormValues) => {
     createNewDeck(data.name, data.description ?? '');
-    // TODO: Handle submission
     onOpenChange(false);
     form.reset();
+
+    toast.success('New deck created');
   };
 
   return (

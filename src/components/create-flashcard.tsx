@@ -9,6 +9,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Book } from 'lucide-react';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 
 type CreateFlashcardFormProps = {
   onSubmit: (values: CardContentFormValues) => void;
@@ -40,10 +41,21 @@ export function CreateUpdateFlashcardForm({
     }
   }, [initialFront, initialBack, form]);
 
+  const isUpdate = initialFront || initialBack;
+
   const handleSubmit = (data: CardContentFormValues) => {
     onSubmit(data);
     form.reset();
     form.setFocus('front');
+    if (isUpdate) {
+      const hasChanged =
+        initialFront !== data.front || initialBack !== data.back;
+      if (hasChanged) {
+        toast.success('Flashcard updated');
+      }
+    } else {
+      toast.success('Flashcard created');
+    }
   };
 
   return (
@@ -72,7 +84,7 @@ export function CreateUpdateFlashcardForm({
           />
         </div>
         <div className='flex justify-start'>
-          {numDecks && (
+          {numDecks !== undefined && (
             <div className='flex gap-1 text-muted-foreground justify-center items-center font-semibold ml-2'>
               <Book className='w-5 h-5' />
               <span className='text-sm'>
@@ -82,7 +94,7 @@ export function CreateUpdateFlashcardForm({
           )}
 
           <Button type='submit' size='lg' className='ml-auto self-end'>
-            {initialFront || initialBack ? 'Update' : 'Create'}
+            {isUpdate ? 'Update' : 'Create'}
           </Button>
         </div>
       </form>

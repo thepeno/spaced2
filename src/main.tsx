@@ -43,8 +43,8 @@ createRoot(document.getElementById('root')!).render(
             classNames: {
               toast:
                 'bg-background rounded-xl w-80 py-4 pl-5 pr-4 shadow-sm flex gap-2 items-center',
-              title: 'text-base',
-              description: 'text-sm',
+              title: 'text-sm',
+              description: 'text-xs',
               icon: 'size-4',
               actionButton:
                 'text-xs font-semibold px-3 py-2 bg-primary text-primary-foreground rounded-md cursor-pointer active:scale-95 transition-all',

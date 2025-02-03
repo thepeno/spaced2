@@ -1,7 +1,9 @@
 import { CreateUpdateFlashcardForm } from '@/components/create-flashcard';
 import {
   Drawer,
-  DrawerContent
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
 } from '@/components/ui/drawer';
 import { CardContentFormValues } from '@/lib/form-schema';
 import { CardWithMetadata } from '@/lib/types';
@@ -21,14 +23,16 @@ export default function EditFlashcardDrawer({
 }: EditFlashcardDrawerProps) {
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent>
-        <DrawerContent className='w-full'>
-          <CreateUpdateFlashcardForm
-            onSubmit={onEdit}
-            initialFront={card.front}
-            initialBack={card.back}
-          />
-        </DrawerContent>
+      <DrawerContent className='w-full'>
+        <DrawerHeader>
+          <DrawerTitle>Edit Flashcard</DrawerTitle>
+        </DrawerHeader>
+
+        <CreateUpdateFlashcardForm
+          onSubmit={onEdit}
+          initialFront={card.front}
+          initialBack={card.back}
+        />
       </DrawerContent>
     </Drawer>
   );
