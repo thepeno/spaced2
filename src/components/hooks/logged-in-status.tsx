@@ -33,7 +33,17 @@ const subscribe = (listener: () => void) => {
 
 const getSnapshot = () => currentStatus;
 
-export const emitChange = () => {
+export const emitChange = async () => {
+  currentStatus = {
+    ...currentStatus,
+    isLoading: true,
+  };
+  const isLoggedIn = await checkLoginStatus();
+  currentStatus = {
+    isLoggedIn,
+    isLoading: false,
+  };
+
   for (const listener of listeners) {
     listener();
   }

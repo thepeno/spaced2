@@ -1,6 +1,6 @@
 import { useLoggedInStatus } from '@/components/hooks/logged-in-status';
 import { useOnlineStatus } from '@/components/hooks/online-status';
-import { LoginButton } from '@/components/profile/loginout';
+import { LoginButton } from '@/components/profile/login-button';
 import { LogoutButton } from '@/components/profile/logout-button';
 import OfflineUsageDialog from '@/components/profile/offline-usage-dialog';
 import { StatsLinkButton } from '@/components/profile/stats-link-button';

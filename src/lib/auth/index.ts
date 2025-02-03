@@ -1,3 +1,4 @@
+import SyncEngine from '@/lib/sync/engine';
 import { setClientId } from '@/lib/sync/meta';
 
 type LoginResponse = {
@@ -65,4 +66,13 @@ export async function registerClient(): Promise<RegisterClientResponse> {
   return {
     success: true,
   };
+}
+
+export async function registerAndSync(): Promise<void> {
+  const clientIdResponse = await registerClient();
+  if (!clientIdResponse.success) {
+    throw new Error(clientIdResponse.message);
+  }
+
+  return SyncEngine.syncFromServer() || Promise.resolve();
 }

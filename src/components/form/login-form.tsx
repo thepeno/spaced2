@@ -28,7 +28,6 @@ export function LoginForm({ onSubmit }: LoginFormProps) {
 
   const handleSubmit = async (data: LoginFormValues) => {
     await onSubmit(data);
-    form.reset();
   };
 
   return (

@@ -54,14 +54,9 @@ async function syncToServer() {
 }
 
 let syncFromServerInProgress = false;
-// We sync from server more infrequently as we don't want to overload the server
+let promise: Promise<void> | null = null;
+
 async function syncFromServer() {
-  if (syncFromServerInProgress) {
-    return;
-  }
-
-  syncFromServerInProgress = true;
-
   try {
     const clientId = await getClientId();
     if (!clientId) {
@@ -81,6 +76,16 @@ async function syncFromServer() {
   }
 }
 
+// We sync from server more infrequently as we don't want to overload the server
+function syncFromServerCached() {
+  if (syncFromServerInProgress) {
+    return promise;
+  }
+
+  syncFromServerInProgress = true;
+  promise = syncFromServer();
+}
+
 function start() {
   if (started) {
     return;
@@ -89,7 +94,7 @@ function start() {
   started = true;
 
   syncToServer();
-  syncFromServer();
+  syncFromServerCached();
 
   // Sync to server
   setInterval(syncToServer, SYNC_TO_SERVER_INTERVAL);
@@ -103,14 +108,15 @@ function start() {
   });
 
   // Sync from server
-  setInterval(syncFromServer, SYNC_FROM_SERVER_INTERVAL);
+  setInterval(syncFromServerCached, SYNC_FROM_SERVER_INTERVAL);
   document.addEventListener('online', () => {
-    syncFromServer();
+    syncFromServerCached();
   });
 }
 
 const SyncEngine = {
   syncToServer,
+  syncFromServer: syncFromServerCached,
   start,
 };
 
