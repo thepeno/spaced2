@@ -9,6 +9,7 @@ import { createEmptyCard, Grade } from 'ts-fsrs';
 import { z } from 'zod';
 
 export const states = ['New', 'Learning', 'Review', 'Relearning'] as const;
+export const ratings = ['Manual', 'Easy', 'Good', 'Hard', 'Again'] as const;
 
 export const cardOperationSchema = z
   .object({
@@ -31,6 +32,48 @@ export const cardOperationSchema = z
   .passthrough();
 
 export type CardOperation = z.infer<typeof cardOperationSchema>;
+
+export const reviewLogOperationSchema = z
+  .object({
+    type: z.literal('reviewLog'),
+    payload: z.object({
+      id: z.string(),
+      cardId: z.string(),
+
+      grade: z.enum(ratings),
+      state: z.enum(states),
+
+      due: z.coerce.date(),
+      stability: z.number(),
+      difficulty: z.number(),
+      elapsed_days: z.number(),
+      last_elapsed_days: z.number(),
+      scheduled_days: z.number(),
+      review: z.coerce.date(),
+      duration: z.number(),
+
+      createdAt: z.coerce.date(),
+    }),
+    timestamp: z.number(),
+  })
+  .passthrough();
+
+export type ReviewLogOperation = z.infer<typeof reviewLogOperationSchema>;
+
+export const reviewLogDeletedOperationSchema = z
+  .object({
+    type: z.literal('reviewLogDeleted'),
+    payload: z.object({
+      reviewLogId: z.string(),
+      deleted: z.boolean(),
+    }),
+    timestamp: z.number(),
+  })
+  .passthrough();
+
+export type ReviewLogDeletedOperation = z.infer<
+  typeof reviewLogDeletedOperationSchema
+>;
 
 export const cardContentOperationSchema = z
   .object({
@@ -128,6 +171,8 @@ export const operationSchema = z.union([
   cardSuspendedOperationSchema,
   deckOperationSchema,
   updateDeckCardOperationSchema,
+  reviewLogOperationSchema,
+  reviewLogDeletedOperationSchema,
 ]);
 export type Operation = z.infer<typeof operationSchema>;
 
@@ -148,6 +193,8 @@ export const server2ClientSyncSchema = z.object({
       cardSuspendedOperationSchema.extend({ seqNo: z.number() }),
       deckOperationSchema.extend({ seqNo: z.number() }),
       updateDeckCardOperationSchema.extend({ seqNo: z.number() }),
+      reviewLogOperationSchema.extend({ seqNo: z.number() }),
+      reviewLogDeletedOperationSchema.extend({ seqNo: z.number() }),
     ])
   ),
 });
@@ -537,6 +584,10 @@ export function handleClientOperation(operation: Operation): OperationResult {
       return handleDeckOperation(operation);
     case 'updateDeckCard':
       return handleUpdateDeckCardOperation(operation);
+    case 'reviewLog':
+      return { applied: false };
+    case 'reviewLogDeleted':
+      return { applied: false };
     default:
       throw new Error(`Unknown operation type: ${JSON.stringify(operation)}`);
   }
@@ -647,5 +698,13 @@ export async function applyServerOperations(
   MemoryDB.notify();
 
   await setSeqNo(highestSeqNo);
-  await db.operations.bulkAdd(operationsApplied);
+  const reviewLogOperations = operations.filter(
+    (op) => op.type === 'reviewLog' || op.type === 'reviewLogDeleted'
+  );
+  const reviewLogPromise = db.reviewLogOperations.bulkAdd(reviewLogOperations);
+
+  await Promise.all([
+    db.operations.bulkAdd(operationsApplied),
+    reviewLogPromise,
+  ]);
 }
