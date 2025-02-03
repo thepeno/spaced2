@@ -47,7 +47,7 @@ export function gradeCard(
  */
 export function reviewLogOperationToReviewLog(
   operation: ReviewLogOperation
-): ReviewLog {
+): ReviewLog & { duration: number } {
   return {
     ...operation.payload,
     rating: RATING_NAME_TO_NUMBER[operation.payload.grade],
@@ -80,8 +80,8 @@ export function reviewLogToReviewLogOperation(
  */
 export function processReviewLogOperations(
   operations: OperationWithId[]
-): ReviewLog[] {
-  const reviewLogMap: Record<string, ReviewLog> = {};
+): (ReviewLog & { duration: number })[] {
+  const reviewLogMap: Record<string, ReviewLog & { duration: number }> = {};
 
   const reviewLogOperations = operations.filter(
     (op): op is ReviewLogOperation & { id: number } => op.type === 'reviewLog'
@@ -106,7 +106,10 @@ export function processReviewLogOperations(
 
   const reviewLogs = Object.entries(reviewLogMap)
     .filter(([id]) => !reviewLogsToDeleteSet.has(id))
-    .map(([, log]) => log);
+    .map(([, log]) => ({
+      ...log,
+      duration: log.duration,
+    }));
 
   return reviewLogs;
 }

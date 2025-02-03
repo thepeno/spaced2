@@ -36,7 +36,7 @@ export default function ReviewRoute() {
   async function handleGrade(grade: Grade) {
     if (!nextReviewCard) return;
 
-    await gradeCardOperation(nextReviewCard, grade);
+    await gradeCardOperation(nextReviewCard, grade, Date.now() - start);
   }
 
   async function handleDelete() {
