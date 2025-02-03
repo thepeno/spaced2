@@ -1,4 +1,10 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import * as React from 'react';
 import { ReviewLog } from 'ts-fsrs';
@@ -58,6 +64,13 @@ export function Heatmap({ reviewLogs }: HeatmapProps) {
     return result;
   }, [heatmapData]);
 
+  const formatTooltipDate = (dateStr: string) => {
+    const date = new Date(dateStr);
+    return `${date.toLocaleString('default', {
+      month: 'long',
+    })} ${date.getDate()}`;
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -68,11 +81,23 @@ export function Heatmap({ reviewLogs }: HeatmapProps) {
           {weeks.map((week, weekIndex) => (
             <div key={weekIndex} className='flex flex-col gap-1'>
               {week.map(({ date, count }) => (
-                <div
-                  key={date}
-                  className={cn('h-3 w-3 rounded-sm', getColorClass(count))}
-                  title={`${date}: ${count} reviews`}
-                />
+                <TooltipProvider key={date} delayDuration={50}>
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <div
+                        className={cn(
+                          'h-3 w-3 rounded-sm',
+                          getColorClass(count)
+                        )}
+                      />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>
+                        {count} reviews on {formatTooltipDate(date)}
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               ))}
             </div>
           ))}
