@@ -11,6 +11,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       manifest: {
         name: 'Spaced',
+        short_name: 'Spaced',
+        description: 'Spaced is an app for spaced repetition using flashcards',
         theme_color: '#06B6D4',
         icons: [
           {
