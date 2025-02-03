@@ -1,4 +1,3 @@
-import LoginScreen from '@/components/login.tsx';
 import NavBar from '@/components/nav/nav-bar.tsx';
 import { SpacedIcon } from '@/components/nav/spaced-icon';
 import { Toaster } from '@/components/ui/sonner.tsx';
@@ -54,7 +53,6 @@ createRoot(document.getElementById('root')!).render(
         />
         <Routes>
           <Route path='/' element={<ReviewRoute />} />
-          <Route path='/login' element={<LoginScreen />} />
           <Route path='/decks' element={<DecksRoute />} />
           <Route path='/decks/_all' element={<AllCardsRoute />} />
           <Route path='/decks/:deckId' element={<DeckRoute />} />
