@@ -326,13 +326,18 @@ export async function gradeCardOperation(card: CardWithMetadata, grade: Grade) {
     timestamp: Date.now(),
   };
 
-  const reviewLogOperation = reviewLogToReviewLogOperation(
-    reviewLog,
-    card.id
-  );
+  const reviewLogOperation = reviewLogToReviewLogOperation(reviewLog, card.id);
+  const cardOperationResult = handleCardOperation(cardOperation);
+  if (!cardOperationResult.applied) {
+    throw new Error(
+      'SHOULD NOT HAPPEN - there should not be conflict when grading cards'
+    );
+  }
 
-  await handleClientOperationWithPersistence(cardOperation);
-  await handleClientOperationWithPersistence(reviewLogOperation);
+  await db.operations.add(cardOperation);
+  await db.reviewLogOperations.add(reviewLogOperation);
+  await db.pendingOperations.bulkAdd([cardOperation, reviewLogOperation]);
+  MemoryDB.notify();
 }
 
 export async function createNewDeck(name: string, description: string) {
