@@ -2,7 +2,31 @@
 
 ## What is this?
 
-An updated version of spaced, a flashcard app that I made which uses FSRS.
+Spaced is a modern flashcard application that uses the Free Spaced Repetition Scheduler (FSRS) algorithm to help you learn efficiently. It's designed to be fast, offline-capable, easy to use, and visually appealing.
+
+![Desktop Screenshot](public/screenshots/desktop.png)
+
+### Features
+
+- 📱 **Progressive Web App** - Works offline and can be installed on your device
+- ⚡ **Fast and Responsive** - Local-first means the UI is fast and responsive
+- 🔄 **Sync Across Devices** - Review cards on desktop or mobile with automatic sync
+- 📊 **Rich Statistics** - Track your learning progress with detailed analytics
+- 💻 **Modern UI** - Clean, intuitive interface built with shadcn/ui
+
+### Mobile
+
+<p align="center">
+  <img src="public/screenshots/mobile.png" alt="Mobile Screenshot" width="400"/>
+</p>
+
+### Stats
+
+![Stats](public/screenshots/stats.jpeg)
+
+### Note
+
+The sections below are still being updated.
 
 ### Differences from spaced
 
