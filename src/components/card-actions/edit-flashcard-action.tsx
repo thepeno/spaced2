@@ -33,7 +33,7 @@ export default function EditFlashcardAction() {
         onEdit={handleEdit}
       />
 
-      <TooltipProvider delayDuration={100}>
+      <TooltipProvider delayDuration={300}>
         <Tooltip>
           <TooltipTrigger asChild>
             <Button variant='ghost' size='icon' onClick={() => setOpen(true)}>

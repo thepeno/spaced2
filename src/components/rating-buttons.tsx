@@ -79,7 +79,7 @@ function GradeButton({
   }, [grade, key, onGrade, timePressed]);
 
   return (
-    <TooltipProvider key={grade} delayDuration={100}>
+    <TooltipProvider key={grade} delayDuration={300}>
       <Tooltip>
         {/* Pretty hacky way of handling the presses, will probably need to refactor the BouncyButton */}
         <TooltipTrigger

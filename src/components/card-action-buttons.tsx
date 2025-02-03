@@ -45,7 +45,7 @@ export default function CardActionButtons({
     >
       {/* Delete Button */}
       <AlertDialog>
-        <TooltipProvider delayDuration={100}>
+        <TooltipProvider delayDuration={300}>
           <Tooltip>
             <TooltipTrigger asChild>
               <AlertDialogTrigger
@@ -68,7 +68,7 @@ export default function CardActionButtons({
         </TooltipProvider>
 
         {/* Undo Button */}
-        {/* <TooltipProvider delayDuration={100}>
+        {/* <TooltipProvider delayDuration={300}>
         <Tooltip>
           <TooltipTrigger
             onClick={onUndo}
@@ -93,7 +93,7 @@ export default function CardActionButtons({
       </TooltipProvider>
  */}
         {/* Suspend Button */}
-        <TooltipProvider delayDuration={100}>
+        <TooltipProvider delayDuration={300}>
           <Tooltip>
             <TooltipTrigger
               onClick={onSkip}
@@ -118,7 +118,7 @@ export default function CardActionButtons({
         </TooltipProvider>
 
         {/* Bookmark button */}
-        <TooltipProvider delayDuration={100}>
+        <TooltipProvider delayDuration={300}>
           <Tooltip>
             <TooltipTrigger
               onClick={() => onBookmark?.(!bookmarked)}
