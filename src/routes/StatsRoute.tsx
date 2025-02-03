@@ -1,4 +1,5 @@
 import { BasicStats } from '@/components/stats/basic';
+import EmptyStats from '@/components/stats/empty';
 import { Heatmap } from '@/components/stats/heatmap';
 import { TimeOfDayChart } from '@/components/stats/radial-time-of-day';
 import { RatingPieChart } from '@/components/stats/rating-pie-chart';
@@ -24,16 +25,23 @@ export default function StatsRoute() {
   }
 
   const reviewLogs = processReviewLogOperations(allReviewLogOperations);
+  const hasStats = reviewLogs.length > 0;
 
   return (
     <div className='flex flex-col h-full col-start-1 col-end-13 xl:col-start-3 xl:col-end-11 md:px-24 pb-6 gap-2 animate-fade-in'>
-      <BasicStats reviewLogs={reviewLogs} />
-      <Heatmap reviewLogs={reviewLogs} />
-      <div className='flex sm:flex-row flex-col gap-2 w-full'>
-        <RatingPieChart reviewLogs={reviewLogs} />
-        <TimeOfDayChart reviewLogs={reviewLogs} />
-      </div>
-      <ReviewChart reviewLogs={reviewLogs} />
+      {hasStats ? (
+        <>
+          <BasicStats reviewLogs={reviewLogs} />
+          <Heatmap reviewLogs={reviewLogs} />
+          <div className='flex sm:flex-row flex-col gap-2 w-full'>
+            <RatingPieChart reviewLogs={reviewLogs} />
+            <TimeOfDayChart reviewLogs={reviewLogs} />
+          </div>
+          <ReviewChart reviewLogs={reviewLogs} />
+        </>
+      ) : (
+        <EmptyStats />
+      )}
     </div>
   );
 }
