@@ -14,6 +14,8 @@ import {
 } from '@/lib/sync/operation';
 import { cn } from '@/lib/utils';
 import { Separator } from '@radix-ui/react-dropdown-menu';
+import { BookmarkIcon } from 'lucide-react';
+import { toast } from 'sonner';
 import { Grade } from 'ts-fsrs';
 
 function tenMinutesFromNow(): Date {
@@ -44,6 +46,13 @@ export default function ReviewRoute() {
   async function handleBookmark(bookmarked: boolean) {
     if (!nextReviewCard) return;
     await updateBookmarkedClientSide(nextReviewCard.id, bookmarked);
+    if (bookmarked) {
+      toast('Bookmarked', {
+        icon: <BookmarkIcon className='size-4 text-primary' fill='currentColor' />,
+      });
+    } else {
+      toast('Bookmark removed');
+    }
   }
 
   return (
