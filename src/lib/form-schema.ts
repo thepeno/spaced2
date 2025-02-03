@@ -25,6 +25,47 @@ export const cardContentFormSchema = z.object({
 
 export type CardContentFormValues = z.infer<typeof cardContentFormSchema>;
 
+export const loginFormSchema = z.object({
+  email: z.string().email({ message: 'Invalid email address.' }),
+  password: z
+    .string()
+    .min(8, {
+      message: 'Password must be at least 8 characters long.',
+    })
+    .max(128, {
+      message: 'Password must be less than 128 characters long.',
+    }),
+});
+
+export type LoginFormValues = z.infer<typeof loginFormSchema>;
+
+export const registerFormSchema = z
+  .object({
+    email: z.string().email({ message: 'Invalid email address.' }),
+    password: z
+      .string()
+      .min(8, {
+        message: 'Password must be at least 8 characters long.',
+      })
+      .max(128, {
+        message: 'Password must be less than 128 characters long.',
+      }),
+    confirmPassword: z
+      .string()
+      .min(8, {
+        message: 'Password must be at least 8 characters long.',
+      })
+      .max(128, {
+        message: 'Password must be less than 128 characters long.',
+      }),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    path: ['confirmPassword'],
+    message: 'Passwords do not match.',
+  });
+
+export type RegisterFormValues = z.infer<typeof registerFormSchema>;
+
 export const deckFormSchema = z.object({
   name: z
     .string()
@@ -36,14 +77,5 @@ export const deckFormSchema = z.object({
     .max(300, { message: 'Description is too long.' })
     .optional(),
 });
-
-export const loginFormSchema = z.object({
-  email: z.string().email({ message: 'Invalid email address.' }),
-  password: z.string().min(8, {
-    message: 'Password must be at least 8 characters long.',
-  }),
-});
-
-export type LoginFormValues = z.infer<typeof loginFormSchema>;
 
 export type DeckFormValues = z.infer<typeof deckFormSchema>;

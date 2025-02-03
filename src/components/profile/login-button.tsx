@@ -1,5 +1,6 @@
 import BouncyButton from '@/components/bouncy-button';
 import { LoginForm } from '@/components/form/login-form';
+import { RegisterForm } from '@/components/form/register-form';
 import { emitChange } from '@/components/hooks/logged-in-status';
 import { useOnlineStatus } from '@/components/hooks/online-status';
 import {
@@ -10,8 +11,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { login, registerAndSync } from '@/lib/auth';
-import { LoginFormValues } from '@/lib/form-schema';
+import { login, register, registerAndSync } from '@/lib/auth';
+import { LoginFormValues, RegisterFormValues } from '@/lib/form-schema';
 import { cn } from '@/lib/utils';
 import { LogIn } from 'lucide-react';
 import { useState } from 'react';
@@ -22,8 +23,22 @@ type LoginFormDialogContentProps = {
 };
 
 function LoginFormDialogContent({ onSuccess }: LoginFormDialogContentProps) {
-  const handleSubmit = async (data: LoginFormValues) => {
+  const [formType, setFormType] = useState<'login' | 'register'>('login');
+
+  const handleLogin = async (data: LoginFormValues) => {
     const response = await login(data.email, data.password);
+
+    if (!response.success) {
+      toast.error(response.message);
+      return;
+    }
+
+    emitChange();
+    onSuccess();
+  };
+
+  const handleRegister = async (data: RegisterFormValues) => {
+    const response = await register(data.email, data.password);
 
     if (!response.success) {
       toast.error(response.message);
@@ -41,12 +56,19 @@ function LoginFormDialogContent({ onSuccess }: LoginFormDialogContentProps) {
         <DialogDescription>
           Enter your email and password to sign in.
         </DialogDescription>
-
-        <LoginForm onSubmit={handleSubmit} />
+        {formType === 'login' ? (
+          <LoginForm onSubmit={handleLogin} />
+        ) : (
+          <RegisterForm onSubmit={handleRegister} />
+        )}
 
         <div className='text-sm text-center text-gray-500'>
           Don't have an account?{' '}
-          <a href='#' className='text-blue-600 hover:underline'>
+          <a
+            href='#'
+            className='text-blue-600 hover:underline'
+            onClick={() => setFormType('register')}
+          >
             Sign up
           </a>
         </div>
