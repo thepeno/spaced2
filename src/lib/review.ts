@@ -1,6 +1,8 @@
 import {
   RATING_NAME_TO_NUMBER,
+  RATING_NUMBER_TO_NAME,
   STATE_NAME_TO_NUMBER,
+  STATE_NUMBER_TO_NAME,
 } from '@/lib/card-mapping';
 import {
   OperationWithId,
@@ -21,19 +23,10 @@ export function gradeCard(
   now = new Date()
 ): {
   nextCard: Card;
-  //   reviewLog: NewReviewLog;
+  reviewLog: ReviewLog;
 } {
   const recordLog = f.repeat(card, now, (recordLog) => {
     const recordLogItem = recordLog[grade];
-
-    //TODO: add in the review logs
-    // const reviewLog: NewReviewLog = {
-    //   ...recordLogItem.log,
-    //   id: crypto.randomUUID(),
-    //   cardId: card.id,
-    //   grade: grade,
-    //   state: recordLogItem.log.state,
-    // };
 
     const nextCard = {
       ...card,
@@ -42,7 +35,7 @@ export function gradeCard(
 
     return {
       nextCard,
-      //   reviewLog,
+      reviewLog: recordLogItem.log,
     };
   });
 
@@ -59,6 +52,25 @@ export function reviewLogOperationToReviewLog(
     ...operation.payload,
     rating: RATING_NAME_TO_NUMBER[operation.payload.grade],
     state: STATE_NAME_TO_NUMBER[operation.payload.state],
+  };
+}
+
+export function reviewLogToReviewLogOperation(
+  reviewLog: ReviewLog,
+  cardId: string
+): ReviewLogOperation {
+  return {
+    type: 'reviewLog',
+    payload: {
+      ...reviewLog,
+      cardId,
+      id: crypto.randomUUID(),
+      grade: RATING_NUMBER_TO_NAME[reviewLog.rating],
+      state: STATE_NUMBER_TO_NAME[reviewLog.state],
+      duration: 0,
+      createdAt: new Date(),
+    },
+    timestamp: Date.now(),
   };
 }
 

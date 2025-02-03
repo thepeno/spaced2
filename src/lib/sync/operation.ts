@@ -1,7 +1,7 @@
 import { STATE_NAME_TO_NUMBER, STATE_NUMBER_TO_NAME } from '@/lib/card-mapping';
 import MemoryDB from '@/lib/db/memory';
 import { db } from '@/lib/db/persistence';
-import { gradeCard } from '@/lib/review';
+import { gradeCard, reviewLogToReviewLogOperation } from '@/lib/review';
 import { defaultCard, defaultDeck } from '@/lib/sync/default';
 import { getSeqNo, setSeqNo } from '@/lib/sync/meta';
 import { CardWithMetadata, Deck } from '@/lib/types';
@@ -313,7 +313,7 @@ export async function updateCardContentOperation(
 }
 
 export async function gradeCardOperation(card: CardWithMetadata, grade: Grade) {
-  const { nextCard } = gradeCard(card, grade);
+  const { nextCard, reviewLog } = gradeCard(card, grade);
 
   const cardOperation: CardOperation = {
     type: 'card',
@@ -326,7 +326,13 @@ export async function gradeCardOperation(card: CardWithMetadata, grade: Grade) {
     timestamp: Date.now(),
   };
 
+  const reviewLogOperation = reviewLogToReviewLogOperation(
+    reviewLog,
+    card.id
+  );
+
   await handleClientOperationWithPersistence(cardOperation);
+  await handleClientOperationWithPersistence(reviewLogOperation);
 }
 
 export async function createNewDeck(name: string, description: string) {
