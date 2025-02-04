@@ -40,13 +40,30 @@ const subscribe = (callback: () => void = () => {}): (() => void) => {
   };
 };
 
+let notifyCount = 0;
 const notify = () => {
   // Create a new object reference so that we can pass it to the `useSyncExternalStore` hook
   snapshot = Object.assign({}, snapshot);
+  notifyCount++;
+
   for (const callback of subscribers) {
     callback();
   }
 };
+
+// Memoize a function to avoid recomputing the same value.
+// Invalidated when
+function memoize<T extends (...args: never[]) => unknown>(fn: T) {
+  let result: ReturnType<T>;
+  let currentCount = notifyCount;
+  return (...args: Parameters<T>) => {
+    if (!result || currentCount !== notifyCount) {
+      currentCount = notifyCount;
+      result = fn(...args) as ReturnType<T>;
+    }
+    return result;
+  };
+}
 
 const putCard = (card: CardWithMetadata) => {
   memoryDb.cards[card.id] = Object.assign({}, card);
@@ -64,9 +81,9 @@ const getCardById = (id: string) => {
  * Returns all cards.
  * Does not include deleted cards.
  */
-const getCards = () => {
+const getCards = memoize(() => {
   return Object.values(memoryDb.cards).filter((card) => !card.deleted);
-};
+});
 
 const putDeck = (deck: Deck) => {
   memoryDb.decks[deck.id] = Object.assign({}, deck);
@@ -84,9 +101,9 @@ const getDeckById = (id: string) => {
  * Returns all decks.
  * Does not include deleted decks.
  */
-const getDecks = () => {
+const getDecks = memoize(() => {
   return Object.values(memoryDb.decks).filter((deck) => !deck.deleted);
-};
+});
 
 /**
  * Returns all cards for a deck.
@@ -148,7 +165,6 @@ async function init() {
     handleClientOperation(operation);
   }
 
-  console.log('Spaced Database initialized');
   notify();
 }
 
