@@ -8,6 +8,7 @@ export default function BouncyButton({
   pressed,
   asButton = false,
   disabled = false,
+  onClick,
 }: {
   children: React.ReactNode;
   variant?: 'default' | 'medium' | 'large';
@@ -15,6 +16,7 @@ export default function BouncyButton({
   pressed?: boolean;
   asButton?: boolean;
   disabled?: boolean;
+  onClick?: () => void;
 }) {
   const [isPressed, setIsPressed] = useState(false);
   const [isReleased, setIsReleased] = useState(false);
@@ -76,6 +78,7 @@ export default function BouncyButton({
       onDragEnd={handleRelease}
       onTouchStart={handlePress}
       onTouchEnd={handleRelease}
+      onClick={onClick}
     >
       {children}
     </Comp>

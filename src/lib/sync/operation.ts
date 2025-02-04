@@ -686,6 +686,25 @@ export async function updateBookmarkedClientSide(
   handleClientOperationWithPersistence(cardOperation);
 }
 
+export async function applyOperations(operations: Operation[]) {
+  const appliedOperations: Operation[] = [];
+  for (const operation of operations) {
+    const result = handleClientOperation(operation);
+    if (result.applied) {
+      appliedOperations.push(operation);
+    }
+  }
+
+  const reviewLogOperations = operations.filter(
+    (op) => op.type === 'reviewLog' || op.type === 'reviewLogDeleted'
+  );
+
+  await db.operations.bulkAdd(appliedOperations);
+  await db.reviewLogOperations.bulkAdd(reviewLogOperations);
+  await db.pendingOperations.bulkAdd(operations);
+  MemoryDB.notify();
+}
+
 // We assume that the updates are being applied sequentially
 // in order of seqNo (which is provided by the server)
 // If this guarantee is violated, then we might miss out on some operations applied

@@ -20,6 +20,7 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Route, Routes } from 'react-router';
 import './index.css';
+import ImportRoute from '@/routes/ImportRoute';
 
 SyncEngine.start();
 createRoot(document.getElementById('root')!).render(
@@ -67,6 +68,7 @@ createRoot(document.getElementById('root')!).render(
           <Route path='/profile' element={<ProfileRoute />} />
           <Route path='/stats' element={<StatsRoute />} />
           <Route path='/login-success' element={<LoginSuccessRoute />} />
+          <Route path='/import' element={<ImportRoute />} />
         </Routes>
       </div>
     </BrowserRouter>
