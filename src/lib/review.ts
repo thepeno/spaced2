@@ -84,15 +84,15 @@ export function processReviewLogOperations(
   const reviewLogMap: Record<string, ReviewLog & { duration: number }> = {};
 
   const reviewLogOperations = operations.filter(
-    (op): op is ReviewLogOperation & { id: number } => op.type === 'reviewLog'
+    (op): op is ReviewLogOperation & { _id: number } => op.type === 'reviewLog'
   );
 
   reviewLogOperations.forEach((op) => {
-    reviewLogMap[op.id] = reviewLogOperationToReviewLog(op);
+    reviewLogMap[op._id] = reviewLogOperationToReviewLog(op);
   });
 
   const reviewLogDeletedOperations = operations.filter(
-    (op): op is ReviewLogDeletedOperation & { id: number } =>
+    (op): op is ReviewLogDeletedOperation & { _id: number } =>
       op.type === 'reviewLogDeleted'
   );
   const reviewLogsToDeleteSet = new Set<string>();
