@@ -3,35 +3,39 @@ import { useEffect } from 'react';
 
 export function GoogleSignInOneTap() {
   const { isLoggedIn } = useLoggedInStatus();
-  useEffect(() => {
-    if (isLoggedIn) return;
-    // Load the Google Sign-In script
-    const script = document.createElement('script');
-    script.src = 'https://accounts.google.com/gsi/client';
-    script.async = true;
-    script.defer = true;
-    document.body.appendChild(script);
-
-    // Cleanup on unmount
-    return () => {
-      document.body.removeChild(script);
-    };
-  }, [isLoggedIn]);
 
   if (isLoggedIn) return null;
 
-  return (
-    <>
-      <div
-        id='g_id_onload'
-        data-client_id={import.meta.env.VITE_GOOGLE_CLIENT_ID}
-        data-context='signin'
-        data-ux_mode='popup'
-        data-login_uri={import.meta.env.VITE_GOOGLE_LOGIN_URI}
-        data-itp_support='true'
-      />
-    </>
-  );
+  const Comp = () => {
+    useEffect(() => {
+      // Load the Google Sign-In script
+      const script = document.createElement('script');
+      script.src = 'https://accounts.google.com/gsi/client';
+      script.async = true;
+      script.defer = true;
+      document.body.appendChild(script);
+
+      // Cleanup on unmount
+      return () => {
+        document.body.removeChild(script);
+      };
+    }, []);
+
+    return (
+      <>
+        <div
+          id='g_id_onload'
+          data-client_id={import.meta.env.VITE_GOOGLE_CLIENT_ID}
+          data-context='signin'
+          data-ux_mode='popup'
+          data-login_uri={import.meta.env.VITE_GOOGLE_LOGIN_URI}
+          data-itp_support='true'
+        />
+      </>
+    );
+  };
+
+  return <Comp />;
 }
 
 export function GoogleSignIn() {
