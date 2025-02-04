@@ -47,7 +47,7 @@ async function syncToServer() {
       console.error('Failed to push operations to server');
     }
 
-    await db.pendingOperations.bulkDelete(pendingOperations.map((op) => op.id));
+    await db.pendingOperations.bulkDelete(pendingOperations.map((op) => op._id));
   } finally {
     syncToServerInProgress = false;
   }

@@ -181,7 +181,7 @@ export type Operation = z.infer<typeof operationSchema>;
  * The IDs are for client side ordering when sending to the server,
  * and will not be used by the server.
  */
-export type OperationWithId = Operation & { id: number };
+export type OperationWithId = Operation & { _id: number };
 
 export const server2ClientSyncSchema = z.object({
   ops: z.array(

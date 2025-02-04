@@ -112,8 +112,8 @@ export default function DebugRoute() {
         </Button>
         <ul>
           {operations?.map((operation) => (
-            <li key={operation.id}>
-              {operation.id}: {operation.type} - {operation.timestamp}
+            <li key={operation._id}>
+              {operation._id}: {operation.type} - {operation.timestamp}
             </li>
           ))}
         </ul>
