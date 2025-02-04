@@ -1,6 +1,7 @@
-import SessionExpiredBanner from '@/components/session-expired-banner';
+import { GoogleSignInOneTap } from '@/components/auth/google-sign-in';
 import NavBar from '@/components/nav/nav-bar.tsx';
 import { SpacedIcon } from '@/components/nav/spaced-icon';
+import SessionExpiredBanner from '@/components/session-expired-banner';
 import { Toaster } from '@/components/ui/sonner.tsx';
 import SyncEngine from '@/lib/sync/engine.ts';
 import { cn } from '@/lib/utils.ts';
@@ -9,6 +10,7 @@ import BookmarksRoute from '@/routes/BookmarksRoute.tsx';
 import CreateFlashcardRoute from '@/routes/CreateFlashcardRoute.tsx';
 import DeckRoute from '@/routes/DeckRoute.tsx';
 import DecksRoute from '@/routes/DecksRoute.tsx';
+import LoginSuccessRoute from '@/routes/LoginSuccessRoute';
 import ProfileRoute from '@/routes/ProfileRoute';
 import ReviewRoute from '@/routes/Review.tsx';
 import StatsRoute from '@/routes/StatsRoute';
@@ -31,6 +33,7 @@ createRoot(document.getElementById('root')!).render(
           'bg-muted'
         )}
       >
+        <GoogleSignInOneTap />
         <SpacedIcon />
         <NavBar />
         <SessionExpiredBanner />
@@ -63,6 +66,7 @@ createRoot(document.getElementById('root')!).render(
           <Route path='/create' element={<CreateFlashcardRoute />} />
           <Route path='/profile' element={<ProfileRoute />} />
           <Route path='/stats' element={<StatsRoute />} />
+          <Route path='/login-success' element={<LoginSuccessRoute />} />
         </Routes>
       </div>
     </BrowserRouter>

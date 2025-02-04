@@ -322,7 +322,7 @@ export async function gradeCardOperation(
   const cardOperation: CardOperation = {
     type: 'card',
     payload: {
-      id: card.id,
+      id: crypto.randomUUID(),
       ...nextCard,
       state: STATE_NUMBER_TO_NAME[nextCard.state],
       last_review: nextCard.last_review ?? null,

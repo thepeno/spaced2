@@ -1,3 +1,4 @@
+import { GoogleSignIn } from '@/components/auth/google-sign-in';
 import BouncyButton from '@/components/bouncy-button';
 import { LoginForm } from '@/components/form/login-form';
 import { RegisterForm } from '@/components/form/register-form';
@@ -22,7 +23,9 @@ type LoginFormDialogContentProps = {
   onSuccess: () => void;
 };
 
-export function LoginFormDialogContent({ onSuccess }: LoginFormDialogContentProps) {
+export function LoginFormDialogContent({
+  onSuccess,
+}: LoginFormDialogContentProps) {
   const [formType, setFormType] = useState<'login' | 'register'>('login');
 
   const handleLogin = async (data: LoginFormValues) => {
@@ -62,16 +65,35 @@ export function LoginFormDialogContent({ onSuccess }: LoginFormDialogContentProp
           <RegisterForm onSubmit={handleRegister} />
         )}
 
-        <div className='text-sm text-center text-gray-500'>
-          Don't have an account?{' '}
-          <a
-            href='#'
-            className='text-blue-600 hover:underline'
-            onClick={() => setFormType('register')}
-          >
-            Sign up
-          </a>
+        <div className='flex justify-center mb-4'>
+          <GoogleSignIn />
         </div>
+
+        {formType === 'login' && (
+          <div className='text-sm text-center text-gray-500'>
+            Don't have an account?{' '}
+            <a
+              href='#'
+              className='text-blue-600 hover:underline'
+              onClick={() => setFormType('register')}
+            >
+              Sign up
+            </a>
+          </div>
+        )}
+
+        {formType === 'register' && (
+          <div className='text-sm text-center text-gray-500'>
+            Already have an account?{' '}
+            <a
+              href='#'
+              className='text-blue-600 hover:underline'
+              onClick={() => setFormType('login')}
+            >
+              Sign in
+            </a>
+          </div>
+        )}
       </DialogHeader>
     </div>
   );

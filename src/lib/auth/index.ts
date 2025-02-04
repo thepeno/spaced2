@@ -116,7 +116,12 @@ export async function registerClient(): Promise<RegisterClientResponse> {
   };
 }
 
-export async function registerAndSync(): Promise<void> {
+export async function registerAndSync(clientId?: string): Promise<void> {
+  if (clientId) {
+    await setClientId(clientId);
+    return SyncEngine.syncFromServer() || Promise.resolve();
+  }
+
   const clientIdResponse = await registerClient();
   if (!clientIdResponse.success) {
     throw new Error(clientIdResponse.message);
