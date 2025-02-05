@@ -280,8 +280,9 @@ export async function createNewCard(
     }
   }
 
+  const operationsCopy = operations.map((op) => structuredClone(op));
   await db.operations.bulkAdd(operations);
-  await db.pendingOperations.bulkAdd(operations);
+  await db.pendingOperations.bulkAdd(operationsCopy);
   MemoryDB.notify();
 }
 
@@ -341,9 +342,15 @@ export async function gradeCardOperation(
     );
   }
 
+  const operationsCopy = [
+    structuredClone(cardOperation),
+    structuredClone(reviewLogOperation),
+  ];
+
   await db.operations.add(cardOperation);
   await db.reviewLogOperations.add(reviewLogOperation);
-  await db.pendingOperations.bulkAdd([cardOperation, reviewLogOperation]);
+  // On fe-dev, the "add" operation modifies to object
+  await db.pendingOperations.bulkAdd(operationsCopy);
   MemoryDB.notify();
 }
 
@@ -618,7 +625,8 @@ export async function handleClientOperationWithPersistence(
 
   if (result.applied) {
     await db.operations.add(operation);
-    await db.pendingOperations.add(operation);
+    const operationCopy = structuredClone(operation);
+    await db.pendingOperations.add(operationCopy);
     MemoryDB.notify();
   }
 
@@ -698,9 +706,13 @@ export async function applyOperations(operations: Operation[]) {
     (op) => op.type === 'reviewLog' || op.type === 'reviewLogDeleted'
   );
 
+  const operationsCopy = [...appliedOperations, ...reviewLogOperations].map(
+    (op) => structuredClone(op)
+  );
+
   await db.operations.bulkAdd(appliedOperations);
   await db.reviewLogOperations.bulkAdd(reviewLogOperations);
-  await db.pendingOperations.bulkAdd(operations);
+  await db.pendingOperations.bulkAdd(operationsCopy);
   MemoryDB.notify();
 }
 
