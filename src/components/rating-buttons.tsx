@@ -32,6 +32,13 @@ const RATING_TO_NAME = {
 
 const HOLD_TO_CANCEL_THRESHOLD_MS = 250;
 
+function isEventTargetInput(e: KeyboardEvent) {
+  return (
+    ['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement)?.tagName) ||
+    (e.target as HTMLElement)?.isContentEditable
+  );
+}
+
 function GradeButton({
   grade,
   onGrade,
@@ -51,13 +58,12 @@ function GradeButton({
   // Allow for "cancelling the press" by holding the key down for a while
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (isEventTargetInput(e)) return;
       if (e.repeat) return;
-
       if (e.key === key) {
-        // onGrade(grade);
-        // buttonRef.current?.click();
         setPressed(true);
         setTimePressed(Date.now());
+        e.preventDefault();
       }
     };
     window.addEventListener('keydown', handleKeyDown);
@@ -66,6 +72,7 @@ function GradeButton({
 
   useEffect(() => {
     const handleKeyUp = (e: KeyboardEvent) => {
+      if (isEventTargetInput(e)) return;
       if (e.key === key) {
         if (Date.now() - timePressed < HOLD_TO_CANCEL_THRESHOLD_MS) {
           onGrade(grade);
