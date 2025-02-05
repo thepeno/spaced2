@@ -4,7 +4,13 @@ import { useEffect, useRef, useState } from 'react';
 const INACTIVITY_THRESHOLD_MS = 2 * 60 * 1000; // 2 minutes
 const DEBOUNCE_WAIT_MS = 1000; // 1 second
 
-export function useActiveStartTime(): number {
+type UseActiveStartTimeOptions = {
+  id?: string;
+};
+
+export function useActiveStartTime(
+  options?: UseActiveStartTimeOptions
+): number {
   const now = Date.now();
   const [startTime, setStartTime] = useState(now);
   const lastInteractionRef = useRef(now);
@@ -12,8 +18,6 @@ export function useActiveStartTime(): number {
   const handleUserActivity = debounce(() => {
     const now = Date.now();
     const timeSinceLastInteraction = now - lastInteractionRef.current;
-    console.log('timeSinceLastInteraction', timeSinceLastInteraction);
-
     if (timeSinceLastInteraction > INACTIVITY_THRESHOLD_MS) {
       // User was inactive, reset start time
       setStartTime(now);
@@ -22,7 +26,16 @@ export function useActiveStartTime(): number {
     lastInteractionRef.current = now;
   }, DEBOUNCE_WAIT_MS);
 
+  // Reset the start time when the id changes
   useEffect(() => {
+    setStartTime(Date.now());
+  }, [options?.id]);
+
+  useEffect(() => {
+    if (!options?.id) {
+      return;
+    }
+
     // Track user interactions
     const events = [
       'mousedown',
@@ -41,7 +54,7 @@ export function useActiveStartTime(): number {
         window.removeEventListener(event, handleUserActivity);
       });
     };
-  }, [handleUserActivity]);
+  }, [handleUserActivity, options?.id]);
 
   return startTime;
 }

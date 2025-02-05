@@ -31,7 +31,7 @@ export default function ReviewRoute() {
   const reviewCards = useReviewCards();
   const nextReviewCard = reviewCards?.[0];
 
-  const start = useActiveStartTime();
+  const start = useActiveStartTime({ id: nextReviewCard?.id });
 
   async function handleGrade(grade: Grade) {
     if (!nextReviewCard) return;
