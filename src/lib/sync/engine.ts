@@ -18,7 +18,7 @@ import { pullFromServer, pushToServer } from '@/lib/sync/server';
 const MAX_OPERATIONS = 2500;
 
 const SYNC_TO_SERVER_INTERVAL = 10000;
-const SYNC_FROM_SERVER_INTERVAL = 30000;
+const SYNC_FROM_SERVER_INTERVAL = 30 * 1000 * 5; // Sync from server interval can be long
 let started = false;
 
 let syncToServerInProgress = false;
@@ -117,6 +117,7 @@ function start() {
   // Sync to server
   setInterval(syncToServer, SYNC_TO_SERVER_INTERVAL);
   document.addEventListener('visibilitychange', () => {
+    // Sync when the user switches away
     if (document.visibilityState === 'hidden') {
       syncToServer();
     }
@@ -129,6 +130,12 @@ function start() {
   setInterval(syncFromServerCached, SYNC_FROM_SERVER_INTERVAL);
   document.addEventListener('online', () => {
     syncFromServerCached();
+  });
+  // Grab from serve whenever the user comes back
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+      syncFromServerCached();
+    }
   });
 }
 
