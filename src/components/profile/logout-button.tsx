@@ -19,14 +19,12 @@ import { toast } from 'sonner';
 
 export function LogoutButton() {
   const online = useOnlineStatus();
-
   const handleLogout = async () => {
     const logoutResponse = await logout();
 
     if (!logoutResponse.success) {
       console.error('Failed to logout', logoutResponse.message);
-      toast.error(logoutResponse.message);
-      return;
+      throw new Error(logoutResponse.message);
     }
 
     await SyncEngine.wipeDatabase();
@@ -61,7 +59,17 @@ export function LogoutButton() {
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction onClick={handleLogout}>Sign out</AlertDialogAction>
+          <AlertDialogAction
+            onClick={() => {
+              toast.promise(handleLogout, {
+                loading: 'Signing out...',
+                success: 'Signed out successfully',
+                error: 'Failed to sign out',
+              });
+            }}
+          >
+            Sign out
+          </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

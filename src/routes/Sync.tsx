@@ -54,7 +54,7 @@ export default function DebugRoute() {
     if (clientId) return;
 
     const response = await fetch(
-      `${import.meta.env.VITE_BACKEND_URL}/clientId`,
+      `${import.meta.env.VITE_BACKEND_URL}/auth/clientId`,
       {
         credentials: "include",
         method: "POST",

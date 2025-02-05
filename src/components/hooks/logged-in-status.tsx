@@ -7,7 +7,7 @@ type LoggedInStatus = {
 
 const checkLoginStatus = async (): Promise<boolean> => {
   try {
-    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/me`, {
+    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/auth/me`, {
       credentials: 'include',
     });
     return response.ok;

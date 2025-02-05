@@ -15,6 +15,8 @@ import { pullFromServer, pushToServer } from '@/lib/sync/server';
 // Note: we don't have to handle race conditions as the operations being sent
 // to the server are idempotent.
 
+const MAX_OPERATIONS = 2500;
+
 const SYNC_TO_SERVER_INTERVAL = 10000;
 const SYNC_FROM_SERVER_INTERVAL = 30000;
 let started = false;
@@ -32,22 +34,38 @@ async function syncToServer() {
       return;
     }
 
-    const pendingOperations = await db.pendingOperations.toArray();
-    if (pendingOperations.length === 0) {
-      return;
-    }
-
     const clientId = await getClientId();
     if (!clientId) {
       return;
     }
 
-    const { success } = await pushToServer(clientId, pendingOperations);
-    if (!success) {
-      console.error('Failed to push operations to server');
+    const pendingOperations = await db.pendingOperations.toArray();
+    if (pendingOperations.length === 0) {
+      return;
     }
 
-    await db.pendingOperations.bulkDelete(pendingOperations.map((op) => op._id));
+    // Process operations in chunks
+    for (let i = 0; i < pendingOperations.length; i += MAX_OPERATIONS) {
+      const chunk = pendingOperations.slice(i, i + MAX_OPERATIONS);
+
+      console.log('Pushing', chunk.length, 'operations');
+      const { success } = await pushToServer(clientId, chunk);
+
+      if (!success) {
+        console.error('Failed to push operations to server');
+        break;
+      }
+
+      // Delete the successfully sent chunk
+      await db.pendingOperations.bulkDelete(chunk.map((op) => op._id));
+      console.log(
+        'Synced',
+        i + MAX_OPERATIONS,
+        'operations',
+        'of',
+        pendingOperations.length
+      );
+    }
   } finally {
     syncToServerInProgress = false;
   }

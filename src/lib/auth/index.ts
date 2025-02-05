@@ -15,7 +15,7 @@ export async function login(
   email: string,
   password: string
 ): Promise<LoginResponse> {
-  const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/login`, {
+  const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/auth/login`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -56,7 +56,7 @@ export async function register(
   email: string,
   password: string
 ): Promise<RegisterResponse> {
-  const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/register`, {
+  const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/auth/register`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -95,7 +95,7 @@ type RegisterClientResponse = {
 };
 
 export async function registerClient(): Promise<RegisterClientResponse> {
-  const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/clientId`, {
+  const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/auth/clientId`, {
     method: 'POST',
     credentials: 'include',
   });
@@ -136,7 +136,7 @@ type LogoutResponse = {
 };
 
 export async function logout(): Promise<LogoutResponse> {
-  const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/logout`, {
+  const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/auth/logout`, {
     method: 'POST',
     credentials: 'include',
   });
