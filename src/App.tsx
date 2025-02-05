@@ -15,7 +15,7 @@ import LoginSuccessRoute from '@/routes/LoginSuccessRoute';
 import ProfileRoute from '@/routes/ProfileRoute';
 import ReviewRoute from '@/routes/Review.tsx';
 import StatsRoute from '@/routes/StatsRoute';
-import { CircleAlert, CircleCheck } from 'lucide-react';
+import { CircleAlert, CircleCheck, X } from 'lucide-react';
 import { BrowserRouter, Route, Routes } from 'react-router';
 import './index.css';
 
@@ -41,8 +41,11 @@ export default function App() {
           icons={{
             success: <CircleCheck className='text-primary size-5' />,
             error: <CircleAlert className='text-destructive size-5' />,
+            // close: <X className='text-muted-foreground size-3' />,
           }}
           toastOptions={{
+            closeButton: true,
+            duration: 2000,
             unstyled: true,
             classNames: {
               toast:
