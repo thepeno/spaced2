@@ -5,6 +5,7 @@ import {
   cardContentFormSchema,
   CardContentFormValues,
 } from '@/lib/form-schema';
+import VibrationPattern from '@/lib/vibrate';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Book } from 'lucide-react';
 import { useEffect } from 'react';
@@ -44,6 +45,7 @@ export function CreateUpdateFlashcardForm({
   const isUpdate = initialFront || initialBack;
 
   const handleSubmit = (data: CardContentFormValues) => {
+    navigator?.vibrate(VibrationPattern.successConfirm);
     onSubmit(data);
     form.reset();
     form.setFocus('front');

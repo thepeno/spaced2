@@ -14,6 +14,7 @@ import {
   updateSuspendedClientSide,
 } from '@/lib/sync/operation';
 import { cn } from '@/lib/utils';
+import VibrationPattern from '@/lib/vibrate';
 import { Separator } from '@radix-ui/react-dropdown-menu';
 import { BookmarkIcon } from 'lucide-react';
 import { toast } from 'sonner';
@@ -37,6 +38,7 @@ export default function ReviewRoute() {
     if (!nextReviewCard) return;
 
     await gradeCardOperation(nextReviewCard, grade, Date.now() - start);
+    navigator?.vibrate(VibrationPattern.release);
   }
 
   async function handleDelete() {
@@ -47,12 +49,15 @@ export default function ReviewRoute() {
   async function handleSuspend() {
     if (!nextReviewCard) return;
     await updateSuspendedClientSide(nextReviewCard.id, tenMinutesFromNow());
+    navigator?.vibrate(VibrationPattern.buttonTap);
   }
 
   async function handleBookmark(bookmarked: boolean) {
     if (!nextReviewCard) return;
+
     await updateBookmarkedClientSide(nextReviewCard.id, bookmarked);
     if (bookmarked) {
+      navigator?.vibrate(VibrationPattern.successConfirm);
       toast('Bookmarked', {
         icon: (
           <BookmarkIcon className='size-4 text-primary' fill='currentColor' />

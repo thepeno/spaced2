@@ -1,4 +1,5 @@
 import { cn } from '@/lib/utils';
+import VibrationPattern from '@/lib/vibrate';
 import { useCallback, useEffect, useState } from 'react';
 
 export default function BouncyButton({

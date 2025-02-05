@@ -1,6 +1,7 @@
 import BouncyButton from '@/components/bouncy-button';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import VibrationPattern from '@/lib/vibrate';
 import React, { SVGProps, useState } from 'react';
 import { Link } from 'react-router';
 
@@ -18,10 +19,18 @@ export default function NavButton({
   return (
     <Link to={href} className='w-full py-1' draggable={false}>
       <Button
-        onMouseDown={() => setPressed(true)}
-        onMouseUp={() => setPressed(false)}
+        onMouseDown={() => {
+          setPressed(true);
+          navigator?.vibrate(VibrationPattern.buttonTap);
+        }}
+        onMouseUp={() => {
+          setPressed(false);
+        }}
         onMouseLeave={() => setPressed(false)}
-        onTouchStart={() => setPressed(true)}
+        onTouchStart={() => {
+          setPressed(true);
+          navigator?.vibrate(VibrationPattern.buttonTap);
+        }}
         onTouchEnd={() => setPressed(false)}
         variant={'nav'}
         size={'nav'}

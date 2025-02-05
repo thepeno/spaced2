@@ -7,6 +7,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
+import VibrationPattern from '@/lib/vibrate';
 import { intlFormatDistance } from 'date-fns';
 import { useEffect, useRef, useState } from 'react';
 import { Card, FSRS, Grade, Rating } from 'ts-fsrs';

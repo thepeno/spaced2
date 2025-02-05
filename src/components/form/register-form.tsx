@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { registerFormSchema } from '@/lib/form-schema';
+import VibrationPattern from '@/lib/vibrate';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2, Lock, Mail } from 'lucide-react';
 import { useForm } from 'react-hook-form';
@@ -31,6 +32,7 @@ export function RegisterForm({ onSubmit }: RegisterFormProps) {
   });
 
   const handleSubmit = async (data: RegisterFormValues) => {
+    navigator?.vibrate(VibrationPattern.successConfirm);
     await onSubmit(data);
   };
 

@@ -6,6 +6,7 @@ import SearchBar from '@/components/search-bar';
 import { Card } from '@/components/ui/card';
 import { createNewCard } from '@/lib/sync/operation';
 import { cn } from '@/lib/utils';
+import VibrationPattern from '@/lib/vibrate';
 import { CircleCheck, CirclePlus } from 'lucide-react';
 import { useState } from 'react';
 
@@ -135,6 +136,7 @@ export default function CreateFlashcardRoute() {
                 backgroundType={selected ? 'cool-mint' : 'plain'}
                 selected={selected}
                 onSelect={() => {
+                  navigator?.vibrate(VibrationPattern.buttonTap);
                   if (selected) {
                     setSelectedDecks(
                       selectedDecks.filter((id) => id !== deck.id)
