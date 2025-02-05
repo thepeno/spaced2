@@ -60,7 +60,7 @@ async function syncToServer() {
       await db.pendingOperations.bulkDelete(chunk.map((op) => op._id));
       console.log(
         'Synced',
-        i + MAX_OPERATIONS,
+        Math.min(i + MAX_OPERATIONS, pendingOperations.length),
         'operations',
         'of',
         pendingOperations.length
