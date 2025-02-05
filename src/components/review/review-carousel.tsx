@@ -56,7 +56,7 @@ export default function ReviewCarousel({ card }: { card: CardWithMetadata }) {
   );
 
   return (
-    <div className='flex flex-col items-center gap-2 pt-12 sm:hidden'>
+    <div className='flex flex-col items-center gap-2 pt-12 sm:hidden w-full'>
       <Dots current={current} count={count} />
       <Carousel className='w-full max-w-xs' setApi={setApi}>
         <CarouselContent>
