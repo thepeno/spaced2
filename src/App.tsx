@@ -62,7 +62,7 @@ export default function App() {
           <Route path='/decks/_all' element={<AllCardsRoute />} />
           <Route path='/decks/:deckId' element={<DeckRoute />} />
           <Route path='/bookmarks' element={<BookmarksRoute />} />
-          <Route path='/debug' element={<DebugRoute />} />
+          {/* <Route path='/debug' element={<DebugRoute />} /> */}
           <Route path='/create' element={<CreateFlashcardRoute />} />
           <Route path='/profile' element={<ProfileRoute />} />
           <Route path='/stats' element={<StatsRoute />} />
