@@ -15,7 +15,6 @@ import LoginSuccessRoute from '@/routes/LoginSuccessRoute';
 import ProfileRoute from '@/routes/ProfileRoute';
 import ReviewRoute from '@/routes/Review.tsx';
 import StatsRoute from '@/routes/StatsRoute';
-import DebugRoute from '@/routes/Sync.tsx';
 import { CircleAlert, CircleCheck } from 'lucide-react';
 import { BrowserRouter, Route, Routes } from 'react-router';
 import './index.css';
