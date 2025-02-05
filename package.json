@@ -8,7 +8,7 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "pnpm run build && wrangler pages dev ./dist",
-    "deploy": "pnpm run build && wrangler pages deploy ./dist",
+    "deploy": "pnpm run build && wrangler pages deploy ./dist --project-name spaced2",
     "generate-pwa-assets": "pwa-assets-generator --preset minimal-2023 public/telescope.svg"
   },
   "dependencies": {
