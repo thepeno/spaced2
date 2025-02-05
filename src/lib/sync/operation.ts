@@ -229,16 +229,7 @@ export function emptyCardToOperations(card: CardWithMetadata): Operation[] {
     timestamp: now,
   };
 
-  const cardDeletedOperation: CardDeletedOperation = {
-    type: 'cardDeleted',
-    payload: {
-      cardId: card.id,
-      deleted: false,
-    },
-    timestamp: now,
-  };
-
-  return [cardOperation, cardContentOperation, cardDeletedOperation];
+  return [cardOperation, cardContentOperation];
 }
 
 function cardDeckOperations(
