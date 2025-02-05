@@ -43,6 +43,7 @@ export function useActiveStartTime(
       'keydown',
       'scroll',
       'touchstart',
+      'visibilitychange',
     ];
 
     events.forEach((event) => {
