@@ -312,13 +312,21 @@ export async function updateCardContentOperation(
   await handleClientOperationWithPersistence(cardOperation);
 }
 
+const MAX_DURATION_PER_CARD_MS = 2 * 60 * 1000; // 2 minutes
+
 export async function gradeCardOperation(
   card: CardWithMetadata,
   grade: Grade,
-  duration: number = 0
+  providedDuration: number = 0
 ) {
   const { nextCard, reviewLog } = gradeCard(card, grade);
+  if (providedDuration > MAX_DURATION_PER_CARD_MS) {
+    console.warn(
+      `Duration for card ${card.id} was ${providedDuration}ms, clamping to ${MAX_DURATION_PER_CARD_MS}ms`
+    );
+  }
 
+  const duration = Math.min(providedDuration, MAX_DURATION_PER_CARD_MS);
   const cardOperation: CardOperation = {
     type: 'card',
     payload: {
