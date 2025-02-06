@@ -624,8 +624,8 @@ export async function handleClientOperationWithPersistence(
   const result = handleClientOperation(operation);
 
   if (result.applied) {
-    await db.operations.add(operation);
     const operationCopy = structuredClone(operation);
+    await db.operations.add(operation);
     await db.pendingOperations.add(operationCopy);
     MemoryDB.notify();
   }
