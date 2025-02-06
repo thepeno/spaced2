@@ -5,6 +5,7 @@ import {
   cardContentFormSchema,
   CardContentFormValues,
 } from '@/lib/form-schema';
+import { isEventTargetInput } from '@/lib/utils';
 import VibrationPattern from '@/lib/vibrate';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Book } from 'lucide-react';
@@ -41,6 +42,20 @@ export function CreateUpdateFlashcardForm({
       form.setValue('back', initialBack);
     }
   }, [initialFront, initialBack, form]);
+
+  useEffect(() => {
+    // cmd enter to submit
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (!isEventTargetInput(event)) return;
+      if (event.metaKey && event.key === 'Enter') {
+        form.handleSubmit(handleSubmit)();
+        form.setFocus('front');
+        event.preventDefault();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [form]);
 
   const isUpdate = initialFront || initialBack;
 
