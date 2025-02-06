@@ -15,16 +15,40 @@ import LoginSuccessRoute from '@/routes/LoginSuccessRoute';
 import ProfileRoute from '@/routes/ProfileRoute';
 import ReviewRoute from '@/routes/Review.tsx';
 import StatsRoute from '@/routes/StatsRoute';
-import { CircleAlert, CircleCheck, X } from 'lucide-react';
+import { useMediaQuery } from '@uidotdev/usehooks';
+import { CircleAlert, CircleCheck } from 'lucide-react';
 import { BrowserRouter, Route, Routes } from 'react-router';
 import './index.css';
 
 SyncEngine.start();
 export default function App() {
   useGoogleSignInPrompt({ delay: 1000 });
+  const isMobile = useMediaQuery('(max-width: 768px)');
 
   return (
     <BrowserRouter>
+      <Toaster
+        position={isMobile ? 'top-center' : 'top-right'}
+        icons={{
+          success: <CircleCheck className='text-primary size-5' />,
+          error: <CircleAlert className='text-destructive size-5' />,
+          // close: <X className='text-muted-foreground size-3' />,
+        }}
+        toastOptions={{
+          closeButton: true,
+          duration: 2000,
+          unstyled: true,
+          classNames: {
+            toast:
+              'bg-background rounded-xl w-80 py-4 pl-5 pr-4 shadow-sm flex gap-2 items-center',
+            title: 'text-sm',
+            description: 'text-xs',
+            icon: 'size-4',
+            actionButton:
+              'text-xs font-semibold px-3 py-2 bg-primary text-primary-foreground rounded-md cursor-pointer active:scale-95 transition-all',
+          },
+        }}
+      />
       <div
         className={cn(
           'grid grid-cols-12 gap-x-6 items-start',
@@ -36,28 +60,6 @@ export default function App() {
         <SpacedIcon />
         <NavBar />
         <SessionExpiredBanner />
-        <Toaster
-          position='top-center'
-          icons={{
-            success: <CircleCheck className='text-primary size-5' />,
-            error: <CircleAlert className='text-destructive size-5' />,
-            // close: <X className='text-muted-foreground size-3' />,
-          }}
-          toastOptions={{
-            closeButton: true,
-            duration: 2000,
-            unstyled: true,
-            classNames: {
-              toast:
-                'bg-background rounded-xl w-80 py-4 pl-5 pr-4 shadow-sm flex gap-2 items-center',
-              title: 'text-sm',
-              description: 'text-xs',
-              icon: 'size-4',
-              actionButton:
-                'text-xs font-semibold px-3 py-2 bg-primary text-primary-foreground rounded-md cursor-pointer active:scale-95 transition-all',
-            },
-          }}
-        />
         <Routes>
           <Route path='/' element={<ReviewRoute />} />
           <Route path='/decks' element={<DecksRoute />} />
