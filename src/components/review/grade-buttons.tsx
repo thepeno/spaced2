@@ -6,8 +6,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { cn } from '@/lib/utils';
-import VibrationPattern from '@/lib/vibrate';
+import { cn, isEventTargetInput } from '@/lib/utils';
 import { intlFormatDistance } from 'date-fns';
 import { useEffect, useRef, useState } from 'react';
 import { Card, FSRS, Grade, Rating } from 'ts-fsrs';
@@ -32,13 +31,6 @@ const RATING_TO_NAME = {
 } as Record<Rating, string>;
 
 const HOLD_TO_CANCEL_THRESHOLD_MS = 250;
-
-function isEventTargetInput(e: KeyboardEvent) {
-  return (
-    ['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement)?.tagName) ||
-    (e.target as HTMLElement)?.isContentEditable
-  );
-}
 
 function GradeButton({
   grade,
@@ -99,12 +91,7 @@ function GradeButton({
         >
           <BouncyButton
             className={cn(
-              'flex h-16 w-full flex-col justify-center gap-0 transition sm:h-12 bg-muted text-foreground border rounded-none sm:rounded-xl',
-              pos === 'top-right' && 'rounded-tr-2xl',
-              pos === 'bottom-right' && 'rounded-br-2xl',
-              pos === 'top-left' && 'rounded-tl-2xl',
-              pos === 'bottom-left' && 'rounded-bl-2xl'
-              // pos === 'center' && 'rounded-2xl'
+              'flex w-full flex-col justify-center gap-0 transition h-14 bg-background text-muted-foreground font-semibold border rounded-xl shadow-xs hover:shadow-2xs hover:scale-110'
             )}
             pressed={pressed}
           >
@@ -131,7 +118,7 @@ export default function GradeButtons({ onGrade, card }: GradeButtonsProps) {
   return (
     <div
       className={cn(
-        'grid h-full grid-cols-2 gap-x-1 md:gap-x-3 gap-y-1 md:gap-y-2 sm:w-96 md:grid-cols-4'
+        'grid h-full gap-x-3 gap-y-2 w-[600px] grid-cols-4 bg-transparent px-2 py-2 rounded-xl'
       )}
     >
       <GradeButton

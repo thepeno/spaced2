@@ -57,15 +57,97 @@ export default {
           '30%': { transform: 'scale(1.1)' },
           '100%': { transform: 'scale(1)' },
         },
+        scaleIconSize: {
+          '25%': { transform: 'scale(0.90)' },
+          '60%': { transform: 'scale(1.15)' },
+          '100%': { transform: 'scale(1)' },
+        },
+        scaleArrowIconSize: {
+          '25%': {
+            transform: 'translateX(-10%) scaleX(0.90)',
+            transformOrigin: 'left',
+          },
+          '50%': {
+            transform: 'translateX(10%) scaleX(1.15)',
+            transformOrigin: 'left',
+          },
+          '100%': {
+            transform: 'scaleX(1)',
+            transformOrigin: 'left',
+          },
+        },
+        bounceTrashIcon: {
+          '30%': {
+            transform: 'scaleY(0.90)',
+            transformOrigin: 'bottom',
+          },
+          '70%': {
+            transform: 'scaleY(1.20)',
+            transformOrigin: 'bottom',
+          },
+          '100%': {
+            transform: 'scaleY(1)',
+            transformOrigin: 'bottom',
+          },
+        },
+        movePencilIcon: {
+          '25%': {
+            transform: 'translateX(-10%)',
+            rotate: '5deg',
+          },
+          '65%': {
+            transform: 'translateX(20%)',
+            rotate: '-10deg',
+          },
+          '100%': {
+            transform: 'translateX(0%)',
+          },
+        },
+        wobbleIcon: {
+          '0%': {
+            transform: 'rotate(0deg)',
+          },
+          '25%': {
+            transform: 'rotate(-5deg)',
+          },
+          '50%': {
+            transform: 'rotate(5deg)',
+          },
+          '75%': {
+            transform: 'rotate(-5deg)',
+          },
+          '100%': {
+            transform: 'rotate(0deg)',
+          },
+        },
         fadeIn: {
           '0%': { opacity: '0', transform: 'scale(0.95)' },
           '100%': { opacity: '1', transform: 'scale(1)' },
         },
+        fadeInDropdownMenu: {
+          '0%': {
+            opacity: '0',
+            transform: 'scale(0.80)',
+            translate: '20% -15%',
+          },
+          '100%': { opacity: '1', transform: 'scale(1)', translate: '0 0' },
+        },
       },
       animation: {
         scale: 'scale 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
-        //  scale: 'scale 0.3s ease-out forwards',
+        scaleIconSize:
+          'scaleIconSize 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
+        scaleArrowIconSize:
+          'scaleArrowIconSize 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
+        bounceTrashIcon:
+          'bounceTrashIcon 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
+        movePencilIcon:
+          'movePencilIcon 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
+        wobbleIcon:
+          'wobbleIcon 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
         fadeIn: 'fadeIn 0.2s ease-out forwards',
+        fadeInDropdownMenu:
+          'fadeInDropdownMenu 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
       },
     },
   },

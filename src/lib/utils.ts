@@ -34,3 +34,11 @@ export function debounce(func: () => void, delay: number = 300) {
     timeout = setTimeout(() => func.apply(this, args), delay);
   };
 }
+
+
+export function isEventTargetInput(e: KeyboardEvent) {
+  return (
+    ['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement)?.tagName) ||
+    (e.target as HTMLElement)?.isContentEditable
+  );
+}
