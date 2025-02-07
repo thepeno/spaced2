@@ -1,5 +1,6 @@
 import BouncyButton from '@/components/bouncy-button';
 import { registerAndSync } from '@/lib/auth';
+import { delayAfter } from '@/lib/utils';
 import { CloudAlert, RefreshCcw } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router';
 import { toast } from 'sonner';
@@ -33,7 +34,7 @@ export default function LoginSuccessRoute() {
               <RefreshCcw
                 className='size-24 text-primary'
                 onClick={() => {
-                  toast.promise(registerAndSync(clientId), {
+                  toast.promise(delayAfter(registerAndSync(clientId), 1000), {
                     loading: 'Syncing...',
                     success: () => {
                       navigate('/');

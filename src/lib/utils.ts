@@ -42,3 +42,10 @@ export function isEventTargetInput(e: KeyboardEvent) {
     (e.target as HTMLElement)?.isContentEditable
   );
 }
+
+export async function delayAfter<T>(promise: Promise<T>, delay: number): Promise<T> {
+  const result = await promise;
+  await new Promise((resolve) => setTimeout(resolve, delay));
+  return result;
+}
+
