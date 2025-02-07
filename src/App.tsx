@@ -1,4 +1,5 @@
 import { useGoogleSignInPrompt } from '@/components/hooks/google-sign-in-prompt';
+import CommandBar from '@/components/nav/command-bar';
 import NavBar from '@/components/nav/nav-bar.tsx';
 import { SpacedIcon } from '@/components/nav/spaced-icon';
 import SessionExpiredBanner from '@/components/session-expired-banner';
@@ -50,6 +51,7 @@ export default function App() {
           },
         }}
       />
+      <CommandBar />
       <div
         className={cn(
           'grid grid-cols-12 gap-x-6 items-start',
