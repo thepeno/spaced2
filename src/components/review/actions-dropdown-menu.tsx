@@ -1,20 +1,20 @@
 // Dropdown menu for actions on a review card
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuGroup,
-    DropdownMenuItem,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
 import {
-    Ban,
-    BookmarkIcon,
-    ChevronsRight,
-    EllipsisVertical,
-    Pencil,
-    Trash,
+  Ban,
+  BookmarkIcon,
+  ChevronsRight,
+  Ellipsis,
+  Pencil,
+  Trash
 } from 'lucide-react';
 
 type ActionsDropdownMenuProps = {
@@ -39,7 +39,9 @@ export default function ActionsDropdownMenu({
       {/* Without this, when we close the "handle delete" alert dialog, pointer events is still set to none. */}
       <DropdownMenu modal={false}>
         <DropdownMenuTrigger asChild>
-          <EllipsisVertical className='size-6 text-muted-foreground/50 active:text-muted-foreground transition-all cursor-pointer' />
+          <div className='px-2 py-3 cursor-pointer text-muted-foreground/50 active:text-muted-foreground transition-all'>
+            <Ellipsis className='size-6' />
+          </div>
         </DropdownMenuTrigger>
 
         <DropdownMenuContent className='w-56 sm:w-40 text-muted-foreground text-base sm:text-sm bg-muted rounded-lg p-1 flex flex-col shadow-md mt-3 mr-8 animate-fade-in-dropdown-menu z-20 gap-1'>

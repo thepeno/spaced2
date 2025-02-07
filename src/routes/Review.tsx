@@ -122,8 +122,11 @@ export default function ReviewRoute() {
 
         {/* Actions dropdown menu */}
         {nextReviewCard && (
-          <div className='absolute top-4 sm:top-5 right-4 flex gap-3'>
-            <Redo2 className='size-6 text-muted-foreground/50 hover:text-muted-foreground transition-all rotate-180' />
+          <div className='absolute top-1 sm:top-2 right-3 flex'>
+            <div className='px-2 py-3'>
+              <Redo2 className='size-6 text-muted-foreground/50 hover:text-muted-foreground transition-all rotate-180' />
+            </div>
+
             <ActionsDropdownMenu
               bookmarked={nextReviewCard?.bookmarked}
               handleBookmark={handleSave}
