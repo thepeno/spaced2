@@ -23,8 +23,8 @@ export default function NavBar() {
       {/* Bookmarks */}
       <NavButton
         icon={<Bookmark />}
-        href={'/bookmarks'}
-        focused={path.pathname === '/bookmarks'}
+        href={'/saved'}
+        focused={path.pathname === '/saved'}
       />
 
       <NavButton

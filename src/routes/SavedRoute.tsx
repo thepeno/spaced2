@@ -4,12 +4,12 @@ import ReturnToTop from '@/components/return-to-top';
 import SearchBar from '@/components/search-bar';
 import { useState } from 'react';
 
-export default function BookmarksRoute() {
+export default function SavedRoute() {
   const cards = useCards();
   const [search, setSearch] = useState('');
 
-  const bookmarks = cards.filter((card) => card.bookmarked);
-  const filteredCards = bookmarks.filter((card) =>
+  const savedCards = cards.filter((card) => card.bookmarked);
+  const filteredCards = savedCards.filter((card) =>
     (card.front.toLowerCase() + card.back.toLowerCase()).includes(
       search.toLowerCase()
     )
@@ -21,7 +21,7 @@ export default function BookmarksRoute() {
       <SearchBar
         search={search}
         setSearch={setSearch}
-        placeholder='Search bookmarks...'
+        placeholder='Search saved...'
       />
       <CardsTable cards={filteredCards} />
     </div>

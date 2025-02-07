@@ -6,7 +6,6 @@ import { Toaster } from '@/components/ui/sonner.tsx';
 import SyncEngine from '@/lib/sync/engine.ts';
 import { cn } from '@/lib/utils.ts';
 import AllCardsRoute from '@/routes/AllCardsRoute';
-import BookmarksRoute from '@/routes/BookmarksRoute.tsx';
 import CreateFlashcardRoute from '@/routes/CreateFlashcardRoute.tsx';
 import DeckRoute from '@/routes/DeckRoute.tsx';
 import DecksRoute from '@/routes/DecksRoute.tsx';
@@ -14,6 +13,7 @@ import ImportRoute from '@/routes/ImportRoute';
 import LoginSuccessRoute from '@/routes/LoginSuccessRoute';
 import ProfileRoute from '@/routes/ProfileRoute';
 import ReviewRoute from '@/routes/Review.tsx';
+import SavedRoute from '@/routes/SavedRoute';
 import StatsRoute from '@/routes/StatsRoute';
 import { useMediaQuery } from '@uidotdev/usehooks';
 import { CircleAlert, CircleCheck } from 'lucide-react';
@@ -66,7 +66,7 @@ export default function App() {
           <Route path='/decks' element={<DecksRoute />} />
           <Route path='/decks/_all' element={<AllCardsRoute />} />
           <Route path='/decks/:deckId' element={<DeckRoute />} />
-          <Route path='/bookmarks' element={<BookmarksRoute />} />
+          <Route path='/saved' element={<SavedRoute />} />
           {/* <Route path='/debug' element={<DebugRoute />} /> */}
           <Route path='/create' element={<CreateFlashcardRoute />} />
           <Route path='/profile' element={<ProfileRoute />} />
