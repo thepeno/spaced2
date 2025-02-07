@@ -19,10 +19,16 @@ import {
   updateDeletedClientSide,
   updateSuspendedClientSide,
 } from '@/lib/sync/operation';
-import { cn } from '@/lib/utils';
+import { cn, MAX_DATE } from '@/lib/utils';
 import VibrationPattern from '@/lib/vibrate';
 import { useMediaQuery } from '@uidotdev/usehooks';
-import { BookmarkIcon, Redo2, Trash } from 'lucide-react';
+import {
+  BookmarkIcon,
+  ChevronsRight,
+  EyeOff,
+  Redo2,
+  Trash,
+} from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { Grade } from 'ts-fsrs';
@@ -77,6 +83,18 @@ export default function ReviewRoute() {
     if (!nextReviewCard) return;
     await updateSuspendedClientSide(nextReviewCard.id, tenMinutesFromNow());
     navigator?.vibrate(VibrationPattern.buttonTap);
+    toast('Skipped for 10 minutes', {
+      icon: <ChevronsRight className='size-4' />,
+    });
+  }
+
+  async function handleBury() {
+    if (!nextReviewCard) return;
+    await updateSuspendedClientSide(nextReviewCard.id, MAX_DATE);
+    navigator?.vibrate(VibrationPattern.buttonTap);
+    toast("You won't see this card again", {
+      icon: <EyeOff className='size-4' />,
+    });
   }
 
   async function handleSave(bookmarked: boolean) {
@@ -132,7 +150,7 @@ export default function ReviewRoute() {
               handleBookmark={handleSave}
               handleDelete={() => setIsDeleteDialogOpen(true)}
               handleSkip={handleSuspend}
-              handleBury={handleSuspend}
+              handleBury={handleBury}
               handleEdit={() => setIsEditing(true)}
             />
           </div>

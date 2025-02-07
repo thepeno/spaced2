@@ -35,7 +35,6 @@ export function debounce(func: () => void, delay: number = 300) {
   };
 }
 
-
 export function isEventTargetInput(e: KeyboardEvent) {
   return (
     ['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement)?.tagName) ||
@@ -43,9 +42,16 @@ export function isEventTargetInput(e: KeyboardEvent) {
   );
 }
 
-export async function delayAfter<T>(promise: Promise<T>, delay: number): Promise<T> {
+export async function delayAfter<T>(
+  promise: Promise<T>,
+  delay: number
+): Promise<T> {
   const result = await promise;
   await new Promise((resolve) => setTimeout(resolve, delay));
   return result;
 }
 
+export const MAX_DATE = new Date(9999, 11, 31);
+export function isCardPermanentlySuspended(suspended: Date) {
+  return suspended.getTime() >= MAX_DATE.getTime();
+}
