@@ -1,3 +1,4 @@
+import EditFlashcardResponsive from '@/components/card-actions/edit-flashcard-responsive';
 import { useDecks, useReviewCards } from '@/components/hooks/query';
 import {
     CommandDialog,
@@ -8,9 +9,11 @@ import {
     CommandList,
     CommandShortcut,
 } from '@/components/ui/command';
+import { CardContentFormValues } from '@/lib/form-schema';
 import {
     handleCardBury,
     handleCardDelete,
+    handleCardEdit,
     handleCardSave,
     handleCardSuspend,
 } from '@/lib/review/actions';
@@ -128,6 +131,7 @@ function CommandBarDecks({
 }
 export default function CommandBar() {
   const [open, setOpen] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
 
   const { pathname } = useLocation();
   const isReviewPath = pathname === '/';
@@ -173,59 +177,78 @@ export default function CommandBar() {
     setOpen(false);
   }
 
+  async function handleEdit(values: CardContentFormValues) {
+    await handleCardEdit(values, nextReviewCard);
+    setIsEditing(false);
+  }
+
   return (
-    <CommandDialog open={open} onOpenChange={setOpen}>
-      <CommandInput placeholder='Type a command or search...' />
-      <CommandList>
-        <CommandEmpty>No results found.</CommandEmpty>
-        {isReviewPath && nextReviewCard && (
-          <CommandGroup heading='Actions'>
-            <CommandBarActions
-              bookmarked={nextReviewCard.bookmarked}
-              handleBookmark={handleSave}
-              handleDelete={handleDelete}
-              handleSkip={handleSuspend}
-              handleBury={handleBury}
-              handleEdit={() => {}}
+    <>
+      {/* Cannot nest in the dialog, must be separate such that we can open and close individually */}
+      <EditFlashcardResponsive
+        card={nextReviewCard}
+        open={isEditing}
+        onOpenChange={setIsEditing}
+        onEdit={handleEdit}
+      />
+
+      <CommandDialog open={open} onOpenChange={setOpen}>
+        <CommandInput placeholder='Type a command or search...' />
+        <CommandList>
+          <CommandEmpty>No results found.</CommandEmpty>
+          {isReviewPath && nextReviewCard && (
+            <CommandGroup heading='Actions'>
+              <CommandBarActions
+                bookmarked={nextReviewCard.bookmarked}
+                handleBookmark={handleSave}
+                handleDelete={handleDelete}
+                handleSkip={handleSuspend}
+                handleBury={handleBury}
+                handleEdit={async () => {
+                  // Close command par before opening the edit dialog
+                  setOpen(false);
+                  setIsEditing(true);
+                }}
+              />
+            </CommandGroup>
+          )}
+
+          <CommandGroup heading='Navigation'>
+            <NavPathCommandItem
+              path='/'
+              icon={<Home className='h-4 w-4' />}
+              label='Home'
+              onSelect={() => setOpen(false)}
+            />
+            <NavPathCommandItem
+              path='/decks'
+              icon={<Book className='h-4 w-4' />}
+              label='Decks'
+              onSelect={() => setOpen(false)}
+            />
+            <NavPathCommandItem
+              path='/saved'
+              icon={<Bookmark className='h-4 w-4' />}
+              label='Saved'
+              onSelect={() => setOpen(false)}
+            />
+            <NavPathCommandItem
+              path='/create'
+              icon={<Plus className='h-4 w-4' />}
+              label='Create'
+              onSelect={() => setOpen(false)}
+            />
+            <NavPathCommandItem
+              path='/profile'
+              icon={<UserRound className='h-4 w-4' />}
+              label='Profile'
+              onSelect={() => setOpen(false)}
             />
           </CommandGroup>
-        )}
 
-        <CommandGroup heading='Navigation'>
-          <NavPathCommandItem
-            path='/'
-            icon={<Home className='h-4 w-4' />}
-            label='Home'
-            onSelect={() => setOpen(false)}
-          />
-          <NavPathCommandItem
-            path='/decks'
-            icon={<Book className='h-4 w-4' />}
-            label='Decks'
-            onSelect={() => setOpen(false)}
-          />
-          <NavPathCommandItem
-            path='/saved'
-            icon={<Bookmark className='h-4 w-4' />}
-            label='Saved'
-            onSelect={() => setOpen(false)}
-          />
-          <NavPathCommandItem
-            path='/create'
-            icon={<Plus className='h-4 w-4' />}
-            label='Create'
-            onSelect={() => setOpen(false)}
-          />
-          <NavPathCommandItem
-            path='/profile'
-            icon={<UserRound className='h-4 w-4' />}
-            label='Profile'
-            onSelect={() => setOpen(false)}
-          />
-        </CommandGroup>
-
-        <CommandBarDecks decks={decks} onSelect={handleDeckSelect} />
-      </CommandList>
-    </CommandDialog>
+          <CommandBarDecks decks={decks} onSelect={handleDeckSelect} />
+        </CommandList>
+      </CommandDialog>
+    </>
   );
 }
