@@ -6,10 +6,11 @@ import { useActiveStartTime } from '@/components/hooks/inactivity';
 import { useCards, useReviewCards } from '@/components/hooks/query';
 import ActionsDropdownMenu from '@/components/review/actions-dropdown-menu';
 import DeleteFlashcardDialog from '@/components/review/delete-flashcard-dialog';
+import DesktopActionsContextMenu from '@/components/review/desktop-actions-context-menu';
 import EmptyReviewUi from '@/components/review/empty';
-import GradeButtons from '@/components/review/grade-buttons';
+import DesktopGradeButtons from '@/components/review/grade-buttons';
 import MobileGradeButtons from '@/components/review/mobile-grade-buttons';
-import ReviewCarousel from '@/components/review/review-carousel';
+import MobileReviewCarousel from '@/components/review/review-carousel';
 import { Separator } from '@/components/ui/separator';
 import { CardContentFormValues } from '@/lib/form-schema';
 import {
@@ -122,64 +123,72 @@ export default function ReviewRoute() {
         'md:mt-12 mb-6'
       )}
     >
-      <div className='relative col-span-12 flex flex-col gap-x-4 gap-y-0 sm:gap-y-2 bg-background rounded-t-2xl sm:rounded-b-2xl px-1 md:px-4 p-4 h-full animate-fade-in'>
-        <DeleteFlashcardDialog
-          open={isDeleteDialogOpen}
-          onOpenChange={setIsDeleteDialogOpen}
-          onDelete={handleDelete}
+      <DeleteFlashcardDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+        onDelete={handleDelete}
+      />
+
+      {nextReviewCard && (
+        <EditFlashcardResponsive
+          card={nextReviewCard}
+          open={isEditing}
+          onOpenChange={setIsEditing}
+          onEdit={handleEdit}
         />
+      )}
+      <DesktopActionsContextMenu
+        bookmarked={nextReviewCard?.bookmarked}
+        handleBookmark={handleSave}
+        handleDelete={() => setIsDeleteDialogOpen(true)}
+        handleSkip={handleSuspend}
+        handleBury={handleBury}
+        handleEdit={() => setIsEditing(true)}
+      >
+        <div className='relative col-span-12 flex flex-col gap-x-4 gap-y-0 sm:gap-y-2 bg-background rounded-t-2xl sm:rounded-b-2xl px-1 md:px-4 p-4 h-full animate-fade-in'>
+          {/* Actions dropdown menu */}
+          {nextReviewCard && (
+            <div className='absolute top-1 sm:top-2 right-3 flex'>
+              <div className='px-2 py-3'>
+                <Redo2 className='size-6 text-muted-foreground/50 hover:text-muted-foreground transition-all rotate-180' />
+              </div>
 
-        {nextReviewCard && (
-          <EditFlashcardResponsive
-            card={nextReviewCard}
-            open={isEditing}
-            onOpenChange={setIsEditing}
-            onEdit={handleEdit}
-          />
-        )}
-
-        {/* Actions dropdown menu */}
-        {nextReviewCard && (
-          <div className='absolute top-1 sm:top-2 right-3 flex'>
-            <div className='px-2 py-3'>
-              <Redo2 className='size-6 text-muted-foreground/50 hover:text-muted-foreground transition-all rotate-180' />
+              <ActionsDropdownMenu
+                bookmarked={nextReviewCard?.bookmarked}
+                handleBookmark={handleSave}
+                handleDelete={() => setIsDeleteDialogOpen(true)}
+                handleSkip={handleSuspend}
+                handleBury={handleBury}
+                handleEdit={() => setIsEditing(true)}
+              />
             </div>
-
-            <ActionsDropdownMenu
-              bookmarked={nextReviewCard?.bookmarked}
-              handleBookmark={handleSave}
-              handleDelete={() => setIsDeleteDialogOpen(true)}
-              handleSkip={handleSuspend}
-              handleBury={handleBury}
-              handleEdit={() => setIsEditing(true)}
-            />
-          </div>
-        )}
-
-        <div className='w-full flex flex-col-reverse sm:flex-row justify-between items-center gap-4'>
-          <div className='flex gap-2'>
-            <CardCountBadges />
-            {nextReviewCard && <CurrentCardBadge card={nextReviewCard} />}
-          </div>
-        </div>
-
-        <div className='flex flex-col md:flex-row justify-stretch md:justify-center items-center gap-2 lg:gap-4 w-full h-full'>
-          {nextReviewCard ? (
-            <div className='w-full hidden sm:flex gap-2'>
-              <FlashcardContent content={nextReviewCard.front} />
-              <Separator className='sm:hidden bg-muted w-[95%] h-0.5' />
-              <FlashcardContent content={nextReviewCard.back} />
-            </div>
-          ) : (
-            <EmptyReviewUi noCardsCreatedYet={noCardsCreatedYet} />
           )}
-          {nextReviewCard && <ReviewCarousel card={nextReviewCard} />}
+
+          <div className='w-full flex flex-col-reverse sm:flex-row justify-between items-center gap-4'>
+            <div className='flex gap-2'>
+              <CardCountBadges />
+              {nextReviewCard && <CurrentCardBadge card={nextReviewCard} />}
+            </div>
+          </div>
+
+          <div className='flex flex-col md:flex-row justify-stretch md:justify-center items-center gap-2 lg:gap-4 w-full h-full'>
+            {nextReviewCard ? (
+              <div className='w-full hidden sm:flex gap-2'>
+                <FlashcardContent content={nextReviewCard.front} />
+                <Separator className='sm:hidden bg-muted w-[95%] h-0.5' />
+                <FlashcardContent content={nextReviewCard.back} />
+              </div>
+            ) : (
+              <EmptyReviewUi noCardsCreatedYet={noCardsCreatedYet} />
+            )}
+            {nextReviewCard && <MobileReviewCarousel card={nextReviewCard} />}
+          </div>
         </div>
-      </div>
+      </DesktopActionsContextMenu>
 
       <div className='col-span-12 w-full hidden sm:block sm:mx-auto sm:mt-2 sm:w-max mb-4 px-4 pb-2'>
         {nextReviewCard && !isMobile && (
-          <GradeButtons onGrade={handleGrade} card={nextReviewCard} />
+          <DesktopGradeButtons onGrade={handleGrade} card={nextReviewCard} />
         )}
       </div>
       <div className='col-span-12 mt-0'>

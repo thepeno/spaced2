@@ -109,7 +109,7 @@ function GradeButton({
 /**
  * The buttons to rate a flashcard.
  */
-export default function GradeButtons({ onGrade, card }: GradeButtonsProps) {
+export default function DesktopGradeButtons({ onGrade, card }: GradeButtonsProps) {
   const f = new FSRS({});
   const schedulingCards = f.repeat(card, new Date());
 
@@ -162,4 +162,4 @@ export default function GradeButtons({ onGrade, card }: GradeButtonsProps) {
   );
 }
 
-GradeButtons.displayName = 'GradeButtons';
+DesktopGradeButtons.displayName = 'GradeButtons';
