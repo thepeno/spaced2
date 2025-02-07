@@ -185,12 +185,14 @@ export default function CommandBar() {
   return (
     <>
       {/* Cannot nest in the dialog, must be separate such that we can open and close individually */}
-      <EditFlashcardResponsive
-        card={nextReviewCard}
-        open={isEditing}
-        onOpenChange={setIsEditing}
-        onEdit={handleEdit}
-      />
+      {isReviewPath && nextReviewCard && (
+        <EditFlashcardResponsive
+          card={nextReviewCard}
+          open={isEditing}
+          onOpenChange={setIsEditing}
+          onEdit={handleEdit}
+        />
+      )}
 
       <CommandDialog open={open} onOpenChange={setOpen}>
         <CommandInput placeholder='Type a command or search...' />
