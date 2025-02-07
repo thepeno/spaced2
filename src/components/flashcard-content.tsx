@@ -9,7 +9,7 @@ export default function FlashcardContent({ content }: { content: string }) {
     // To solve this we add 2 pseudo elements that take up the remaining height
     // and only use `items-center` to center horizontally.
     <article
-      className='prose h-96 overflow-y-auto flex flex-col flex-1 p-2 rounded-xl sm:shadow-xs w-full sm:border animate-in fade-in before:content-[""] after:content-[""] before:flex-1 after:flex-1 items-center'
+      className='prose min-h-96 h-[55vh] sm:h-[400px] overflow-y-auto flex flex-col flex-1 p-2 rounded-xl sm:shadow-xs w-full sm:border animate-in fade-in before:content-[""] after:content-[""] before:flex-1 after:flex-1 items-center prose-img:rounded-lg'
       dangerouslySetInnerHTML={{
         __html: markdownToHtml(content),
       }}
