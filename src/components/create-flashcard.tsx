@@ -110,7 +110,7 @@ export function CreateUpdateFlashcardForm({
             </div>
           )}
 
-          <Button type='submit' size='lg' className='ml-auto self-end'>
+          <Button type='submit' size='lg' className='ml-auto self-end rounded-lg'>
             {isUpdate ? 'Update' : 'Create'}
           </Button>
         </div>

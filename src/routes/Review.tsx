@@ -5,21 +5,11 @@ import FlashcardContent from '@/components/flashcard-content';
 import { useActiveStartTime } from '@/components/hooks/inactivity';
 import { useCards, useReviewCards } from '@/components/hooks/query';
 import ActionsDropdownMenu from '@/components/review/actions-dropdown-menu';
+import DeleteFlashcardDialog from '@/components/review/delete-flashcard-dialog';
 import EmptyReviewUi from '@/components/review/empty';
 import GradeButtons from '@/components/review/grade-buttons';
 import MobileGradeButtons from '@/components/review/mobile-grade-buttons';
 import ReviewCarousel from '@/components/review/review-carousel';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
-import { buttonVariants } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { CardContentFormValues } from '@/lib/form-schema';
 import {
@@ -115,42 +105,11 @@ export default function ReviewRoute() {
       )}
     >
       <div className='relative col-span-12 flex flex-col gap-x-4 gap-y-0 sm:gap-y-2 bg-background rounded-t-2xl sm:rounded-b-2xl px-1 md:px-4 p-4 h-full animate-fade-in'>
-        <AlertDialog
+        <DeleteFlashcardDialog
           open={isDeleteDialogOpen}
           onOpenChange={setIsDeleteDialogOpen}
-        >
-          <AlertDialogContent className='rounded-2xl'>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Delete card</AlertDialogTitle>
-              <AlertDialogDescription>
-                Are you sure you want to delete this card?
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel
-                className={cn(
-                  buttonVariants({ variant: 'outline' }),
-                  'rounded-lg'
-                )}
-                onClick={() => setIsDeleteDialogOpen(false)}
-              >
-                Cancel
-              </AlertDialogCancel>
-              <AlertDialogAction
-                onClick={() => {
-                  handleDelete();
-                }}
-                className={cn(
-                  buttonVariants({ variant: 'default' }),
-                  '',
-                  'rounded-lg'
-                )}
-              >
-                Continue
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+          onDelete={handleDelete}
+        />
 
         {nextReviewCard && (
           <EditFlashcardResponsive

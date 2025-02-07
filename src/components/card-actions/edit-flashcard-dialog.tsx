@@ -23,9 +23,9 @@ export default function EditFlashcardDialog({
 }: EditFlashcardDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className=''>
-        <DialogHeader>
-          <DialogTitle>Edit Flashcard</DialogTitle>
+      <DialogContent className='p-2 pt-6'>
+        <DialogHeader className='text-center'>
+          <DialogTitle className='text-center text-lg'>Edit Flashcard</DialogTitle>
         </DialogHeader>
 
         <CreateUpdateFlashcardForm
