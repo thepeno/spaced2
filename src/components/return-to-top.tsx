@@ -9,7 +9,6 @@ export default function ReturnToTop() {
 
   useEffect(() => {
     const handleScroll = debounce(() => {
-      console.log('scroll', window.scrollY);
       setIsVisible(window.scrollY > 100);
     }, 150);
 

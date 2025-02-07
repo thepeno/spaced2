@@ -35,6 +35,9 @@ export function useActiveStartTime(
     if (!options?.id) {
       return;
     }
+    function resetStartTime() {
+      setStartTime(Date.now());
+    }
 
     // Track user interactions
     const events = [
@@ -43,17 +46,19 @@ export function useActiveStartTime(
       'keydown',
       'scroll',
       'touchstart',
-      'visibilitychange',
     ];
 
     events.forEach((event) => {
       window.addEventListener(event, handleUserActivity);
     });
+    // When the user goes to another page and comes back, we should restart
+    window.addEventListener('visibilitychange', resetStartTime);
 
     return () => {
       events.forEach((event) => {
         window.removeEventListener(event, handleUserActivity);
       });
+      window.removeEventListener('visibilitychange', resetStartTime);
     };
   }, [handleUserActivity, options?.id]);
 
