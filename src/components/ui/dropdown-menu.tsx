@@ -3,6 +3,7 @@ import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu"
 import { Check, ChevronRight, Circle } from "lucide-react"
 
 import { cn } from "@/lib/utils"
+import { dropdownMenuItemVariants } from "@/components/ui/dropdown-variants";
 
 const DropdownMenu = DropdownMenuPrimitive.Root
 
@@ -82,9 +83,8 @@ const DropdownMenuItem = React.forwardRef<
   <DropdownMenuPrimitive.Item
     ref={ref}
     className={cn(
-      "relative flex cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden transition-colors focus:bg-accent data-disabled:pointer-events-none data-disabled:opacity-50 [&>svg]:size-4 [&>svg]:shrink-0",
+      dropdownMenuItemVariants({ variant: 'default' }),
       inset && "pl-8",
-      "px-3 py-2 hover:bg-muted-foreground/10 focus:bg-muted-foreground/10 active:bg-muted-foreground/10 active:scale-97 rounded-md transition-all",
       className
     )}
     {...props}

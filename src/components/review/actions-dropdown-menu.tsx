@@ -7,6 +7,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { dropdownMenuItemVariants } from '@/components/ui/dropdown-variants';
 import { cn } from '@/lib/utils';
 import {
   Ban,
@@ -14,7 +15,7 @@ import {
   ChevronsRight,
   Ellipsis,
   Pencil,
-  Trash
+  Trash,
 } from 'lucide-react';
 
 type ActionsDropdownMenuProps = {
@@ -46,7 +47,7 @@ export default function ActionsDropdownMenu({
 
         <DropdownMenuContent className='w-56 sm:w-40 text-muted-foreground text-base sm:text-sm bg-muted rounded-lg p-1 flex flex-col shadow-md mt-3 mr-8 animate-fade-in-dropdown-menu z-20 gap-1'>
           <DropdownMenuItem
-            className='flex items-center gap-5 sm:gap-2 font-medium group'
+            className={dropdownMenuItemVariants({ variant: 'telegram' })}
             onClick={() => handleBookmark(!bookmarked)}
           >
             <BookmarkIcon
@@ -65,7 +66,7 @@ export default function ActionsDropdownMenu({
 
           <DropdownMenuGroup className='flex flex-col gap-0'>
             <DropdownMenuItem
-              className='flex gap-5 sm:gap-2 items-center font-medium group'
+              className={dropdownMenuItemVariants({ variant: 'telegram' })}
               onClick={handleSkip}
             >
               <ChevronsRight className='size-5 group-hover:animate-scale-arrow-icon-size' />
@@ -73,7 +74,7 @@ export default function ActionsDropdownMenu({
             </DropdownMenuItem>
 
             <DropdownMenuItem
-              className='flex gap-5 sm:gap-2 items-center font-medium group'
+              className={dropdownMenuItemVariants({ variant: 'telegram' })}
               onClick={handleBury}
             >
               <Ban className='size-5 group-hover:animate-scale-icon-size' />
@@ -85,7 +86,7 @@ export default function ActionsDropdownMenu({
 
           <DropdownMenuGroup className='flex flex-col gap-0'>
             <DropdownMenuItem
-              className='flex gap-5 sm:gap-2 items-center font-medium group'
+              className={dropdownMenuItemVariants({ variant: 'telegram' })}
               onClick={handleEdit}
             >
               <Pencil className='size-5 group-hover:animate-move-pencil-icon' />
@@ -93,7 +94,7 @@ export default function ActionsDropdownMenu({
             </DropdownMenuItem>
 
             <DropdownMenuItem
-              className='flex gap-5 sm:gap-2 items-center font-medium group'
+              className={dropdownMenuItemVariants({ variant: 'telegram' })}
               onClick={handleDelete}
             >
               <Trash className='size-5 group-hover:animate-bounce-trash-icon' />
