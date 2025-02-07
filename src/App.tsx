@@ -34,6 +34,7 @@ export default function App() {
           error: <CircleAlert className='text-destructive size-5' />,
           // close: <X className='text-muted-foreground size-3' />,
         }}
+        theme='light'
         toastOptions={{
           closeButton: true,
           duration: 2000,
