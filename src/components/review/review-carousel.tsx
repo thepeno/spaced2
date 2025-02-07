@@ -26,7 +26,7 @@ function Dots({ current, count }: { current: number; count: number }) {
 }
 
 // Review carousel for mobile view of reviewing flashcards
-export default function ReviewCarousel({ card }: { card: CardWithMetadata }) {
+export default function MobileReviewCarousel({ card }: { card: CardWithMetadata }) {
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
   const [count, setCount] = useState(0);
