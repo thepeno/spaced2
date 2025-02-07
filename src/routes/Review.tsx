@@ -16,23 +16,16 @@ import { CardContentFormValues } from '@/lib/form-schema';
 import {
   handleCardBury,
   handleCardDelete,
+  handleCardEdit,
   handleCardSave,
   handleCardSuspend,
 } from '@/lib/review/actions';
-import {
-  gradeCardOperation,
-  updateCardContentOperation,
-} from '@/lib/sync/operation';
+import { gradeCardOperation } from '@/lib/sync/operation';
 import { cn } from '@/lib/utils';
 import { useMediaQuery } from '@uidotdev/usehooks';
 import { Redo2 } from 'lucide-react';
 import { useState } from 'react';
 import { Grade } from 'ts-fsrs';
-
-function tenMinutesFromNow(): Date {
-  const now = new Date();
-  return new Date(now.getTime() + 10 * 60 * 1000);
-}
 
 export default function ReviewRoute() {
   const allCards = useCards();
@@ -47,18 +40,10 @@ export default function ReviewRoute() {
   const [isEditing, setIsEditing] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
-  const handleEdit = async (values: CardContentFormValues) => {
-    if (!nextReviewCard) return;
-
-    const hasChanged =
-      nextReviewCard.front !== values.front ||
-      nextReviewCard.back !== values.back;
-
-    if (hasChanged) {
-      updateCardContentOperation(nextReviewCard.id, values.front, values.back);
-    }
+  async function handleEdit(values: CardContentFormValues) {
+    await handleCardEdit(values, nextReviewCard);
     setIsEditing(false);
-  };
+  }
 
   async function handleGrade(grade: Grade) {
     if (!nextReviewCard) return;

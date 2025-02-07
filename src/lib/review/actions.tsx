@@ -1,5 +1,7 @@
+import { CardContentFormValues } from '@/lib/form-schema';
 import {
   updateBookmarkedClientSide,
+  updateCardContentOperation,
   updateDeletedClientSide,
   updateSuspendedClientSide,
 } from '@/lib/sync/operation';
@@ -51,5 +53,18 @@ export async function handleCardSave(
     });
   } else {
     toast('Removed from saved');
+  }
+}
+
+export async function handleCardEdit(
+  values: CardContentFormValues,
+  reviewCard?: CardWithMetadata
+) {
+  if (!reviewCard) return;
+  const hasChanged =
+    reviewCard.front !== values.front || reviewCard.back !== values.back;
+
+  if (hasChanged) {
+    await updateCardContentOperation(reviewCard.id, values.front, values.back);
   }
 }
