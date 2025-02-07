@@ -6,7 +6,7 @@ import { RatingPieChart } from '@/components/stats/rating-pie-chart';
 import { ReviewChart } from '@/components/stats/review-chart';
 import { TimeBarChart } from '@/components/stats/time-bar-chart';
 import { db } from '@/lib/db/persistence';
-import { processReviewLogOperations } from '@/lib/review';
+import { processReviewLogOperations } from '@/lib/review/review';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { Loader2 } from 'lucide-react';
 

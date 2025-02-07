@@ -14,24 +14,19 @@ import MobileReviewCarousel from '@/components/review/review-carousel';
 import { Separator } from '@/components/ui/separator';
 import { CardContentFormValues } from '@/lib/form-schema';
 import {
-  gradeCardOperation,
-  updateBookmarkedClientSide,
-  updateCardContentOperation,
-  updateDeletedClientSide,
-  updateSuspendedClientSide,
-} from '@/lib/sync/operation';
-import { cn, MAX_DATE } from '@/lib/utils';
-import VibrationPattern from '@/lib/vibrate';
-import { useMediaQuery } from '@uidotdev/usehooks';
+  handleCardBury,
+  handleCardDelete,
+  handleCardSave,
+  handleCardSuspend,
+} from '@/lib/review/actions';
 import {
-  BookmarkIcon,
-  ChevronsRight,
-  EyeOff,
-  Redo2,
-  Trash,
-} from 'lucide-react';
+  gradeCardOperation,
+  updateCardContentOperation,
+} from '@/lib/sync/operation';
+import { cn } from '@/lib/utils';
+import { useMediaQuery } from '@uidotdev/usehooks';
+import { Redo2 } from 'lucide-react';
 import { useState } from 'react';
-import { toast } from 'sonner';
 import { Grade } from 'ts-fsrs';
 
 function tenMinutesFromNow(): Date {
@@ -67,51 +62,24 @@ export default function ReviewRoute() {
 
   async function handleGrade(grade: Grade) {
     if (!nextReviewCard) return;
-
     await gradeCardOperation(nextReviewCard, grade, Date.now() - start);
   }
 
   async function handleDelete() {
-    if (!nextReviewCard) return;
-    await updateDeletedClientSide(nextReviewCard.id, true);
-    toast('Card deleted', {
-      icon: <Trash className='size-4' />,
-    });
+    await handleCardDelete(nextReviewCard);
     setIsDeleteDialogOpen(false);
   }
 
   async function handleSuspend() {
-    if (!nextReviewCard) return;
-    await updateSuspendedClientSide(nextReviewCard.id, tenMinutesFromNow());
-    navigator?.vibrate(VibrationPattern.buttonTap);
-    toast('Skipped for 10 minutes', {
-      icon: <ChevronsRight className='size-4' />,
-    });
+    await handleCardSuspend(nextReviewCard);
   }
 
   async function handleBury() {
-    if (!nextReviewCard) return;
-    await updateSuspendedClientSide(nextReviewCard.id, MAX_DATE);
-    navigator?.vibrate(VibrationPattern.buttonTap);
-    toast("You won't see this card again", {
-      icon: <EyeOff className='size-4' />,
-    });
+    await handleCardBury(nextReviewCard);
   }
 
   async function handleSave(bookmarked: boolean) {
-    if (!nextReviewCard) return;
-
-    await updateBookmarkedClientSide(nextReviewCard.id, bookmarked);
-    if (bookmarked) {
-      navigator?.vibrate(VibrationPattern.successConfirm);
-      toast('Saved', {
-        icon: (
-          <BookmarkIcon className='size-4 text-primary' fill='currentColor' />
-        ),
-      });
-    } else {
-      toast('Removed from saved');
-    }
+    await handleCardSave(bookmarked, nextReviewCard);
   }
 
   return (

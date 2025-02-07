@@ -1,7 +1,7 @@
 import { STATE_NAME_TO_NUMBER, STATE_NUMBER_TO_NAME } from '@/lib/card-mapping';
 import MemoryDB from '@/lib/db/memory';
 import { db } from '@/lib/db/persistence';
-import { gradeCard, reviewLogToReviewLogOperation } from '@/lib/review';
+import { gradeCard, reviewLogToReviewLogOperation } from '@/lib/review/review';
 import { defaultCard, defaultDeck } from '@/lib/sync/default';
 import { getSeqNo, setSeqNo } from '@/lib/sync/meta';
 import { CardWithMetadata, Deck } from '@/lib/types';

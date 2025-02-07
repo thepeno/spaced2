@@ -1,13 +1,32 @@
+import { useDecks, useReviewCards } from '@/components/hooks/query';
 import {
-  CommandDialog,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-  CommandShortcut,
+    CommandDialog,
+    CommandEmpty,
+    CommandGroup,
+    CommandInput,
+    CommandItem,
+    CommandList,
+    CommandShortcut,
 } from '@/components/ui/command';
-import { Book, Bookmark, EyeOff, Home, Plus, UserRound } from 'lucide-react';
+import {
+    handleCardBury,
+    handleCardDelete,
+    handleCardSave,
+    handleCardSuspend,
+} from '@/lib/review/actions';
+import { Deck } from '@/lib/types';
+import {
+    Ban,
+    Book,
+    Bookmark,
+    BookmarkIcon,
+    ChevronsRight,
+    Home,
+    Pencil,
+    Plus,
+    Trash,
+    UserRound,
+} from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 
@@ -41,18 +60,6 @@ function NavPathCommandItem({
     </CommandItem>
   );
 }
-
-import { useDecks, useReviewCards } from '@/components/hooks/query';
-import {
-  updateBookmarkedClientSide,
-  updateDeletedClientSide,
-  updateSuspendedClientSide,
-} from '@/lib/sync/operation';
-import { Deck } from '@/lib/types';
-import { MAX_DATE } from '@/lib/utils';
-import VibrationPattern from '@/lib/vibrate';
-import { Ban, BookmarkIcon, ChevronsRight, Pencil, Trash } from 'lucide-react';
-import { toast } from 'sonner';
 
 type CommandBarActionsProps = {
   bookmarked: boolean;
@@ -121,14 +128,15 @@ function CommandBarDecks({
 }
 export default function CommandBar() {
   const [open, setOpen] = useState(false);
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+
   const { pathname } = useLocation();
   const isReviewPath = pathname === '/';
-  const reviewCards = useReviewCards();
-  const nextReviewCard = reviewCards?.[0];
+
   const decks = useDecks();
   const navigate = useNavigate();
-   
+  const reviewCards = useReviewCards();
+  const nextReviewCard = reviewCards?.[0];
+
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
       if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
@@ -146,49 +154,22 @@ export default function CommandBar() {
   }
 
   async function handleDelete() {
-    if (!nextReviewCard) return;
-    await updateDeletedClientSide(nextReviewCard.id, true);
-    toast('Card deleted', {
-      icon: <Trash className='size-4' />,
-    });
-    setIsDeleteDialogOpen(false);
+    await handleCardDelete(nextReviewCard);
     setOpen(false);
   }
 
   async function handleSuspend() {
-    if (!nextReviewCard) return;
-    const tenMinutesFromNow = new Date(Date.now() + 10 * 60 * 1000);
-    await updateSuspendedClientSide(nextReviewCard.id, tenMinutesFromNow);
-    navigator?.vibrate(VibrationPattern.buttonTap);
-    toast('Skipped for 10 minutes', {
-      icon: <ChevronsRight className='size-4' />,
-    });
+    await handleCardSuspend(nextReviewCard);
     setOpen(false);
   }
 
   async function handleBury() {
-    if (!nextReviewCard) return;
-    await updateSuspendedClientSide(nextReviewCard.id, MAX_DATE);
-    navigator?.vibrate(VibrationPattern.buttonTap);
-    toast("You won't see this card again", {
-      icon: <EyeOff className='size-4' />,
-    });
+    await handleCardBury(nextReviewCard);
     setOpen(false);
   }
 
   async function handleSave(bookmarked: boolean) {
-    if (!nextReviewCard) return;
-    await updateBookmarkedClientSide(nextReviewCard.id, bookmarked);
-    if (bookmarked) {
-      navigator?.vibrate(VibrationPattern.successConfirm);
-      toast('Saved', {
-        icon: (
-          <BookmarkIcon className='size-4 text-primary' fill='currentColor' />
-        ),
-      });
-    } else {
-      toast('Removed from saved');
-    }
+    await handleCardSave(bookmarked, nextReviewCard);
     setOpen(false);
   }
 
