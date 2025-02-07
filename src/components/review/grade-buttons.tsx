@@ -36,12 +36,10 @@ function GradeButton({
   grade,
   onGrade,
   dateString,
-  pos,
 }: {
   grade: Grade;
   onGrade: (grade: Grade) => void;
   dateString: string;
-  pos: 'top-right' | 'bottom-right' | 'top-left' | 'bottom-left' | 'center';
 }) {
   const key = RATING_TO_KEY[grade] ?? '';
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -129,7 +127,6 @@ export default function GradeButtons({ onGrade, card }: GradeButtonsProps) {
           schedulingCards[Rating.Again].card.due,
           new Date()
         )}
-        pos='top-left'
       />
 
       <GradeButton
@@ -140,7 +137,6 @@ export default function GradeButtons({ onGrade, card }: GradeButtonsProps) {
           schedulingCards[Rating.Hard].card.due,
           new Date()
         )}
-        pos='top-right'
       />
 
       <GradeButton
@@ -151,7 +147,6 @@ export default function GradeButtons({ onGrade, card }: GradeButtonsProps) {
           schedulingCards[Rating.Good].card.due,
           new Date()
         )}
-        pos='bottom-left'
       />
 
       <GradeButton
@@ -162,7 +157,6 @@ export default function GradeButtons({ onGrade, card }: GradeButtonsProps) {
           schedulingCards[Rating.Easy].card.due,
           new Date()
         )}
-        pos='bottom-right'
       />
     </div>
   );
