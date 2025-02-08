@@ -66,6 +66,14 @@ export const registerFormSchema = z
 
 export type RegisterFormValues = z.infer<typeof registerFormSchema>;
 
+export const verifyOtpFormSchema = z.object({
+  pin: z.string().min(8, {
+    message: 'Your one-time password must be 8 characters.',
+  }),
+});
+
+export type VerifyOtpFormValues = z.infer<typeof verifyOtpFormSchema>;
+
 export const deckFormSchema = z.object({
   name: z
     .string()

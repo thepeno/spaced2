@@ -15,14 +15,17 @@ export async function login(
   email: string,
   password: string
 ): Promise<LoginResponse> {
-  const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/auth/login`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ email, password }),
-    credentials: 'include',
-  });
+  const response = await fetch(
+    `${import.meta.env.VITE_BACKEND_URL}/auth/login`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, password }),
+      credentials: 'include',
+    }
+  );
 
   if (response.status === 401) {
     return {
@@ -56,14 +59,17 @@ export async function register(
   email: string,
   password: string
 ): Promise<RegisterResponse> {
-  const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/auth/register`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ email, password }),
-    credentials: 'include',
-  });
+  const response = await fetch(
+    `${import.meta.env.VITE_BACKEND_URL}/auth/register`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, password }),
+      credentials: 'include',
+    }
+  );
 
   if (!response.ok) {
     return {
@@ -89,16 +95,61 @@ export async function register(
   };
 }
 
+type VerifyOtpResponse = {
+  success: boolean;
+  message?: string;
+};
+
+export async function verifyOtp(
+  email: string,
+  pin: string
+): Promise<VerifyOtpResponse> {
+  const response = await fetch(
+    `${import.meta.env.VITE_BACKEND_URL}/auth/verify`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, token: pin }),
+      credentials: 'include',
+    }
+  );
+
+  if (!response.ok) {
+    return {
+      success: false,
+      message: UNKNOWN_ERROR_MESSAGE,
+    };
+  }
+
+  const data: { success: true } | { success: false; error: string } =
+    await response.json();
+  if (!data.success) {
+    return {
+      success: false,
+      message: data.error,
+    };
+  }
+
+  return {
+    success: data.success,
+  };
+}
+
 type RegisterClientResponse = {
   success: boolean;
   message?: string;
 };
 
 export async function registerClient(): Promise<RegisterClientResponse> {
-  const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/auth/clientId`, {
-    method: 'POST',
-    credentials: 'include',
-  });
+  const response = await fetch(
+    `${import.meta.env.VITE_BACKEND_URL}/auth/clientId`,
+    {
+      method: 'POST',
+      credentials: 'include',
+    }
+  );
 
   if (!response.ok) {
     console.error('Failed to register client', response);
@@ -136,10 +187,13 @@ type LogoutResponse = {
 };
 
 export async function logout(): Promise<LogoutResponse> {
-  const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/auth/logout`, {
-    method: 'POST',
-    credentials: 'include',
-  });
+  const response = await fetch(
+    `${import.meta.env.VITE_BACKEND_URL}/auth/logout`,
+    {
+      method: 'POST',
+      credentials: 'include',
+    }
+  );
 
   if (!response.ok) {
     console.error('Failed to logout', response);

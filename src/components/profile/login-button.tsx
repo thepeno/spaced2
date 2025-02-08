@@ -1,4 +1,5 @@
 import { GoogleSignIn } from '@/components/auth/google-sign-in';
+import VerifyOtpForm from '@/components/form/verify-otp-form';
 import BouncyButton from '@/components/bouncy-button';
 import { LoginForm } from '@/components/form/login-form';
 import { RegisterForm } from '@/components/form/register-form';
@@ -12,8 +13,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { login, register, registerAndSync } from '@/lib/auth';
-import { LoginFormValues, RegisterFormValues } from '@/lib/form-schema';
+import { login, register, registerAndSync, verifyOtp } from '@/lib/auth';
+import {
+  LoginFormValues,
+  RegisterFormValues,
+  VerifyOtpFormValues,
+} from '@/lib/form-schema';
 import { cn } from '@/lib/utils';
 import { LogIn } from 'lucide-react';
 import { useState } from 'react';
@@ -26,7 +31,10 @@ type LoginFormDialogContentProps = {
 export function LoginFormDialogContent({
   onSuccess,
 }: LoginFormDialogContentProps) {
-  const [formType, setFormType] = useState<'login' | 'register'>('login');
+  const [formType, setFormType] = useState<'login' | 'register' | 'verify'>(
+    'login'
+  );
+  const [registeredEmail, setRegisteredEmail] = useState<string | null>(null);
 
   const handleLogin = async (data: LoginFormValues) => {
     const response = await login(data.email, data.password);
@@ -48,6 +56,23 @@ export function LoginFormDialogContent({
       return;
     }
 
+    setRegisteredEmail(data.email);
+    setFormType('verify');
+  };
+
+  const handleVerifyOtp = async (data: VerifyOtpFormValues) => {
+    if (!registeredEmail) {
+      toast.error('No email registered');
+      return;
+    }
+
+    const response = await verifyOtp(registeredEmail, data.pin);
+
+    if (!response.success) {
+      toast.error(response.message);
+      return;
+    }
+
     emitChange();
     onSuccess();
   };
@@ -57,17 +82,28 @@ export function LoginFormDialogContent({
       <DialogHeader>
         <DialogTitle>Sign in</DialogTitle>
         <DialogDescription>
-          Enter your email and password to sign in.
+          {formType === 'login' ? (
+            'Enter your email and password to sign in.'
+          ) : formType === 'register' ? (
+            'Enter your email and password to register.'
+          ) : (
+            'Enter the one-time password sent to your email.'
+          )}
         </DialogDescription>
+
         {formType === 'login' ? (
           <LoginForm onSubmit={handleLogin} />
-        ) : (
+        ) : formType === 'register' ? (
           <RegisterForm onSubmit={handleRegister} />
+        ) : (
+          <VerifyOtpForm onSubmit={handleVerifyOtp} />
         )}
 
-        <div className='flex justify-center mb-4'>
-          <GoogleSignIn />
-        </div>
+        {formType !== 'verify' && (
+          <div className='flex justify-center mb-4'>
+            <GoogleSignIn />
+          </div>
+        )}
 
         {formType === 'login' && (
           <div className='text-sm text-center text-gray-500'>
