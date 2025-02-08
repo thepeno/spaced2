@@ -132,6 +132,10 @@ export default {
           },
           '100%': { opacity: '1', transform: 'scale(1)', translate: '0 0' },
         },
+        'caret-blink': {
+          '0%,70%,100%': { opacity: '1' },
+          '20%,50%': { opacity: '0' },
+        },
       },
       animation: {
         scale: 'scale 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
@@ -148,6 +152,7 @@ export default {
         fadeIn: 'fadeIn 0.2s ease-out forwards',
         fadeInDropdownMenu:
           'fadeInDropdownMenu 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
+        'caret-blink': 'caret-blink 1.25s ease-out infinite',
       },
     },
   },
