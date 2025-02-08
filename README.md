@@ -4,7 +4,7 @@
 
 Spaced is a modern flashcard application that uses the Free Spaced Repetition Scheduler (FSRS) algorithm to help you learn efficiently. It's designed to be fast, offline-capable, easy to use, and visually appealing.
 
-![Desktop Screenshot](public/screenshots/desktop.png)
+![Spaced Screenshots](public/screenshots/spaced-screenshots.png)
 
 ### Features
 
