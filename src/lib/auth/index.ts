@@ -3,10 +3,15 @@ import { setClientId, setSessionExpiry } from '@/lib/sync/meta';
 
 const SESSION_DURATION_MS = 1000 * 60 * 60 * 24 * 30 - 1000 * 60; // 30 days with leeway
 
-type LoginResponse = {
-  success: boolean;
-  message?: string;
-};
+type LoginResponse =
+  | {
+      success: true;
+    }
+  | {
+      success: false;
+      message: string;
+      isTempUser: boolean;
+    };
 
 const UNAUTHORIZED_MESSAGE = 'Invalid email or password';
 const UNKNOWN_ERROR_MESSAGE = 'An unknown error occurred';
@@ -28,9 +33,15 @@ export async function login(
   );
 
   if (response.status === 401) {
+    const data = (await response.json()) as {
+      success: false;
+      isTempUser?: boolean;
+    };
+
     return {
       success: false,
       message: UNAUTHORIZED_MESSAGE,
+      isTempUser: data.isTempUser ?? false,
     };
   }
 
@@ -38,6 +49,7 @@ export async function login(
     return {
       success: false,
       message: UNKNOWN_ERROR_MESSAGE,
+      isTempUser: false,
     };
   }
 

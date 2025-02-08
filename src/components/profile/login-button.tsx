@@ -40,7 +40,12 @@ export function LoginFormDialogContent({
     const response = await login(data.email, data.password);
 
     if (!response.success) {
-      toast.error(response.message);
+      if (response.isTempUser) {
+        setRegisteredEmail(data.email);
+        setFormType('verify');
+      } else {
+        toast.error(response.message);
+      }
       return;
     }
 
@@ -82,13 +87,11 @@ export function LoginFormDialogContent({
       <DialogHeader>
         <DialogTitle>Sign in</DialogTitle>
         <DialogDescription>
-          {formType === 'login' ? (
-            'Enter your email and password to sign in.'
-          ) : formType === 'register' ? (
-            'Enter your email and password to register.'
-          ) : (
-            'Enter the one-time password sent to your email.'
-          )}
+          {formType === 'login'
+            ? 'Enter your email and password to sign in.'
+            : formType === 'register'
+            ? 'Enter your email and password to register.'
+            : 'Enter the one-time password sent to your email.'}
         </DialogDescription>
 
         {formType === 'login' ? (
