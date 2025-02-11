@@ -23,7 +23,7 @@ export default function LoginSuccessRoute() {
 
   return (
     <div className='flex flex-col h-full col-start-1 col-end-13 xl:col-start-3 xl:col-end-11 md:px-24 pb-6 gap-2 animate-fade-in'>
-      <div className='flex flex-col items-center justify-center h-[70vh] gap-4 py-12'>
+      <div className='flex flex-col items-center justify-center h-[70dvh] gap-4 py-12'>
         {clientId ? (
           <>
             <BouncyButton
