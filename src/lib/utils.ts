@@ -1,3 +1,4 @@
+import rehypeShiki from '@shikijs/rehype';
 import { clsx, type ClassValue } from 'clsx';
 import rehypeKatex from 'rehype-katex';
 import rehypeStringify from 'rehype-stringify';
@@ -12,17 +13,32 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function markdownToHtml(markdown: string) {
-  const result = unified()
-    .use(remarkParse)
-    .use(remarkMath)
-    .use(remarkGfm)
-    .use(remarkRehype)
-    .use(rehypeKatex)
-    .use(rehypeStringify)
-    .processSync(markdown);
+const markdownProcessor = unified()
+  .use(remarkParse)
+  .use(remarkMath)
+  .use(remarkGfm)
+  .use(remarkRehype)
+  .use(rehypeKatex)
+  .use(rehypeShiki, {
+    themes: {
+      light: 'vitesse-light',
+      dark: 'tokyo-night',
+    },
+  })
+  .use(rehypeStringify);
 
+export async function markdownToHtml(markdown: string) {
+  const result = await markdownProcessor.process(markdown);
   return result.toString();
+}
+
+/**
+ * Removes links from markdown
+ * @param markdown
+ * @returns
+ */
+export function excludeLinksFromMarkdown(markdown: string) {
+  return markdown.replace(/!\[.*?\]\((.*?)\)/g, '');
 }
 
 export function debounce(func: () => void, delay: number = 300) {

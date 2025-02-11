@@ -60,6 +60,7 @@
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20241216.0",
     "@eslint/js": "^9.15.0",
+    "@shikijs/rehype": "^2.3.2",
     "@tailwindcss/postcss": "^4.0.0",
     "@tailwindcss/typography": "^0.5.15",
     "@types/google.accounts": "^0.0.15",
