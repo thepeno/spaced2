@@ -1,19 +1,50 @@
 import NavButton from '@/components/nav/nav-button';
-import { cn } from '@/lib/utils';
+import { cn, isEventTargetInput } from '@/lib/utils';
 import { Book, Bookmark, Home, Plus, UserRound } from 'lucide-react';
-import { useLocation } from 'react-router';
+import { useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router';
 
 export default function NavBar() {
   const path = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Command + 1, 2, 3 ,4, 5
+      if (!e.shiftKey) return;
+      if (isEventTargetInput(e)) return;
+      if (e.key == '!') {
+        navigate('/decks');
+        return;
+      }
+      if (e.key == '@') {
+        navigate('/saved');
+        return;
+      }
+      if (e.key == '#') {
+        navigate('/');
+        return;
+      }
+      if (e.key == '$') {
+        navigate('/create');
+        return;
+      }
+      if (e.key == '%') {
+        navigate('/profile');
+        return;
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [navigate]);
 
   return (
-    <div className={
-      cn(
+    <div
+      className={cn(
         'fixed bottom-0 full flex z-10 bg-muted w-full',
         'md:left-4 md:h-full md:flex-col md:justify-center md:w-16 -mx-2'
-      )
-
-    }>
+      )}
+    >
       <NavButton
         icon={<Book />}
         href={'/decks'}
