@@ -32,7 +32,7 @@ export default function DesktopActionsContextMenu({
 }: DesktopActionsContextMenuProps) {
   const isMobile = useMediaQuery('(max-width: 768px)');
   return (
-    <ContextMenu>
+    <ContextMenu modal={false}>
       <ContextMenuTrigger
         onContextMenu={(e) => {
           if (isMobile) {
