@@ -21,6 +21,8 @@ type CreateFlashcardFormProps = {
   initialBack?: string;
 };
 
+const FOCUS_QUESTION_KEY = ' '
+
 export function CreateUpdateFlashcardForm({
   onSubmit,
   numDecks,
@@ -71,7 +73,13 @@ export function CreateUpdateFlashcardForm({
   useEffect(() => {
     // cmd enter to submit
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (!isEventTargetInput(event)) return;
+      if (!isEventTargetInput(event)) {
+        if (event.key === FOCUS_QUESTION_KEY) {
+          form.setFocus('front');
+          event.preventDefault();
+        }
+        return;
+      };
       if (event.metaKey && event.key === 'Enter') {
         form.handleSubmit(handleSubmit)();
         form.setFocus('front');

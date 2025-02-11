@@ -1,6 +1,8 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { isEventTargetInput } from '@/lib/utils';
 import { Search, X } from 'lucide-react';
+import { useEffect, useRef } from 'react';
 
 type SearchBarProps = {
   search: string;
@@ -15,6 +17,24 @@ export default function SearchBar({
   placeholder = 'Search...',
   onEnter,
 }: SearchBarProps) {
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        (document.activeElement as HTMLElement)?.blur();
+      }
+      if (isEventTargetInput(e)) return;
+      if (e.key === '/') {
+        e.preventDefault();
+        inputRef.current?.focus();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
   return (
     <div className='relative w-full max-w-md col-span-12 mb-2 sm:mb-8 mx-auto'>
       <Button
@@ -25,6 +45,7 @@ export default function SearchBar({
         <Search className='h-4 w-4' />
       </Button>
       <Input
+        ref={inputRef}
         className='px-12 h-12 rounded-xl'
         type='text'
         placeholder={placeholder}
