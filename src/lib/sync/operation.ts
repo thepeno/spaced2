@@ -322,8 +322,14 @@ export async function gradeCardOperation(
   const cardOperation: CardOperation = {
     type: 'card',
     payload: {
-      id: crypto.randomUUID(),
-      ...nextCard,
+      id: card.id,
+      due: nextCard.due,
+      stability: nextCard.stability,
+      difficulty: nextCard.difficulty,
+      elapsed_days: nextCard.elapsed_days,
+      scheduled_days: nextCard.scheduled_days,
+      reps: nextCard.reps,
+      lapses: nextCard.lapses,
       state: STATE_NUMBER_TO_NAME[nextCard.state],
       last_review: nextCard.last_review ?? null,
     },
