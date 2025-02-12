@@ -10,7 +10,7 @@ export default function EmptyReviewUi({
   noCardsCreatedYet,
 }: EmptyReviewUiProps) {
   return (
-    <div className='relative w-full max-w-lg mx-auto'>
+    <div className='relative w-full max-w-lg mx-auto h-96 flex flex-col justify-center items-center'>
       {/* Blur backdrop */}
       <div className='absolute inset-0 backdrop-blur-lg bg-muted/20 rounded-lg' />
 
