@@ -4,6 +4,7 @@ import { LoginButton } from '@/components/profile/login-button';
 import { LogoutButton } from '@/components/profile/logout-button';
 import OfflineUsageDialog from '@/components/profile/offline-usage-dialog';
 import { StatsLinkButton } from '@/components/profile/stats-link-button';
+import { ThemeToggle } from '@/components/theme/theme-toggle';
 import { SiGithub } from '@icons-pack/react-simple-icons';
 import { Link } from 'react-router';
 
@@ -16,6 +17,8 @@ export default function ProfileRoute() {
       <h1 className='mt-10 scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight transition-colors first:mt-0'>
         Profile
       </h1>
+
+      <ThemeToggle />
       <StatsLinkButton />
 
       {!online && <OfflineUsageDialog />}

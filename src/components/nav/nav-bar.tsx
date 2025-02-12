@@ -41,7 +41,7 @@ export default function NavBar() {
   return (
     <div
       className={cn(
-        'fixed bottom-0 full flex z-10 bg-muted w-full',
+        'fixed bottom-0 full flex z-10 bg-muted dark:bg-background w-full',
         'md:left-4 md:h-full md:flex-col md:justify-center md:w-16 -mx-2'
       )}
     >

@@ -10,7 +10,7 @@ export function StatsLinkButton() {
         variant='large'
         asButton={true}
         className={cn(
-          'bg-background w-full rounded-xl py-4 px-6  cursor-pointer transition-all duration-100 ease-out'
+          'bg-background dark:bg-muted/50 w-full rounded-xl py-4 px-6  cursor-pointer transition-all duration-100 ease-out'
         )}
       >
         <div className='flex justify-between'>

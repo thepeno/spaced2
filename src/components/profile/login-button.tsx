@@ -160,7 +160,7 @@ export function LoginButton() {
           <BouncyButton
             variant='large'
             className={cn(
-              'bg-background w-full rounded-xl py-4 px-6',
+              'bg-background dark:bg-muted/50 w-full rounded-xl py-4 px-6',
               !online && 'cursor-not-allowed text-muted-foreground'
             )}
             disabled={!online}
