@@ -23,7 +23,6 @@ import {
 import { gradeCardOperation } from '@/lib/sync/operation';
 import { cn } from '@/lib/utils';
 import { useMediaQuery } from '@uidotdev/usehooks';
-import { Redo2 } from 'lucide-react';
 import { useState } from 'react';
 import { Grade } from 'ts-fsrs';
 
