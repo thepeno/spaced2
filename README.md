@@ -24,10 +24,10 @@ Spaced is a modern flashcard application that uses the Free Spaced Repetition Sc
 
 #### Mobile
 
-<div style="display: flex; justify-content: center; gap: 20px;">
+<p align="center" style="display: flex; justify-content: center; gap: 20px;">
   <img src="public/screenshots/mobile.png" alt="Mobile" width="320"/>
   <img src="public/screenshots/mobile-light.png" alt="Mobile light" width="320"/>
-</div>
+</p>
 
 #### Stats
 
