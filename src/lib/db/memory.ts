@@ -4,6 +4,13 @@
 import { db } from '@/lib/db/persistence';
 import { handleClientOperation, OperationWithId } from '@/lib/sync/operation';
 import { CardWithMetadata, Deck } from '@/lib/types';
+import { Card } from 'ts-fsrs';
+
+export type UndoGrade = {
+  card: Card;
+  cardId: string;
+  reviewLogId: string;
+};
 
 type InternalMemoryDB = {
   cards: Record<string, CardWithMetadata>;
@@ -11,6 +18,14 @@ type InternalMemoryDB = {
   decksToCards: Record<string, Record<string, number>>;
   operations: Record<string, OperationWithId>;
   metadataKv: Record<string, unknown>;
+
+  /**
+   * "Undo" actions are stored in a stack.
+   *
+   * When an undo is executed, the review log is marked as deleted an the card
+   * is restored to its original state.
+   */
+  undoGradeStack: UndoGrade[];
 };
 
 export type Snapshot = {
@@ -21,6 +36,7 @@ export type Snapshot = {
   getDeckById: (id: string) => Deck | undefined;
   getDecks: () => Deck[];
   getCardsForDeck: (deckId: string) => CardWithMetadata[];
+  getUndoStack: () => UndoGrade[];
 };
 
 const memoryDb: InternalMemoryDB = {
@@ -29,6 +45,7 @@ const memoryDb: InternalMemoryDB = {
   decksToCards: {},
   operations: {},
   metadataKv: {},
+  undoGradeStack: [],
 };
 
 const subscribers = new Set<() => void>();
@@ -123,6 +140,22 @@ const getCardsForDeck = (deckId: string) => {
   return cards;
 };
 
+const pushUndoGrade = (undo: UndoGrade) => {
+  memoryDb.undoGradeStack.push(undo);
+};
+
+const popUndoGrade = () => {
+  if (memoryDb.undoGradeStack.length === 0) {
+    return null;
+  }
+
+  return memoryDb.undoGradeStack.pop();
+};
+
+const getUndoStack = () => {
+  return memoryDb.undoGradeStack;
+};
+
 let snapshot: Snapshot = {
   putCard,
   getCardById,
@@ -131,6 +164,7 @@ let snapshot: Snapshot = {
   getDeckById,
   getDecks,
   getCardsForDeck,
+  getUndoStack,
 };
 
 /**
@@ -155,6 +189,8 @@ const MemoryDB = {
   getDeckById,
   getDecks,
   getCardsForDeck,
+  pushUndoGrade,
+  popUndoGrade,
 };
 
 export default MemoryDB;

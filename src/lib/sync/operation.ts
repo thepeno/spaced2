@@ -1,5 +1,5 @@
 import { STATE_NAME_TO_NUMBER, STATE_NUMBER_TO_NAME } from '@/lib/card-mapping';
-import MemoryDB from '@/lib/db/memory';
+import MemoryDB, { UndoGrade } from '@/lib/db/memory';
 import { db } from '@/lib/db/persistence';
 import { gradeCard, reviewLogToReviewLogOperation } from '@/lib/review/review';
 import { defaultCard, defaultDeck } from '@/lib/sync/default';
@@ -348,6 +348,13 @@ export async function gradeCardOperation(
     );
   }
 
+  const undo: UndoGrade = {
+    card,
+    cardId: card.id,
+    reviewLogId: reviewLogOperation.payload.id,
+  };
+  MemoryDB.pushUndoGrade(undo);
+
   const operationsCopy = [
     structuredClone(cardOperation),
     structuredClone(reviewLogOperation),
@@ -358,6 +365,73 @@ export async function gradeCardOperation(
   // On fe-dev, the "add" operation modifies to object
   await db.pendingOperations.bulkAdd(operationsCopy);
   MemoryDB.notify();
+}
+
+type UndoGradeResult = {
+  applied: boolean;
+};
+
+/**
+ * "Undoing" a grade is done by
+ * 1. Marking the existing review log as deleted
+ * 2. Writing the old version of the card
+ */
+export async function undoGradeCard(): Promise<UndoGradeResult> {
+  const undo = MemoryDB.popUndoGrade();
+  if (!undo) {
+    return { applied: false };
+  }
+
+  const card = MemoryDB.getCardById(undo.cardId);
+  if (!card) {
+    return { applied: false };
+  }
+
+  const now = Date.now();
+  const reviewLogDeletedOperation: ReviewLogDeletedOperation = {
+    type: 'reviewLogDeleted',
+    payload: {
+      reviewLogId: undo.reviewLogId,
+      deleted: true,
+    },
+    timestamp: now,
+  };
+
+  const cardOperation: CardOperation = {
+    type: 'card',
+    payload: {
+      id: undo.cardId,
+      due: undo.card.due,
+      stability: undo.card.stability,
+      difficulty: undo.card.difficulty,
+      elapsed_days: undo.card.elapsed_days,
+      scheduled_days: undo.card.scheduled_days,
+      reps: undo.card.reps,
+      lapses: undo.card.lapses,
+      state: STATE_NUMBER_TO_NAME[undo.card.state],
+      last_review: undo.card.last_review ?? null,
+    },
+    timestamp: now,
+  };
+
+  const cardOperationResult = handleCardOperation(cardOperation);
+  if (!cardOperationResult.applied) {
+    throw new Error(
+      'SHOULD NOT HAPPEN - there should not be conflict when undoing card grading'
+    );
+  }
+
+  const operations = [
+    structuredClone(cardOperation),
+    structuredClone(reviewLogDeletedOperation),
+  ];
+
+  await db.operations.add(cardOperation);
+  await db.reviewLogOperations.add(reviewLogDeletedOperation);
+  await db.pendingOperations.bulkAdd(operations);
+  MemoryDB.notify();
+
+  return { applied: true };
 }
 
 export async function createNewDeck(name: string, description: string) {

@@ -11,6 +11,7 @@ import EmptyReviewUi from '@/components/review/empty';
 import DesktopGradeButtons from '@/components/review/grade-buttons';
 import MobileGradeButtons from '@/components/review/mobile-grade-buttons';
 import MobileReviewCarousel from '@/components/review/review-carousel';
+import UndoGradeButton from '@/components/review/undo-grade-button';
 import { CardContentFormValues } from '@/lib/form-schema';
 import {
   handleCardBury,
@@ -101,15 +102,16 @@ export default function ReviewRoute() {
           className={cn(
             'relative col-span-12 flex flex-col gap-x-4 gap-y-0 sm:gap-y-1 bg-background/60 backdrop-blur-sm dark:bg-muted/70 rounded-t-2xl sm:rounded-b-2xl px-1 md:px-0 pt-1 h-full animate-fade-in',
             'dark:border',
-            'shadow-lg'
+            'sm:shadow-lg'
           )}
         >
           {/* Actions dropdown menu */}
           {nextReviewCard && (
             <div className='absolute top-1 sm:-top-1 right-2 flex z-20'>
-              <div className='px-2 py-3'>
+              {/* <div className='px-2 py-3'>
                 <Redo2 className='size-6 text-muted-foreground/50 hover:text-muted-foreground transition-all rotate-180' />
-              </div>
+              </div> */}
+              <UndoGradeButton />
 
               <ActionsDropdownMenu
                 bookmarked={nextReviewCard?.bookmarked}

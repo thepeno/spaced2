@@ -46,3 +46,11 @@ export function useCurrentCard() {
   const cards = useReviewCards();
   return cards[0];
 }
+
+export function useUndoStack() {
+  const snapshot = useSyncExternalStore(
+    MemoryDB.subscribe,
+    MemoryDB.getSnapshot
+  );
+  return snapshot.getUndoStack();
+}
