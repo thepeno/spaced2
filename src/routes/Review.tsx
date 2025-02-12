@@ -11,7 +11,6 @@ import EmptyReviewUi from '@/components/review/empty';
 import DesktopGradeButtons from '@/components/review/grade-buttons';
 import MobileGradeButtons from '@/components/review/mobile-grade-buttons';
 import MobileReviewCarousel from '@/components/review/review-carousel';
-import { Separator } from '@/components/ui/separator';
 import { CardContentFormValues } from '@/lib/form-schema';
 import {
   handleCardBury,
@@ -107,7 +106,7 @@ export default function ReviewRoute() {
         >
           {/* Actions dropdown menu */}
           {nextReviewCard && (
-            <div className='absolute top-1 sm:-top-1 right-2 flex'>
+            <div className='absolute top-1 sm:-top-1 right-2 flex z-20'>
               <div className='px-2 py-3'>
                 <Redo2 className='size-6 text-muted-foreground/50 hover:text-muted-foreground transition-all rotate-180' />
               </div>
@@ -130,7 +129,7 @@ export default function ReviewRoute() {
             </div>
           </div>
 
-          <div className='flex flex-col md:flex-row justify-stretch md:justify-center items-center gap-2 lg:gap-4 w-full h-full bg-background rounded-b-2xl border-t'>
+          <div className='flex flex-col md:flex-row justify-stretch md:justify-center items-center gap-2 lg:gap-4 w-full h-full sm:bg-background rounded-b-2xl sm:border-t'>
             {nextReviewCard ? (
               <div className='w-full hidden sm:flex items-center gap-6 p-6'>
                 <FlashcardContent content={nextReviewCard.front} />

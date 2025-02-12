@@ -56,9 +56,9 @@ export default function MobileReviewCarousel({ card }: { card: CardWithMetadata 
   );
 
   return (
-    <div className='flex flex-col items-center gap-2 sm:hidden w-full'>
+    <div className='flex flex-col items-center gap-2 sm:hidden w-full pt-4'>
       <Dots current={current} count={count} />
-      <Carousel className='w-full max-w-sm pt-3' setApi={setApi}>
+      <Carousel className='w-full max-w-md pt-3' setApi={setApi}>
         <CarouselContent>
           <CarouselItem>
             <div className='p-1'>
