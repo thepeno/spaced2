@@ -12,6 +12,7 @@
     "generate-pwa-assets": "pwa-assets-generator --preset minimal-2023 public/telescope.svg"
   },
   "dependencies": {
+    "@highlightjs/cdn-assets": "^11.11.1",
     "@hookform/resolvers": "^3.9.1",
     "@icons-pack/react-simple-icons": "^11.2.0",
     "@radix-ui/react-alert-dialog": "^1.1.4",
@@ -42,6 +43,7 @@
     "react-hook-form": "^7.54.1",
     "react-router": "^7.0.2",
     "recharts": "^2.15.1",
+    "rehype-highlight": "^7.0.2",
     "rehype-katex": "^7.0.1",
     "rehype-stringify": "^10.0.1",
     "remark": "^15.0.1",
@@ -60,7 +62,6 @@
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20241216.0",
     "@eslint/js": "^9.15.0",
-    "@shikijs/rehype": "^2.3.2",
     "@tailwindcss/postcss": "^4.0.0",
     "@tailwindcss/typography": "^0.5.15",
     "@types/google.accounts": "^0.0.15",

@@ -1,5 +1,5 @@
-import rehypeShiki from '@shikijs/rehype';
 import { clsx, type ClassValue } from 'clsx';
+import rehypeHighlight from 'rehype-highlight';
 import rehypeKatex from 'rehype-katex';
 import rehypeStringify from 'rehype-stringify';
 import remarkGfm from 'remark-gfm';
@@ -19,17 +19,11 @@ const markdownProcessor = unified()
   .use(remarkGfm)
   .use(remarkRehype)
   .use(rehypeKatex)
-  .use(rehypeShiki, {
-    themes: {
-      light: 'vitesse-light',
-      dark: 'tokyo-night',
-    },
-  })
+  .use(rehypeHighlight)
   .use(rehypeStringify);
 
-export async function markdownToHtml(markdown: string) {
-  const result = await markdownProcessor.process(markdown);
-  return result.toString();
+export function markdownToHtml(markdown: string) {
+  return markdownProcessor.processSync(markdown).toString();
 }
 
 /**
