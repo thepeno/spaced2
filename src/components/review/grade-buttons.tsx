@@ -86,18 +86,24 @@ function GradeButton({
           onClick={() => {
             onGrade(grade);
           }}
+          className='flex-1'
         >
           <BouncyButton
             className={cn(
-              'flex w-full flex-col justify-center gap-0 transition h-14 bg-background text-muted-foreground font-semibold border rounded-xl shadow-xs hover:shadow-2xs hover:scale-110'
+              'flex w-full flex-col justify-center gap-0 transition h-14 text-muted-foreground font-semibold border rounded-none group bg-primary relative'
             )}
             pressed={pressed}
           >
-            <div className='text-base sm:text-sm'>{RATING_TO_NAME[grade]}</div>
-            {/* <div className='sm:hidden'>{dateString}</div> */}
+            <div className='absolute bottom-1 left-1 font-semibold text-base sm:text-sm uppercase text-background tracking-widest'>
+              {RATING_TO_NAME[grade]}
+            </div>
+            <div className='absolute top-0 right-2 text-sm text-background'>
+              {grade}
+              {/* {dateString} */}
+            </div>
           </BouncyButton>
         </TooltipTrigger>
-        <TooltipContent className='flex items-center'>
+        <TooltipContent className='flex items-center' sideOffset={8}>
           <Kbd className='text-md mr-2 text-background'>{key}</Kbd>
           <p>{dateString}</p>
         </TooltipContent>
@@ -109,15 +115,21 @@ function GradeButton({
 /**
  * The buttons to rate a flashcard.
  */
-export default function DesktopGradeButtons({ onGrade, card }: GradeButtonsProps) {
+export default function DesktopGradeButtons({
+  onGrade,
+  card,
+}: GradeButtonsProps) {
   const f = new FSRS({});
   const schedulingCards = f.repeat(card, new Date());
 
   return (
     <div
       className={cn(
-        'grid h-full gap-x-3 gap-y-2 w-[600px] grid-cols-4 bg-transparent px-2 py-2 rounded-xl'
+        'flex h-full gap-x-1 w-[36vw] grid-cols-4 bg-background dark:bg-muted dark:border-muted-foreground/30 dark:border p-1 rounded-none mt-12 shadow-md'
       )}
+      style={{
+        transform: `perspective(1000px) rotateX(24deg)`,
+      }}
     >
       <GradeButton
         key={Rating.Again}

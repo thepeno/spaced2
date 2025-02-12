@@ -21,7 +21,7 @@ export default function CardCountBadges() {
   ).length;
 
   return (
-    <div className='hidden sm:flex h-8 justify-center gap-x-2'>
+    <div className='hidden sm:flex h-8 justify-center gap-2'>
       <TooltipProvider delayDuration={100}>
         <Tooltip>
           <TooltipTrigger className='cursor-text'>

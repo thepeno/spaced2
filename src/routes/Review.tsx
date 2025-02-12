@@ -98,10 +98,16 @@ export default function ReviewRoute() {
         handleBury={handleBury}
         handleEdit={() => setIsEditing(true)}
       >
-        <div className='relative col-span-12 flex flex-col gap-x-4 gap-y-0 sm:gap-y-2 bg-background rounded-t-2xl sm:rounded-b-2xl px-1 md:px-4 p-4 h-full animate-fade-in'>
+        <div
+          className={cn(
+            'relative col-span-12 flex flex-col gap-x-4 gap-y-0 sm:gap-y-1 bg-background/60 backdrop-blur-sm dark:bg-muted/70 rounded-t-2xl sm:rounded-b-2xl px-1 md:px-0 pt-1 h-full animate-fade-in',
+            'dark:border',
+            'shadow-lg'
+          )}
+        >
           {/* Actions dropdown menu */}
           {nextReviewCard && (
-            <div className='absolute top-1 sm:top-2 right-3 flex'>
+            <div className='absolute top-1 sm:-top-1 right-2 flex'>
               <div className='px-2 py-3'>
                 <Redo2 className='size-6 text-muted-foreground/50 hover:text-muted-foreground transition-all rotate-180' />
               </div>
@@ -117,18 +123,17 @@ export default function ReviewRoute() {
             </div>
           )}
 
-          <div className='w-full flex flex-col-reverse sm:flex-row justify-between items-center gap-4'>
-            <div className='flex gap-2'>
+          <div className='w-full flex flex-col-reverse sm:flex-row justify-between items-center gap-4 px-2'>
+            <div className='flex gap-2 items-center ml-2'>
               <CardCountBadges />
               {nextReviewCard && <CurrentCardBadge card={nextReviewCard} />}
             </div>
           </div>
 
-          <div className='flex flex-col md:flex-row justify-stretch md:justify-center items-center gap-2 lg:gap-4 w-full h-full'>
+          <div className='flex flex-col md:flex-row justify-stretch md:justify-center items-center gap-2 lg:gap-4 w-full h-full bg-background rounded-b-2xl border-t'>
             {nextReviewCard ? (
-              <div className='w-full hidden sm:flex gap-2'>
+              <div className='w-full hidden sm:flex items-center gap-6 p-6'>
                 <FlashcardContent content={nextReviewCard.front} />
-                <Separator className='sm:hidden bg-muted w-[95%] h-0.5' />
                 <FlashcardContent content={nextReviewCard.back} />
               </div>
             ) : (
@@ -139,7 +144,7 @@ export default function ReviewRoute() {
         </div>
       </DesktopActionsContextMenu>
 
-      <div className='col-span-12 w-full hidden sm:block sm:mx-auto sm:mt-2 sm:w-max mb-4 px-4 pb-2'>
+      <div className='col-span-12 w-full hidden sm:block sm:mx-auto sm:w-max mb-4 px-4 pb-2'>
         {nextReviewCard && !isMobile && (
           <DesktopGradeButtons onGrade={handleGrade} card={nextReviewCard} />
         )}
