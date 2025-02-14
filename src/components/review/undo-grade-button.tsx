@@ -19,7 +19,6 @@ export default function UndoGradeButton() {
         return;
       }
 
-      console.log('event', event);
       if (event.ctrlKey && event.key === 'z') {
         event.preventDefault();
         undoGradeCard();
