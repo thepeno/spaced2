@@ -10,7 +10,6 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { ClipboardEventHandler } from 'react';
 import { FieldValues } from 'react-hook-form';
-// import { toast } from 'sonner';
 
 type FormTextareaImageUploadProps<TFieldValues extends FieldValues> =
   FormInputProps<TFieldValues> & {
@@ -20,14 +19,6 @@ type FormTextareaImageUploadProps<TFieldValues extends FieldValues> =
     rows?: number;
     onUploadImage?: (image: File) => Promise<void>;
   };
-
-const toBase64 = (file: File): Promise<string> =>
-  new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result as string);
-    reader.onerror = reject;
-  });
 
 /**
  * A textarea that allows for image uploads.
@@ -55,12 +46,6 @@ export function FormTextareaImageUpload<TFieldValues extends FieldValues>({
     // Only handle the first image for now
     const image = images[0];
     onUploadImage?.(image);
-
-    // TODO: clean this up
-    // const markdownFormattedLink = `![${image.name}](${link})`;
-
-    // const newText = `${form.getValues(name)}\n${markdownFormattedLink}`;
-    // form.setValue(name, newText as TFieldValues[typeof name]);
   };
 
   return (
