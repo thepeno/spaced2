@@ -4,11 +4,14 @@ import { CreateUpdateFlashcardForm } from '@/components/create-flashcard';
 import { useDecks } from '@/components/hooks/query';
 import SearchBar from '@/components/search-bar';
 import { Card } from '@/components/ui/card';
+import ImageUploadDialog from '@/image-upload-dialog';
+import { constructImageMarkdownLink, uploadImage } from '@/lib/files/upload';
 import { createNewCard } from '@/lib/sync/operation';
 import { cn } from '@/lib/utils';
 import VibrationPattern from '@/lib/vibrate';
-import { CircleCheck, CirclePlus } from 'lucide-react';
+import { CircleCheck, CirclePlus, Image } from 'lucide-react';
 import { useState } from 'react';
+import { toast } from 'sonner';
 
 export function DeckSelectionCard({
   title,
@@ -89,9 +92,54 @@ export default function CreateFlashcardRoute() {
   );
   const [selectedDecks, setSelectedDecks] = useState<string[]>([]);
   const [createDeckDialogOpen, setCreateDeckDialogOpen] = useState(false);
+  const [imageUploadDialogOpen, setImageUploadDialogOpen] = useState(false);
+  const [imageUploading, setImageUploading] = useState(false);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+
+  const onImageUpload = async (altText?: string) => {
+    if (!imageFile) {
+      return;
+    }
+
+    setImageUploading(true);
+    const result = await uploadImage(imageFile, altText);
+    setImageUploadDialogOpen(false);
+
+    if (!result.success) {
+      toast.error(result.error);
+      setImageUploading(false);
+      return;
+    }
+
+    const imageUrl = constructImageMarkdownLink(result.fileKey, altText);
+    await navigator.clipboard.writeText(imageUrl);
+    toast('Image URL copied to clipboard!', {
+      icon: <Image className='w-4 h-4' />,
+    });
+
+    // Avoid the flash in the icon change
+    await new Promise((resolve) => setTimeout(resolve, 100));
+    setImageUploading(false);
+    return;
+  };
+
+  const onImageUpoadDialogOpenChange = (open: boolean) => {
+    setImageUploadDialogOpen(open);
+    if (!open) {
+      setImageFile(null);
+    }
+  };
 
   return (
     <div className='col-span-12 xl:col-start-4 xl:col-end-10 md:px-24 xl:px-0 h-full pb-40'>
+      <ImageUploadDialog
+        image={imageFile}
+        onSubmit={onImageUpload}
+        loading={imageUploading}
+        open={imageUploadDialogOpen}
+        onOpenChange={onImageUpoadDialogOpenChange}
+      />
+
       <SearchBar
         search={search}
         setSearch={setSearch}
@@ -161,6 +209,10 @@ export default function CreateFlashcardRoute() {
             await createNewCard(values.front, values.back, selectedDecks);
           }}
           numDecks={selectedDecks.length}
+          onImageUpload={async (image) => {
+            setImageFile(image);
+            setImageUploadDialogOpen(true);
+          }}
         />
       </div>
     </div>

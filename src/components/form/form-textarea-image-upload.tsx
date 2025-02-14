@@ -18,10 +18,7 @@ type FormTextareaImageUploadProps<TFieldValues extends FieldValues> =
     description?: string;
     className?: string;
     rows?: number;
-    onUploadImage?: (image: {
-      name: string;
-      base64String: string;
-    }) => Promise<string>;
+    onUploadImage?: (image: File) => Promise<void>;
   };
 
 const toBase64 = (file: File): Promise<string> =>
@@ -57,23 +54,13 @@ export function FormTextareaImageUpload<TFieldValues extends FieldValues>({
 
     // Only handle the first image for now
     const image = images[0];
-    const base64String = await toBase64(image);
-    const imageUploadPromise = onUploadImage?.({
-      name: image.name,
-      base64String,
-    });
+    onUploadImage?.(image);
 
-    // toast.promise(imageUploadPromise, {
-    //   loading: 'Uploading image...',
-    //   success: 'Image uploaded',
-    //   error: 'Failed to upload image',
-    // });
+    // TODO: clean this up
+    // const markdownFormattedLink = `![${image.name}](${link})`;
 
-    const link = await imageUploadPromise;
-    const markdownFormattedLink = `![${image.name}](${link})`;
-
-    const newText = `${form.getValues(name)}\n${markdownFormattedLink}`;
-    form.setValue(name, newText as TFieldValues[typeof name]);
+    // const newText = `${form.getValues(name)}\n${markdownFormattedLink}`;
+    // form.setValue(name, newText as TFieldValues[typeof name]);
   };
 
   return (

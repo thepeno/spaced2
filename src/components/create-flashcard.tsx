@@ -19,15 +19,17 @@ type CreateFlashcardFormProps = {
   numDecks?: number;
   initialFront?: string;
   initialBack?: string;
+  onImageUpload?: (image: File) => Promise<void>;
 };
 
-const FOCUS_QUESTION_KEY = ' '
+const FOCUS_QUESTION_KEY = ' ';
 
 export function CreateUpdateFlashcardForm({
   onSubmit,
   numDecks,
   initialFront,
   initialBack,
+  onImageUpload,
 }: CreateFlashcardFormProps) {
   const form = useForm<CardContentFormValues>({
     resolver: zodResolver(cardContentFormSchema),
@@ -79,7 +81,7 @@ export function CreateUpdateFlashcardForm({
           event.preventDefault();
         }
         return;
-      };
+      }
       if (event.metaKey && event.key === 'Enter') {
         form.handleSubmit(handleSubmit)();
         form.setFocus('front');
@@ -98,6 +100,7 @@ export function CreateUpdateFlashcardForm({
       >
         <div className='grow'>
           <FormTextareaImageUpload
+            onUploadImage={onImageUpload}
             className='text-sm border-none shadow-none h-32'
             form={form}
             name='front'
