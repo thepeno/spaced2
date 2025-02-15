@@ -26,7 +26,7 @@ import './index.css';
 SyncEngine.start();
 export default function App() {
   useGoogleSignInPrompt({ delay: 1000 });
-  const isMobile = useMediaQuery('(max-width: 768px)');
+  const isMobile = useMediaQuery('(max-width: 640px)');
 
   return (
     <BrowserRouter>

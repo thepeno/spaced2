@@ -30,7 +30,7 @@ export default function DesktopActionsContextMenu({
   handleEdit,
   children,
 }: DesktopActionsContextMenuProps) {
-  const isMobile = useMediaQuery('(max-width: 768px)');
+  const isMobile = useMediaQuery('(max-width: 640px)');
   return (
     <ContextMenu modal={false}>
       <ContextMenuTrigger

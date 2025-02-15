@@ -35,7 +35,7 @@ export default function ReviewRoute() {
   const nextReviewCard = reviewCards?.[0];
 
   const start = useActiveStartTime({ id: nextReviewCard?.id });
-  const isMobile = useMediaQuery('(max-width: 768px)');
+  const isMobile = useMediaQuery('(max-width: 640px)');
 
   const [isEditing, setIsEditing] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);

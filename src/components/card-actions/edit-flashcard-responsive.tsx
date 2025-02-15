@@ -17,7 +17,7 @@ export default function EditFlashcardResponsive({
   open,
   onOpenChange,
 }: EditFlashcardResponsiveProps) {
-  const isMobile = useMediaQuery('(max-width: 768px)');
+  const isMobile = useMediaQuery('(max-width: 640px)');
 
   return isMobile ? (
     <EditFlashcardDrawer
