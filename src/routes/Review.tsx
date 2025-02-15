@@ -4,6 +4,7 @@ import CurrentCardBadge from '@/components/current-card-badge';
 import FlashcardContent from '@/components/flashcard-content';
 import { useActiveStartTime } from '@/components/hooks/inactivity';
 import { useCards, useReviewCards } from '@/components/hooks/query';
+import CachedImagesContainer from '@/components/images/cached-images-container';
 import ActionsDropdownMenu from '@/components/review/actions-dropdown-menu';
 import DeleteFlashcardDialog from '@/components/review/delete-flashcard-dialog';
 import DesktopActionsContextMenu from '@/components/review/desktop-actions-context-menu';
@@ -130,17 +131,28 @@ export default function ReviewRoute() {
             </div>
           </div>
 
-          <div className='flex flex-col md:flex-row justify-stretch md:justify-center items-center gap-2 lg:gap-4 w-full h-full sm:bg-background rounded-b-2xl sm:border-t'>
-            {nextReviewCard ? (
-              <div className='w-full hidden sm:flex items-center gap-6 p-6'>
-                <FlashcardContent content={nextReviewCard.front} />
-                <FlashcardContent content={nextReviewCard.back} />
-              </div>
-            ) : (
-              <EmptyReviewUi noCardsCreatedYet={noCardsCreatedYet} />
-            )}
-            {nextReviewCard && <MobileReviewCarousel card={nextReviewCard} />}
-          </div>
+          <CachedImagesContainer
+            renderItem={(ref) => {
+              return (
+                <div
+                  className='flex flex-col md:flex-row justify-stretch md:justify-center items-center gap-2 lg:gap-4 w-full h-full sm:bg-background rounded-b-2xl sm:border-t'
+                  ref={ref}
+                >
+                  {nextReviewCard ? (
+                    <div className='w-full hidden sm:flex items-center gap-6 p-6'>
+                      <FlashcardContent content={nextReviewCard.front} />
+                      <FlashcardContent content={nextReviewCard.back} />
+                    </div>
+                  ) : (
+                    <EmptyReviewUi noCardsCreatedYet={noCardsCreatedYet} />
+                  )}
+                  {nextReviewCard && (
+                    <MobileReviewCarousel card={nextReviewCard} />
+                  )}
+                </div>
+              );
+            }}
+          />
         </div>
       </DesktopActionsContextMenu>
 
