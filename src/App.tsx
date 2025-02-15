@@ -11,6 +11,7 @@ import AllCardsRoute from '@/routes/AllCardsRoute';
 import CreateFlashcardRoute from '@/routes/CreateFlashcardRoute.tsx';
 import DeckRoute from '@/routes/DeckRoute.tsx';
 import DecksRoute from '@/routes/DecksRoute.tsx';
+import ImagesRoute from '@/routes/ImagesRoute';
 import ImportRoute from '@/routes/ImportRoute';
 import LoginSuccessRoute from '@/routes/LoginSuccessRoute';
 import ProfileRoute from '@/routes/ProfileRoute';
@@ -77,6 +78,8 @@ export default function App() {
             <Route path='/stats' element={<StatsRoute />} />
             <Route path='/login-success' element={<LoginSuccessRoute />} />
             <Route path='/import' element={<ImportRoute />} />
+
+            <Route path='/images' element={<ImagesRoute />} />
           </Routes>
         </div>
       </ThemeProvider>

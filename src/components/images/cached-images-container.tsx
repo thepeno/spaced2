@@ -29,6 +29,11 @@ export default function CachedImagesContainer({
   useEffect(() => {
     if (!ref.current) return;
 
+    // The mutation observer might not have mounted in time on the initial render,
+    // so we need to handle the images manually.
+    const imageNodes = ref.current.querySelectorAll('img');
+    handleAddedImages(Array.from(imageNodes));
+
     function handleAddedImages(nodes: HTMLElement[]) {
       const imageNodes = nodes.flatMap((node) =>
         Array.from(node.querySelectorAll('img'))

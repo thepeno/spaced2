@@ -80,7 +80,6 @@ async function generateThumbnail(original: Blob): Promise<Blob> {
     img.src = blobUrl;
   });
 
-
   // NOTE: the following is AI generated to crop the image
   // such that our thumbnails are always squares
   // Calculate source region to crop a centered square
@@ -130,6 +129,19 @@ async function databaseAddImage(url: string, image: Blob) {
       content: image,
     } as ImageBlob),
   ]);
+}
+
+export async function downloadImageLocally(url: string): Promise<{
+  newlyDownloaded: boolean;
+}> {
+  const exists = await imagePersistedDb.images.get(url);
+  if (exists) {
+    return { newlyDownloaded: false };
+  }
+
+  const image = await fetchImage(url);
+  await databaseAddImage(url, image);
+  return { newlyDownloaded: true };
 }
 
 async function databaseUpdateImage(url: string, image: Blob) {
