@@ -6,6 +6,7 @@ export type UncachedImage = {
 
 export type CachedImage = {
   url: string;
+  altText: string;
   cachedAt: number;
   thumbnail: Blob;
   size: number;
@@ -24,7 +25,7 @@ export const imagePersistedDb = new Dexie('ImageCache') as Dexie & {
 };
 
 imagePersistedDb.version(1).stores({
-  images: 'url, cachedAt, thumbnail, size',
+  images: 'url, altText, cachedAt, thumbnail, size',
   imageBlobs: 'url, content',
 });
 
@@ -115,11 +116,12 @@ async function generateThumbnail(original: Blob): Promise<Blob> {
   });
 }
 
-async function databaseAddImage(url: string, image: Blob) {
+async function databaseAddImage(url: string, image: Blob, altText: string) {
   const thumbnail = await generateThumbnail(image);
   await Promise.all([
     imagePersistedDb.images.add({
       url,
+      altText,
       cachedAt: Date.now(),
       thumbnail,
       size: image.size + thumbnail.size,
@@ -131,7 +133,10 @@ async function databaseAddImage(url: string, image: Blob) {
   ]);
 }
 
-export async function downloadImageLocally(url: string): Promise<{
+export async function downloadImageLocally(
+  url: string,
+  altText: string
+): Promise<{
   newlyDownloaded: boolean;
 }> {
   const exists = await imagePersistedDb.images.get(url);
@@ -140,16 +145,17 @@ export async function downloadImageLocally(url: string): Promise<{
   }
 
   const image = await fetchImage(url);
-  await databaseAddImage(url, image);
+  await databaseAddImage(url, image, altText);
   return { newlyDownloaded: true };
 }
 
-async function databaseUpdateImage(url: string, image: Blob) {
+async function databaseUpdateImage(url: string, image: Blob, altText: string) {
   const thumbnail = await generateThumbnail(image);
   await Promise.all([
     imagePersistedDb.images.update(url, {
       thumbnail,
       size: image.size + thumbnail.size,
+      altText,
     } as CachedImage),
     imagePersistedDb.imageBlobs.update(url, {
       content: image,
@@ -157,7 +163,10 @@ async function databaseUpdateImage(url: string, image: Blob) {
   ]);
 }
 
-async function getCachedImagePromised(url: string): Promise<string> {
+async function getCachedImagePromised(
+  url: string,
+  altText: string
+): Promise<string> {
   const inMemoryImage = ImageMemoryDB.get(url);
   if (inMemoryImage) {
     inMemoryImage.referenceCount++;
@@ -168,14 +177,14 @@ async function getCachedImagePromised(url: string): Promise<string> {
   let blob: Blob;
   if (!image) {
     blob = await fetchImage(url);
-    await databaseAddImage(url, blob);
+    await databaseAddImage(url, blob, altText);
   } else if (isCachedImage(image)) {
     const imageBlob = await imagePersistedDb.imageBlobs.get(url);
     if (!imageBlob) throw new Error('Should not happen, image is cached');
     blob = imageBlob.content;
   } else {
     blob = await fetchImage(image.url);
-    await databaseUpdateImage(url, blob);
+    await databaseUpdateImage(url, blob, altText);
   }
 
   const objectURL = URL.createObjectURL(blob);
@@ -186,12 +195,15 @@ async function getCachedImagePromised(url: string): Promise<string> {
   return objectURL;
 }
 
-export async function getCachedImage(url: string): Promise<string> {
+export async function getCachedImage(
+  url: string,
+  altText: string
+): Promise<string> {
   if (currentlyFetchingImages.has(url)) {
     return currentlyFetchingImages.get(url)!;
   }
 
-  const promise = getCachedImagePromised(url);
+  const promise = getCachedImagePromised(url, altText);
   currentlyFetchingImages.set(url, promise);
   promise.finally(() => {
     currentlyFetchingImages.delete(url);
@@ -202,8 +214,6 @@ export async function getCachedImage(url: string): Promise<string> {
 export function revokeImage(url: string) {
   const inMemoryImage = ImageMemoryDB.get(url);
   if (!inMemoryImage) return;
-
-  console.log('decrementing reference count for image', url);
 
   inMemoryImage.referenceCount--;
   if (inMemoryImage.referenceCount <= 0) {

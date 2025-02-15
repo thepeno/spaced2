@@ -45,7 +45,7 @@ export default function CachedImagesContainer({
         if (!isSrcUrl(image.src)) return;
 
         image.setAttribute(DATA_IS_CACHED_SRC_ATTRIBUTE, image.src);
-        image.src = await getCachedImage(image.src);
+        image.src = await getCachedImage(image.src, image.alt ?? "");
       });
 
       return;

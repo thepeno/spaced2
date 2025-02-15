@@ -35,9 +35,8 @@ export default function DownloadAllImages() {
 
       const batch = entries.slice(i, i + BATCH_SIZE);
       await Promise.allSettled(
-        // TODO handle image alt text
-        batch.map(async ([url]) => {
-          const { newlyDownloaded } = await downloadImageLocally(url);
+        batch.map(async ([url, altText]) => {
+          const { newlyDownloaded } = await downloadImageLocally(url, altText);
           if (newlyDownloaded) {
             setTotalDownloaded((total) => total + 1);
           }

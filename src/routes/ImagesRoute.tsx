@@ -20,7 +20,7 @@ export default function ImagesRoute() {
 
   const [search, setSearch] = useState('');
   const filteredImages = cachedImages.filter((image) =>
-    image.url.toLowerCase().includes(search.toLowerCase())
+    image.altText.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
