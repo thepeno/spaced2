@@ -100,7 +100,7 @@ export default function ReviewRoute() {
       >
         <div
           className={cn(
-            'relative col-span-12 flex flex-col gap-x-4 gap-y-0 sm:gap-y-1 bg-background/60 backdrop-blur-sm dark:bg-muted/70 rounded-t-2xl sm:rounded-b-2xl px-1 md:px-0 pt-1 h-full animate-fade-in',
+            'relative col-span-12 flex flex-col gap-x-4 gap-y-0 sm:gap-y-1 bg-background/60 backdrop-blur-sm dark:bg-muted/30 rounded-t-2xl sm:rounded-b-2xl px-1 md:px-0 pt-1 h-full animate-fade-in',
             'dark:border',
             'sm:shadow-lg'
           )}
