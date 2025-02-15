@@ -1,10 +1,10 @@
 import { Dexie, type EntityTable } from 'dexie';
 
-type UncachedImage = {
+export type UncachedImage = {
   url: string;
 };
 
-type CachedImage = {
+export type CachedImage = {
   url: string;
   cachedAt: number;
   thumbnail: Blob;
@@ -39,16 +39,18 @@ export const ImageMemoryDB = new Map<
 /** Used to dedupe the fetching requests for the same image. */
 const currentlyFetchingImages = new Map<string, Promise<string>>();
 
-function isCachedImage(
+export function isCachedImage(
   image: CachedImage | UncachedImage
 ): image is CachedImage {
   return 'cachedAt' in image;
 }
 
 async function fetchImage(url: string): Promise<Blob> {
-  const image = await fetch(url, {
-    credentials: 'include',
-  });
+  const requestOptions = url.startsWith(import.meta.env.VITE_BACKEND_URL)
+    ? ({ credentials: 'include' } as const)
+    : undefined;
+
+  const image = await fetch(url, requestOptions);
   return image.blob();
 }
 
@@ -78,7 +80,27 @@ async function generateThumbnail(original: Blob): Promise<Blob> {
     img.src = blobUrl;
   });
 
-  ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+  // NOTE: the following is AI generated to crop the image
+  // such that our thumbnails are always squares
+  // Calculate source region to crop a centered square
+  const minSize = Math.min(img.width, img.height);
+  const sourceX = (img.width - minSize) / 2;
+  const sourceY = (img.height - minSize) / 2;
+
+  // Draw cropped and scaled image to canvas
+  ctx.drawImage(
+    img,
+    sourceX, // Source X (start point)
+    sourceY, // Source Y
+    minSize, // Source width (square size)
+    minSize, // Source height
+    0, // Destination X
+    0, // Destination Y
+    canvas.width, // Destination width (200)
+    canvas.height // Destination height (200)
+  );
+
   URL.revokeObjectURL(blobUrl);
 
   return new Promise((resolve) => {
