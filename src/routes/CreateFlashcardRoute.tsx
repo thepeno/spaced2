@@ -101,8 +101,9 @@ export default function CreateFlashcardRoute() {
       return;
     }
 
+    const trimmedAltText = altText?.trim();
     setImageUploading(true);
-    const result = await uploadImage(imageFile, altText);
+    const result = await uploadImage(imageFile, trimmedAltText);
     setImageUploadDialogOpen(false);
 
     if (!result.success) {
@@ -111,7 +112,7 @@ export default function CreateFlashcardRoute() {
       return;
     }
 
-    const imageUrl = constructImageMarkdownLink(result.fileKey, altText);
+    const imageUrl = constructImageMarkdownLink(result.fileKey, trimmedAltText);
     await navigator.clipboard.writeText(imageUrl);
     toast('Image URL copied to clipboard!', {
       icon: <Image className='w-4 h-4' />,
