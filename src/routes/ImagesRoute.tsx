@@ -2,6 +2,7 @@ import DownloadAllImages from '@/components/images/download-all-images';
 import ReturnToTop from '@/components/return-to-top';
 import SearchBar from '@/components/search-bar';
 import { CachedImage, imagePersistedDb, isCachedImage } from '@/lib/images/db';
+import EmptyImages from '@/lib/images/empty';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { Database, ImageIcon, LinkIcon } from 'lucide-react';
 import { useState } from 'react';
@@ -52,6 +53,7 @@ export default function ImagesRoute() {
         </div>
 
         <div className='grid grid-cols-3 gap-2 w-full rounded-xl'>
+          {filteredImages.length === 0 && <EmptyImages />}
           {filteredImages.map((image) => (
             <img
               key={image.url}
