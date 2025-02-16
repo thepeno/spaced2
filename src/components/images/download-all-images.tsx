@@ -2,6 +2,7 @@ import BouncyButton from '@/components/bouncy-button';
 import { Progress } from '@/components/ui/progress';
 import { downloadImageLocally } from '@/lib/images/db';
 import { searchForLinks } from '@/lib/images/download-all';
+import { PromiseRateLimiterQueue } from '@/lib/images/promise-limiter';
 import { CheckCircle, CircleX, DownloadIcon, Loader2 } from 'lucide-react';
 import { useRef, useState } from 'react';
 
@@ -27,24 +28,30 @@ export default function DownloadAllImages() {
     setTotalImages(linkCount);
 
     const entries = Array.from(links.entries());
-    for (let i = 0; i < linkCount; i += BATCH_SIZE) {
-      if (cancelledRef.current) {
-        setDownloadState('cancelled');
-        return;
-      }
+    const limiter = new PromiseRateLimiterQueue(BATCH_SIZE);
 
-      const batch = entries.slice(i, i + BATCH_SIZE);
-      await Promise.allSettled(
-        batch.map(async ([url, altText]) => {
-          const { newlyDownloaded } = await downloadImageLocally(url, altText);
-          if (newlyDownloaded) {
-            setTotalDownloaded((total) => total + 1);
-          }
-          setDownloadProgress((progress) => progress + 1);
-        })
-      );
+    let lastPromise: Promise<void> | undefined;
+    for (let i = 0; i < linkCount; i += 1) {
+      const [url, altText] = entries[i];
+      const promise = limiter.add(async () => {
+        if (cancelledRef.current) {
+          setDownloadState('cancelled');
+          return;
+        }
+
+        const { newlyDownloaded } = await downloadImageLocally(url, altText);
+        if (newlyDownloaded) {
+          setTotalDownloaded((total) => total + 1);
+        }
+        setDownloadProgress((progress) => progress + 1);
+      });
+
+      if (i === linkCount - 1) {
+        lastPromise = promise;
+      }
     }
 
+    await lastPromise;
     setDownloadState('finished');
   };
 
