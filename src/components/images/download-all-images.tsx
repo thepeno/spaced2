@@ -56,13 +56,13 @@ export default function DownloadAllImages() {
   };
 
   return (
-    <div className='bg-background rounded-xl px-2 py-2 sm:w-full mb-6 flex justify-between items-center mt-4 h-14'>
+    <div className='bg-background dark:bg-muted/50 rounded-xl px-2 py-2 sm:w-full mb-6 flex justify-between items-center mt-4 h-14'>
       {downloadState === 'idle' && (
         <>
           <div className='text-sm ml-2'>Make all images available offline</div>
           <BouncyButton
             asButton
-            className='flex justify-center items-center gap-2 bg-primary p-2 rounded-md text-background font-semibold px-4'
+            className='flex justify-center items-center gap-2 bg-primary p-2 rounded-md text-background font-semibold px-4 dark:text-foreground'
             onClick={handleDownload}
           >
             <DownloadIcon className='w-4 h-4' strokeWidth={2.5} />
