@@ -40,10 +40,6 @@ export function CreateUpdateFlashcardForm({
   });
 
   useEffect(() => {
-    form.setFocus('front');
-  }, [form]);
-
-  useEffect(() => {
     if (initialFront) {
       form.setValue('front', initialFront);
     }
