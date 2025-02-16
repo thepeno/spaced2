@@ -1,6 +1,6 @@
 import BouncyButton from '@/components/bouncy-button';
 import { useTheme } from '@/components/theme/theme-provider';
-import { MoonIcon, SunIcon } from 'lucide-react';
+import { Monitor, MoonIcon, SunIcon } from 'lucide-react';
 
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme();
@@ -10,15 +10,32 @@ export function ThemeToggle() {
       <BouncyButton
         variant='large'
         asButton
-        onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+        onClick={() => {
+          if (theme === 'system') {
+            setTheme('dark');
+          } else if (theme === 'dark') {
+            setTheme('light');
+          } else {
+            setTheme('system');
+          }
+        }}
         className='bg-background/50 dark:bg-muted/50 w-52 h-48 rounded-xl flex flex-col items-center justify-center'
       >
-        {theme === 'dark' ? (
+        {theme === 'system' ? (
+          <Monitor className='size-16' />
+        ) : theme === 'dark' ? (
           <MoonIcon className='size-16' />
         ) : (
           <SunIcon className='size-16' />
         )}
-        <div className='mt-2'>Theme</div>
+        <div className='mt-2'>
+          {theme === 'system'
+            ? 'System '
+            : theme === 'dark'
+            ? 'Dark '
+            : 'Light '}
+          Theme
+        </div>
       </BouncyButton>
     </div>
   );
