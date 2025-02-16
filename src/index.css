@@ -113,3 +113,24 @@
     @apply bg-background text-foreground;
   }
 }
+
+.image-expand img {
+  view-transition-name: image-expand;
+  contain: layout;
+}
+
+
+::view-transition-old(image-expand) {
+  animation: none;
+  mix-blend-mode: normal;
+  display: none;
+}
+
+::view-transition-new(image-expand) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+::view-transition-image-pair(image-expand) {
+  isolation: none;
+}

@@ -12,7 +12,7 @@ export type CachedImage = {
   size: number;
 };
 
-type ImageBlob = {
+export type ImageBlob = {
   url: string;
   content: Blob;
 };
