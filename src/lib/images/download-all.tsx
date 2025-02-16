@@ -1,7 +1,7 @@
 import MemoryDB from '@/lib/db/memory';
 
-export async function searchForLinks(): Promise<Map<string, string>> {
-  const cards = await MemoryDB.getCards();
+export function searchForLinks(): Map<string, string> {
+  const cards = MemoryDB.getCards();
   const imageLinkRegex = /!\[(?<alt>.*?)\]\((?<url>.*?)\)/g;
 
   const links = new Map<string, string>();

@@ -20,7 +20,7 @@ export default function DownloadAllImages() {
 
   const handleDownload = async () => {
     setDownloadState('searching-links');
-    const links = await searchForLinks();
+    const links = searchForLinks();
 
     setDownloadState('downloading');
     const linkCount = links.size;
