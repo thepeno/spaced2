@@ -62,8 +62,6 @@ async function fetchImage(url: string): Promise<Blob> {
  * @returns A promise that resolves to the thumbnail blob.
  */
 async function generateThumbnail(original: Blob): Promise<Blob> {
-  const randomNumber = Math.floor(Math.random() * 100);
-  console.time(`generateThumbnail ${randomNumber}`);
   const canvas = document.createElement('canvas');
   canvas.width = 200;
   canvas.height = 200;
@@ -108,7 +106,6 @@ async function generateThumbnail(original: Blob): Promise<Blob> {
       (blob) => {
         if (!blob) throw new Error('Failed to create thumbnail blob');
         resolve(blob);
-        console.timeEnd(`generateThumbnail ${randomNumber}`);
       },
       'image/jpeg',
       0.8
@@ -217,7 +214,6 @@ export function revokeImage(url: string) {
 
   inMemoryImage.referenceCount--;
   if (inMemoryImage.referenceCount <= 0) {
-    console.log('revoking image', url);
     URL.revokeObjectURL(inMemoryImage.objectURL);
     ImageMemoryDB.delete(url);
   }
