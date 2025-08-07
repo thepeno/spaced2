@@ -9,8 +9,7 @@
     3. Set up the backend Cloudflare Worker.
 
 2. Run `pnpm run deploy` which builds the project and pushes it. Replace `--project-name spaced2` with the name of your Cloudflare Pages project.
-   Note: to use the environment variables in the Cloudflare dashboard, you should set up the CI to trigger a new build on push to the `main` branch
-   of your repository.
+   Note: to use the environment variables in the Cloudflare dashboard, you should set up the CI to trigger a new build on push to the `main` branch of your repository.
 
    If not, Vite will bundle your public `VITE_` environment variables from
    the `.env.local` file into the production build.
