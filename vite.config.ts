@@ -70,4 +70,31 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  server: {
+    proxy: {
+      '/api': {
+        target: 'https://spaced-backend-local.nordahltheo.workers.dev',
+        changeOrigin: true,
+        secure: true,
+        headers: {
+          'X-Forwarded-Host': 'localhost:5173',
+        },
+        configure: (proxy) => {
+          proxy.on('proxyReq', (_proxyReq, req) => {
+            console.log('Proxying request:', req.method, req.url);
+            console.log('Request headers:', req.headers);
+          });
+          proxy.on('proxyRes', (proxyRes, req) => {
+            console.log('Proxy response:', proxyRes.statusCode, req.url);
+            if (proxyRes.statusCode && proxyRes.statusCode >= 400) {
+              console.log('Response headers:', proxyRes.headers);
+            }
+          });
+          proxy.on('error', (err, req) => {
+            console.log('Proxy error:', err.message, req.url);
+          });
+        },
+      }
+    }
+  },
 });

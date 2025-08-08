@@ -16,7 +16,7 @@ export function GoogleSignIn() {
         data-client_id={import.meta.env.VITE_GOOGLE_CLIENT_ID}
         data-context='signin'
         data-ux_mode='popup'
-        data-login_uri={import.meta.env.VITE_BACKEND_URL + '/auth/google'}
+        data-login_uri={'/api/auth/google'}
         data-auto_prompt='false'
       ></div>
 
