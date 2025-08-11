@@ -63,11 +63,23 @@ export default function MobileReviewCarousel({ card }: { card: CardWithMetadata 
           <CarouselItem>
             <div className='p-1'>
               <FlashcardContent content={card.front} />
+              {card.exampleSentence && (
+                <div className='mt-4 p-3 bg-muted/30 rounded-lg border-l-4 border-primary'>
+                  <p className='text-sm text-muted-foreground mb-1'>Example:</p>
+                  <FlashcardContent content={card.exampleSentence} />
+                </div>
+              )}
             </div>
           </CarouselItem>
           <CarouselItem>
             <div className='p-1'>
               <FlashcardContent content={card.back} />
+              {card.exampleSentenceTranslation && (
+                <div className='mt-4 p-3 bg-muted/30 rounded-lg border-l-4 border-secondary'>
+                  <p className='text-sm text-muted-foreground mb-1'>Example translation:</p>
+                  <FlashcardContent content={card.exampleSentenceTranslation} />
+                </div>
+              )}
             </div>
           </CarouselItem>
         </CarouselContent>

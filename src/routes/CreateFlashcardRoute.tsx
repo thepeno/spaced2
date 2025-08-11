@@ -207,7 +207,13 @@ export default function CreateFlashcardRoute() {
 
         <CreateUpdateFlashcardForm
           onSubmit={async (values) => {
-            await createNewCard(values.front, values.back, selectedDecks);
+            await createNewCard(
+              values.front, 
+              values.back, 
+              selectedDecks,
+              values.exampleSentence || null,
+              values.exampleSentenceTranslation || null
+            );
           }}
           numDecks={selectedDecks.length}
           onImageUpload={async (image) => {

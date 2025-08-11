@@ -1,7 +1,7 @@
 // This in-memory database is the data store for cards.
 // We only persist operations, which are applied again every time we restart the app.
 // An in-memory database is faster than fetching from IndexeDB whenever we need cards.
-import { db } from '@/lib/db/persistence';
+import { db, initializeDatabase } from '@/lib/db/persistence';
 import { handleClientOperation, OperationWithId } from '@/lib/sync/operation';
 import { CardWithMetadata, Deck } from '@/lib/types';
 import { Card } from 'ts-fsrs';
@@ -196,12 +196,22 @@ const MemoryDB = {
 export default MemoryDB;
 
 async function init() {
-  const operations = await db.operations.toArray();
-  for (const operation of operations) {
-    handleClientOperation(operation);
-  }
+  try {
+    const dbInitialized = await initializeDatabase();
+    if (!dbInitialized) {
+      console.error('Failed to initialize database');
+      return;
+    }
+    
+    const operations = await db.operations.toArray();
+    for (const operation of operations) {
+      handleClientOperation(operation);
+    }
 
-  notify();
+    notify();
+  } catch (error) {
+    console.error('Error during memory database initialization:', error);
+  }
 }
 
 init();

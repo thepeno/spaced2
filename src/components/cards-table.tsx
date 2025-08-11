@@ -9,7 +9,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { CardContentFormValues } from '@/lib/form-schema';
-import { updateCardContentOperation } from '@/lib/sync/operation';
+import { updateCardContentOperation, updateCardExampleSentenceOperation } from '@/lib/sync/operation';
 import { CardWithMetadata } from '@/lib/types';
 import { useState } from 'react';
 
@@ -24,9 +24,21 @@ const FlashcardTable = ({ cards }: { cards: CardWithMetadata[] }) => {
       return;
     }
     const hasChanged =
-      selectedCard.front !== values.front || selectedCard.back !== values.back;
+      selectedCard.front !== values.front || 
+      selectedCard.back !== values.back ||
+      selectedCard.exampleSentence !== (values.exampleSentence || null) ||
+      selectedCard.exampleSentenceTranslation !== (values.exampleSentenceTranslation || null);
     if (hasChanged) {
       updateCardContentOperation(selectedCard.id, values.front, values.back);
+      // Also update example sentences if they changed
+      if ((values.exampleSentence || null) !== selectedCard.exampleSentence || 
+          (values.exampleSentenceTranslation || null) !== selectedCard.exampleSentenceTranslation) {
+        updateCardExampleSentenceOperation(
+          selectedCard.id, 
+          values.exampleSentence || null, 
+          values.exampleSentenceTranslation || null
+        );
+      }
     }
     setSelectedCard(null);
     setOpen(false);
@@ -47,6 +59,7 @@ const FlashcardTable = ({ cards }: { cards: CardWithMetadata[] }) => {
           <TableRow>
             <TableHead className='w-48'>Question</TableHead>
             <TableHead className='w-48'>Answer</TableHead>
+            <TableHead className='w-40'>Example</TableHead>
             <TableHead className='w-32'>Created</TableHead>
           </TableRow>
         </TableHeader>
@@ -61,6 +74,20 @@ const FlashcardTable = ({ cards }: { cards: CardWithMetadata[] }) => {
             >
               <TableCell className='font-medium'>{card.front}</TableCell>
               <TableCell>{card.back}</TableCell>
+              <TableCell className='text-sm text-muted-foreground'>
+                {card.exampleSentence ? (
+                  <div>
+                    <div className='truncate max-w-32'>{card.exampleSentence}</div>
+                    {card.exampleSentenceTranslation && (
+                      <div className='truncate max-w-32 text-xs opacity-75'>
+                        {card.exampleSentenceTranslation}
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  '-'
+                )}
+              </TableCell>
               <TableCell>
                 {new Date(card.createdAt).toLocaleDateString()}
               </TableCell>
@@ -71,7 +98,7 @@ const FlashcardTable = ({ cards }: { cards: CardWithMetadata[] }) => {
           <TableFooter>
             <TableRow>
               <TableCell
-                colSpan={3}
+                colSpan={4}
                 className='text-muted-foreground text-center h-16'
               >
                 No cards found

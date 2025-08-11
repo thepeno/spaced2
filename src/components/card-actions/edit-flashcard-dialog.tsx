@@ -32,6 +32,8 @@ export default function EditFlashcardDialog({
           onSubmit={onEdit}
           initialFront={card.front}
           initialBack={card.back}
+          initialExampleSentence={card.exampleSentence ?? undefined}
+          initialExampleSentenceTranslation={card.exampleSentenceTranslation ?? undefined}
         />
       </DialogContent>
     </Dialog>

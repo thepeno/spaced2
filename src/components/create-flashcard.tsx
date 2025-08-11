@@ -19,6 +19,8 @@ type CreateFlashcardFormProps = {
   numDecks?: number;
   initialFront?: string;
   initialBack?: string;
+  initialExampleSentence?: string;
+  initialExampleSentenceTranslation?: string;
   onImageUpload?: (image: File) => Promise<void>;
 };
 
@@ -29,6 +31,8 @@ export function CreateUpdateFlashcardForm({
   numDecks,
   initialFront,
   initialBack,
+  initialExampleSentence,
+  initialExampleSentenceTranslation,
   onImageUpload,
 }: CreateFlashcardFormProps) {
   const form = useForm<CardContentFormValues>({
@@ -36,6 +40,8 @@ export function CreateUpdateFlashcardForm({
     defaultValues: {
       front: initialFront || '',
       back: initialBack || '',
+      exampleSentence: initialExampleSentence || '',
+      exampleSentenceTranslation: initialExampleSentenceTranslation || '',
     },
   });
 
@@ -46,7 +52,13 @@ export function CreateUpdateFlashcardForm({
     if (initialBack) {
       form.setValue('back', initialBack);
     }
-  }, [initialFront, initialBack, form]);
+    if (initialExampleSentence) {
+      form.setValue('exampleSentence', initialExampleSentence);
+    }
+    if (initialExampleSentenceTranslation) {
+      form.setValue('exampleSentenceTranslation', initialExampleSentenceTranslation);
+    }
+  }, [initialFront, initialBack, initialExampleSentence, initialExampleSentenceTranslation, form]);
 
   const isUpdate = initialFront || initialBack;
   const handleSubmit = useCallback(
@@ -57,7 +69,10 @@ export function CreateUpdateFlashcardForm({
       form.setFocus('front');
       if (isUpdate) {
         const hasChanged =
-          initialFront !== data.front || initialBack !== data.back;
+          initialFront !== data.front || 
+          initialBack !== data.back ||
+          initialExampleSentence !== data.exampleSentence ||
+          initialExampleSentenceTranslation !== data.exampleSentenceTranslation;
         if (hasChanged) {
           toast.success('Flashcard updated');
         }
@@ -65,7 +80,7 @@ export function CreateUpdateFlashcardForm({
         toast.success('Flashcard created');
       }
     },
-    [form, isUpdate, initialFront, initialBack, onSubmit]
+    [form, isUpdate, initialFront, initialBack, initialExampleSentence, initialExampleSentenceTranslation, onSubmit]
   );
 
   useEffect(() => {
@@ -97,7 +112,7 @@ export function CreateUpdateFlashcardForm({
         <div className='grow'>
           <FormTextareaImageUpload
             onUploadImage={onImageUpload}
-            className='text-sm border-none shadow-none h-32'
+            className='text-sm border-none shadow-none h-28'
             form={form}
             name='front'
             // label='Question'
@@ -107,11 +122,31 @@ export function CreateUpdateFlashcardForm({
 
         <div className='grow'>
           <FormTextareaImageUpload
-            className='text-sm border-none shadow-none h-32'
+            className='text-sm border-none shadow-none h-28'
             form={form}
             name='back'
             // label='Answer'
             placeholder='Enter the answer'
+          />
+        </div>
+
+        <div className='grow'>
+          <FormTextareaImageUpload
+            className='text-sm border-none shadow-none h-24'
+            form={form}
+            name='exampleSentence'
+            // label='Example Sentence'
+            placeholder='Example sentence (optional)'
+          />
+        </div>
+
+        <div className='grow'>
+          <FormTextareaImageUpload
+            className='text-sm border-none shadow-none h-24'
+            form={form}
+            name='exampleSentenceTranslation'
+            // label='Example Translation'
+            placeholder='Translation of example sentence (optional)'
           />
         </div>
         <div className='flex justify-start'>

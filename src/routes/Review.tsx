@@ -139,9 +139,25 @@ export default function ReviewRoute() {
                   ref={ref}
                 >
                   {nextReviewCard ? (
-                    <div className='w-full hidden sm:flex items-center gap-6 p-6'>
-                      <FlashcardContent content={nextReviewCard.front} />
-                      <FlashcardContent content={nextReviewCard.back} />
+                    <div className='w-full hidden sm:flex items-start gap-6 p-6'>
+                      <div className='flex-1'>
+                        <FlashcardContent content={nextReviewCard.front} />
+                        {nextReviewCard.exampleSentence && (
+                          <div className='mt-4 p-3 bg-muted/30 rounded-lg border-l-4 border-primary'>
+                            <p className='text-sm text-muted-foreground mb-2'>Example:</p>
+                            <FlashcardContent content={nextReviewCard.exampleSentence} />
+                          </div>
+                        )}
+                      </div>
+                      <div className='flex-1'>
+                        <FlashcardContent content={nextReviewCard.back} />
+                        {nextReviewCard.exampleSentenceTranslation && (
+                          <div className='mt-4 p-3 bg-muted/30 rounded-lg border-l-4 border-secondary'>
+                            <p className='text-sm text-muted-foreground mb-2'>Example translation:</p>
+                            <FlashcardContent content={nextReviewCard.exampleSentenceTranslation} />
+                          </div>
+                        )}
+                      </div>
                     </div>
                   ) : (
                     <EmptyReviewUi noCardsCreatedYet={noCardsCreatedYet} />

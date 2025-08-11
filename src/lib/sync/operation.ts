@@ -147,6 +147,34 @@ export const deckOperationSchema = z
 
 export type DeckOperation = z.infer<typeof deckOperationSchema>;
 
+export const deckLanguagesOperationSchema = z
+  .object({
+    type: z.literal('deckLanguages'),
+    payload: z.object({
+      deckId: z.string(),
+      nativeLanguage: z.string().nullable(),
+      targetLanguage: z.string().nullable(),
+    }),
+    timestamp: z.number(),
+  })
+  .passthrough();
+
+export type DeckLanguagesOperation = z.infer<typeof deckLanguagesOperationSchema>;
+
+export const cardExampleSentenceOperationSchema = z
+  .object({
+    type: z.literal('cardExampleSentence'),
+    payload: z.object({
+      cardId: z.string(),
+      exampleSentence: z.string().nullable(),
+      exampleSentenceTranslation: z.string().nullable(),
+    }),
+    timestamp: z.number(),
+  })
+  .passthrough();
+
+export type CardExampleSentenceOperation = z.infer<typeof cardExampleSentenceOperationSchema>;
+
 export const updateDeckCardOperationSchema = z
   .object({
     type: z.literal('updateDeckCard'),
@@ -170,6 +198,8 @@ export const operationSchema = z.union([
   cardBookmarkedOperationSchema,
   cardSuspendedOperationSchema,
   deckOperationSchema,
+  deckLanguagesOperationSchema,
+  cardExampleSentenceOperationSchema,
   updateDeckCardOperationSchema,
   reviewLogOperationSchema,
   reviewLogDeletedOperationSchema,
@@ -192,6 +222,8 @@ export const server2ClientSyncSchema = z.object({
       cardBookmarkedOperationSchema.extend({ seqNo: z.number() }),
       cardSuspendedOperationSchema.extend({ seqNo: z.number() }),
       deckOperationSchema.extend({ seqNo: z.number() }),
+      deckLanguagesOperationSchema.extend({ seqNo: z.number() }),
+      cardExampleSentenceOperationSchema.extend({ seqNo: z.number() }),
       updateDeckCardOperationSchema.extend({ seqNo: z.number() }),
       reviewLogOperationSchema.extend({ seqNo: z.number() }),
       reviewLogDeletedOperationSchema.extend({ seqNo: z.number() }),
@@ -253,7 +285,9 @@ function cardDeckOperations(
 export async function createNewCard(
   front: string,
   back: string,
-  decks: string[] = []
+  decks: string[] = [],
+  exampleSentence?: string | null,
+  exampleSentenceTranslation?: string | null
 ) {
   const card: CardWithMetadata = {
     ...createEmptyCard(),
@@ -269,7 +303,22 @@ export async function createNewCard(
 
   const cardOperations = emptyCardToOperations(card);
   const deckOperations = cardDeckOperations(card.id, decks);
-  const operations = [...cardOperations, ...deckOperations];
+  
+  // Add example sentence operation if provided
+  const exampleSentenceOperations: CardExampleSentenceOperation[] = [];
+  if (exampleSentence || exampleSentenceTranslation) {
+    exampleSentenceOperations.push({
+      type: 'cardExampleSentence',
+      payload: {
+        cardId: card.id,
+        exampleSentence: exampleSentence ?? null,
+        exampleSentenceTranslation: exampleSentenceTranslation ?? null,
+      },
+      timestamp: Date.now(),
+    });
+  }
+  
+  const operations = [...cardOperations, ...deckOperations, ...exampleSentenceOperations];
 
   for (const operation of operations) {
     const result = handleClientOperation(operation);
@@ -434,11 +483,67 @@ export async function undoGradeCard(): Promise<UndoGradeResult> {
   return { applied: true };
 }
 
-export async function createNewDeck(name: string, description: string) {
+export async function createNewDeck(
+  name: string, 
+  description: string,
+  nativeLanguage?: string | null,
+  targetLanguage?: string | null
+) {
+  const deckId = crypto.randomUUID();
+  const now = Date.now();
+  
   const deckOperation: DeckOperation = {
     type: 'deck',
     payload: {
-      id: crypto.randomUUID(),
+      id: deckId,
+      name,
+      description,
+      deleted: false,
+    },
+    timestamp: now,
+  };
+
+  const operations: Operation[] = [deckOperation];
+
+  // Add languages operation if languages are provided
+  if (nativeLanguage != null || targetLanguage != null) {
+    const languagesOperation: DeckLanguagesOperation = {
+      type: 'deckLanguages',
+      payload: {
+        deckId,
+        nativeLanguage: nativeLanguage ?? null,
+        targetLanguage: targetLanguage ?? null,
+      },
+      timestamp: now,
+    };
+    operations.push(languagesOperation);
+  }
+
+  // Apply all operations
+  for (const operation of operations) {
+    const result = handleClientOperation(operation);
+    if (!result.applied) {
+      throw new Error(
+        'SHOULD NOT HAPPEN - there should not be conflict when creating new decks'
+      );
+    }
+  }
+
+  const operationsCopy = operations.map((op) => structuredClone(op));
+  await db.operations.bulkAdd(operations);
+  await db.pendingOperations.bulkAdd(operationsCopy);
+  MemoryDB.notify();
+}
+
+export async function updateDeckOperation(
+  deckId: string,
+  name: string,
+  description: string
+) {
+  const deckOperation: DeckOperation = {
+    type: 'deck',
+    payload: {
+      id: deckId,
       name,
       description,
       deleted: false,
@@ -447,6 +552,42 @@ export async function createNewDeck(name: string, description: string) {
   };
 
   await handleClientOperationWithPersistence(deckOperation);
+}
+
+export async function updateDeckLanguagesOperation(
+  deckId: string,
+  nativeLanguage?: string | null,
+  targetLanguage?: string | null
+) {
+  const languagesOperation: DeckLanguagesOperation = {
+    type: 'deckLanguages',
+    payload: {
+      deckId,
+      nativeLanguage: nativeLanguage ?? null,
+      targetLanguage: targetLanguage ?? null,
+    },
+    timestamp: Date.now(),
+  };
+
+  await handleClientOperationWithPersistence(languagesOperation);
+}
+
+export async function updateCardExampleSentenceOperation(
+  cardId: string,
+  exampleSentence?: string | null,
+  exampleSentenceTranslation?: string | null
+) {
+  const exampleSentenceOperation: CardExampleSentenceOperation = {
+    type: 'cardExampleSentence',
+    payload: {
+      cardId,
+      exampleSentence: exampleSentence ?? null,
+      exampleSentenceTranslation: exampleSentenceTranslation ?? null,
+    },
+    timestamp: Date.now(),
+  };
+
+  await handleClientOperationWithPersistence(exampleSentenceOperation);
 }
 
 type OperationResult = {
@@ -673,6 +814,66 @@ function handleUpdateDeckCardOperation(
   return { applied: true };
 }
 
+function handleDeckLanguagesOperation(
+  operation: DeckLanguagesOperation
+): OperationResult {
+  const deck = MemoryDB.getDeckById(operation.payload.deckId);
+
+  if (!deck) {
+    MemoryDB.putDeck({
+      ...defaultDeck,
+      id: operation.payload.deckId,
+      nativeLanguage: operation.payload.nativeLanguage,
+      targetLanguage: operation.payload.targetLanguage,
+      languagesLastModified: operation.timestamp,
+    });
+    return { applied: true };
+  }
+
+  if (deck.languagesLastModified > operation.timestamp) {
+    return { applied: false };
+  }
+
+  const updatedDeck: Deck = {
+    ...deck,
+    nativeLanguage: operation.payload.nativeLanguage,
+    targetLanguage: operation.payload.targetLanguage,
+    languagesLastModified: operation.timestamp,
+  };
+  MemoryDB.putDeck(updatedDeck);
+  return { applied: true };
+}
+
+function handleCardExampleSentenceOperation(
+  operation: CardExampleSentenceOperation
+): OperationResult {
+  const card = MemoryDB.getCardById(operation.payload.cardId);
+
+  if (!card) {
+    MemoryDB.putCard({
+      ...defaultCard,
+      id: operation.payload.cardId,
+      exampleSentence: operation.payload.exampleSentence,
+      exampleSentenceTranslation: operation.payload.exampleSentenceTranslation,
+      cardExampleSentenceLastModified: operation.timestamp,
+    });
+    return { applied: true };
+  }
+
+  if (card.cardExampleSentenceLastModified > operation.timestamp) {
+    return { applied: false };
+  }
+
+  const updatedCard: CardWithMetadata = {
+    ...card,
+    exampleSentence: operation.payload.exampleSentence,
+    exampleSentenceTranslation: operation.payload.exampleSentenceTranslation,
+    cardExampleSentenceLastModified: operation.timestamp,
+  };
+  MemoryDB.putCard(updatedCard);
+  return { applied: true };
+}
+
 export function handleClientOperation(operation: Operation): OperationResult {
   switch (operation.type) {
     case 'card':
@@ -687,6 +888,10 @@ export function handleClientOperation(operation: Operation): OperationResult {
       return handleCardSuspendedOperation(operation);
     case 'deck':
       return handleDeckOperation(operation);
+    case 'deckLanguages':
+      return handleDeckLanguagesOperation(operation);
+    case 'cardExampleSentence':
+      return handleCardExampleSentenceOperation(operation);
     case 'updateDeckCard':
       return handleUpdateDeckCardOperation(operation);
     case 'reviewLog':

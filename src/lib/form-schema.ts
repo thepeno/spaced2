@@ -21,6 +21,20 @@ export const cardContentFormSchema = z.object({
       message: 'Answer is too long.',
     })
     .describe('The answer for the flashcard.'),
+  exampleSentence: z
+    .string()
+    .max(MAX_INPUT_LENGTH, {
+      message: 'Example sentence is too long.',
+    })
+    .optional()
+    .describe('Example sentence in target language.'),
+  exampleSentenceTranslation: z
+    .string()
+    .max(MAX_INPUT_LENGTH, {
+      message: 'Example sentence translation is too long.',
+    })
+    .optional()
+    .describe('Translation of example sentence in native language.'),
 });
 
 export type CardContentFormValues = z.infer<typeof cardContentFormSchema>;
@@ -84,6 +98,8 @@ export const deckFormSchema = z.object({
     .min(1, { message: 'Description is required.' })
     .max(300, { message: 'Description is too long.' })
     .optional(),
+  nativeLanguage: z.string().optional(),
+  targetLanguage: z.string().optional(),
 });
 
 export type DeckFormValues = z.infer<typeof deckFormSchema>;
