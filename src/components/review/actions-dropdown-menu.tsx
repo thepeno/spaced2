@@ -10,13 +10,13 @@ import {
 import { dropdownMenuItemVariants } from '@/components/ui/dropdown-variants';
 import { cn } from '@/lib/utils';
 import {
-  Ban,
-  BookmarkIcon,
-  ChevronsRight,
-  Ellipsis,
-  Pencil,
+  Prohibit,
+  BookmarkSimple,
+  CaretDoubleRight,
+  DotsThree,
+  PencilSimple,
   Trash,
-} from 'lucide-react';
+} from 'phosphor-react';
 
 type ActionsDropdownMenuProps = {
   bookmarked: boolean;
@@ -41,7 +41,7 @@ export default function ActionsDropdownMenu({
       <DropdownMenu modal={false}>
         <DropdownMenuTrigger asChild>
           <div className='px-2 py-3 cursor-pointer text-muted-foreground/50 active:text-muted-foreground transition-all'>
-            <Ellipsis className='size-6' />
+            <DotsThree className='size-6' />
           </div>
         </DropdownMenuTrigger>
 
@@ -57,12 +57,12 @@ export default function ActionsDropdownMenu({
             className={dropdownMenuItemVariants({ variant: 'telegram' })}
             onClick={() => handleBookmark(!bookmarked)}
           >
-            <BookmarkIcon
+            <BookmarkSimple
               className={cn(
                 'size-5 group-hover:animate-wobble-icon',
                 bookmarked && 'text-primary'
               )}
-              fill={bookmarked ? 'currentColor' : 'none'}
+              weight={bookmarked ? 'fill' : 'regular'}
             />
             <p className='text-base sm:text-sm'>
               {bookmarked ? 'Unsave' : 'Save'}
@@ -76,7 +76,7 @@ export default function ActionsDropdownMenu({
               className={dropdownMenuItemVariants({ variant: 'telegram' })}
               onClick={handleSkip}
             >
-              <ChevronsRight className='size-5 group-hover:animate-scale-arrow-icon-size' />
+              <CaretDoubleRight className='size-5 group-hover:animate-scale-arrow-icon-size' />
               <p className='text-base sm:text-sm'>Skip</p>
             </DropdownMenuItem>
 
@@ -84,7 +84,7 @@ export default function ActionsDropdownMenu({
               className={dropdownMenuItemVariants({ variant: 'telegram' })}
               onClick={handleBury}
             >
-              <Ban className='size-5 group-hover:animate-scale-icon-size' />
+              <Prohibit className='size-5 group-hover:animate-scale-icon-size' />
               <p className='text-base sm:text-sm'>Bury</p>
             </DropdownMenuItem>
           </DropdownMenuGroup>
@@ -96,7 +96,7 @@ export default function ActionsDropdownMenu({
               className={dropdownMenuItemVariants({ variant: 'telegram' })}
               onClick={handleEdit}
             >
-              <Pencil className='size-5 group-hover:animate-move-pencil-icon' />
+              <PencilSimple className='size-5 group-hover:animate-move-pencil-icon' />
               <p className='text-base sm:text-sm'>Edit</p>
             </DropdownMenuItem>
 

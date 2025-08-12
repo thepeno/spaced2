@@ -8,6 +8,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Textarea } from '@/components/ui/textarea';
+import { cn } from '@/lib/utils';
 import { FieldValues } from 'react-hook-form';
 
 type FormTextareaProps<TFieldValues extends FieldValues> =
@@ -16,6 +17,7 @@ type FormTextareaProps<TFieldValues extends FieldValues> =
     description?: string;
     className?: string;
     rows?: number;
+    grow?: boolean;
   };
 
 export function FormTextarea<TFieldValues extends FieldValues>({
@@ -27,6 +29,7 @@ export function FormTextarea<TFieldValues extends FieldValues>({
   placeholder,
   description,
   rows,
+  grow,
 }: FormTextareaProps<TFieldValues>) {
   return (
     <FormField
@@ -34,11 +37,11 @@ export function FormTextarea<TFieldValues extends FieldValues>({
       name={name}
       disabled={disabled}
       render={({ field }) => (
-        <FormItem>
+        <FormItem className={cn(grow && 'flex-1 flex flex-col')}>
           {label && <FormLabel>{label}</FormLabel>}
-          <FormControl>
+          <FormControl className={cn(grow && 'flex-1')}>
             <Textarea
-              className={className}
+              className={cn(className, 'text-sm', grow && 'grow h-full')}
               placeholder={placeholder}
               rows={rows}
               {...field}

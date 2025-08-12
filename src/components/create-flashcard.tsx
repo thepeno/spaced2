@@ -1,9 +1,10 @@
-import { FormTextareaImageUpload } from '@/components/form/form-textarea-image-upload';
+import { FormTextarea } from '@/components/form/form-textarea';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Form } from '@/components/ui/form';
+import { DeckSelector } from '@/components/deck-selector';
 import {
   cardContentFormSchema,
   CardContentFormValues,
@@ -13,15 +14,56 @@ import {
 import { isEventTargetInput } from '@/lib/utils';
 import VibrationPattern from '@/lib/vibrate';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Plus, Wand2 } from 'lucide-react';
+import { Plus, MagicWand, Microphone } from 'phosphor-react';
 import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
+
+// Speech Recognition API types
+interface SpeechRecognitionEvent {
+  results: {
+    [index: number]: {
+      [index: number]: {
+        transcript: string;
+      };
+    };
+  };
+}
+
+interface SpeechRecognitionErrorEvent {
+  error: string;
+}
+
+interface SpeechRecognition {
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+  onstart: (() => void) | null;
+  onresult: ((event: SpeechRecognitionEvent) => void) | null;
+  onerror: ((event: SpeechRecognitionErrorEvent) => void) | null;
+  onend: (() => void) | null;
+  start(): void;
+  stop(): void;
+}
+
+declare global {
+  interface Window {
+    SpeechRecognition?: new () => SpeechRecognition;
+    webkitSpeechRecognition?: new () => SpeechRecognition;
+  }
+}
 
 type CreateFlashcardFormProps = {
   onSubmit: (values: CardContentFormValues) => void;
   onAssistedSubmit?: (values: AssistedCardFormValues) => void;
   selectedDeckId?: string;
+  onDeckChange?: (deckId: string) => void;
+  decks?: Array<{
+    id: string;
+    name: string;
+    description: string;
+  }>;
+  onCreateDeck?: () => void;
   initialFront?: string;
   initialBack?: string;
   initialExampleSentence?: string;
@@ -36,15 +78,18 @@ export function CreateUpdateFlashcardForm({
   onSubmit,
   onAssistedSubmit,
   selectedDeckId,
+  onDeckChange,
+  decks = [],
+  onCreateDeck,
   initialFront,
   initialBack,
   initialExampleSentence,
   initialExampleSentenceTranslation,
-  onImageUpload,
   isGenerating = false,
 }: CreateFlashcardFormProps) {
   const [assistedMode, setAssistedMode] = useState(false);
-  
+  const [isListening, setIsListening] = useState(false);
+
   const form = useForm<CardContentFormValues>({
     resolver: zodResolver(cardContentFormSchema),
     defaultValues: {
@@ -86,7 +131,7 @@ export function CreateUpdateFlashcardForm({
       form.setFocus('front');
       if (isUpdate) {
         const hasChanged =
-          initialFront !== data.front || 
+          initialFront !== data.front ||
           initialBack !== data.back ||
           initialExampleSentence !== data.exampleSentence ||
           initialExampleSentenceTranslation !== data.exampleSentenceTranslation;
@@ -110,6 +155,51 @@ export function CreateUpdateFlashcardForm({
     },
     [assistedForm, onAssistedSubmit]
   );
+
+  const handleDictation = useCallback(() => {
+    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+      toast.error('Speech recognition not supported in this browser');
+      return;
+    }
+
+    if (isListening) {
+      setIsListening(false);
+      return;
+    }
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      toast.error('Speech recognition not supported in this browser');
+      return;
+    }
+    const recognition = new SpeechRecognition();
+
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    recognition.lang = 'en-US';
+
+    recognition.onstart = () => {
+      setIsListening(true);
+    };
+
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript;
+      assistedForm.setValue('word', transcript);
+      setIsListening(false);
+    };
+
+    recognition.onerror = (event) => {
+      console.error('Speech recognition error:', event.error);
+      toast.error('Speech recognition failed');
+      setIsListening(false);
+    };
+
+    recognition.onend = () => {
+      setIsListening(false);
+    };
+
+    recognition.start();
+  }, [assistedForm, isListening]);
 
   useEffect(() => {
     // cmd enter to submit
@@ -135,18 +225,18 @@ export function CreateUpdateFlashcardForm({
   const showAssistedToggle = !isUpdate;
 
   return (
-    <div className='flex flex-col gap-4 bg-background rounded-xl p-4 h-full justify-center'>
+    <div className='flex flex-col grow gap-8 rounded-xl h-full'>
       {showAssistedToggle && (
-        <div className='flex items-center space-x-2 mb-4'>
+        <div className='flex items-center justify-between space-x-2'>
+          <Label htmlFor='assisted-mode' className='flex items-center gap-2'>
+            <MagicWand className='w-4 h-4' />
+            Assisted creation
+          </Label>
           <Switch
             id='assisted-mode'
             checked={assistedMode}
             onCheckedChange={setAssistedMode}
           />
-          <Label htmlFor='assisted-mode' className='flex items-center gap-2'>
-            <Wand2 className='w-4 h-4' />
-            Assisted creation
-          </Label>
         </div>
       )}
 
@@ -154,31 +244,51 @@ export function CreateUpdateFlashcardForm({
         <Form {...assistedForm}>
           <form
             onSubmit={assistedForm.handleSubmit(handleAssistedSubmit)}
-            className='flex flex-col gap-4 h-full justify-center'
+            className='flex flex-col grow gap-4 h-full justify-center'
           >
-            <div className='grow'>
+            <div className='flex flex-col flex-1 relative'>
               <Input
                 {...assistedForm.register('word')}
                 placeholder='Enter a word to study (e.g., "hello")'
-                className='text-lg h-20 text-center'
+                className='flex-1 h-full text-lg text-center shadow-none border-none focus:outline-none focus-visible:ring-0'
                 disabled={isGenerating}
               />
+              <Button
+                type='button'
+                variant='outline'
+                className='absolute bottom-4 right-0 h-[60px] w-[60px] min-w-[60px] flex-shrink-0 inline-flex items-center justify-center rounded-[12px]'
+                onClick={handleDictation}
+                disabled={isGenerating}
+                title={isListening ? 'Stop dictation' : 'Start dictation'}
+              >
+                <Microphone className={`h-[22.5px] w-[22.5px] ${isListening ? 'text-red-500 animate-pulse' : ''}`} />
+              </Button>
               {assistedForm.formState.errors.word && (
                 <p className='text-sm text-red-500 mt-2'>
                   {assistedForm.formState.errors.word.message}
                 </p>
               )}
             </div>
-            
-            <div className='flex justify-end'>
+
+            <div className='flex gap-2 items-center'>
+              {onDeckChange && onCreateDeck && (
+                <DeckSelector
+                  decks={decks}
+                  value={selectedDeckId || ''}
+                  onValueChange={onDeckChange}
+                  onCreateNew={onCreateDeck}
+                  placeholder='Select a deck...'
+                  className='flex-1'
+                />
+              )}
               <Button
                 type='submit'
-                size='icon'
-                className='rounded-lg'
+                variant='outline'
+                className='rounded-lg h-[60px] w-[60px] min-w-[60px] flex-shrink-0 inline-flex items-center justify-center rounded-[12px]'
                 disabled={isGenerating || !selectedDeckId}
                 title={isGenerating ? 'Generating...' : 'Generate card'}
               >
-                <Wand2 className='h-4 w-4' />
+                <MagicWand className='h-7.5 w-7.5 text-primary' />
               </Button>
             </div>
           </form>
@@ -187,60 +297,60 @@ export function CreateUpdateFlashcardForm({
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(handleSubmit)}
-            className='flex flex-col gap-4 h-full justify-center'
+            className='flex flex-col grow gap-3 h-full'
           >
-        <div className='grow'>
-          <FormTextareaImageUpload
-            onUploadImage={onImageUpload}
-            className='text-sm border-none shadow-none h-28'
-            form={form}
-            name='front'
-            // label='Question'
-            placeholder='Enter the question'
-          />
-        </div>
-
-        <div className='grow'>
-          <FormTextareaImageUpload
-            className='text-sm border-none shadow-none h-28'
-            form={form}
-            name='back'
-            // label='Answer'
-            placeholder='Enter the answer'
-          />
-        </div>
-
-        <div className='grow'>
-          <FormTextareaImageUpload
-            className='text-sm border-none shadow-none h-24'
-            form={form}
-            name='exampleSentence'
-            // label='Example Sentence'
-            placeholder='Example sentence (optional)'
-          />
-        </div>
-
-        <div className='grow'>
-          <FormTextareaImageUpload
-            className='text-sm border-none shadow-none h-24'
-            form={form}
-            name='exampleSentenceTranslation'
-            // label='Example Translation'
-            placeholder='Translation of example sentence (optional)'
-          />
-        </div>
-        <div className='flex justify-end'>
-          <Button
-            type='submit'
-            size='icon'
-            className='rounded-lg'
-            disabled={!selectedDeckId}
-          >
-            <Plus className='h-4 w-4' />
-          </Button>
-        </div>
-        </form>
-      </Form>
+            <FormTextarea
+              className='text-sm shadow-none bg-background h-10'
+              form={form}
+              name='front'
+              // label='Question'
+              placeholder='Input target word'
+            />
+            <FormTextarea
+              className='text-sm shadow-none bg-background h-10'
+              form={form}
+              name='back'
+              // label='Answer'
+              placeholder='Input translation'
+            />
+            <FormTextarea
+              grow
+              className='text-sm grow shadow-none bg-background h-full'
+              form={form}
+              name='exampleSentence'
+              // label='Example Sentence'
+              placeholder='Example sentence'
+            />
+            <FormTextarea
+              grow
+              className='text-sm grow shadow-none bg-background h-full'
+              form={form}
+              name='exampleSentenceTranslation'
+              // label='Example Translation'
+              placeholder='Translation of example sentence'
+            />
+            <div className='flex gap-2 items-center'>
+              {onDeckChange && onCreateDeck && (
+                <DeckSelector
+                  decks={decks}
+                  value={selectedDeckId || ''}
+                  onValueChange={onDeckChange}
+                  onCreateNew={onCreateDeck}
+                  placeholder='Select a deck...'
+                  className='flex-1'
+                />
+              )}
+              <Button
+                type='submit'
+                variant='outline'
+                className='h-[60px] w-[60px] min-w-[60px] flex-shrink-0 inline-flex items-center justify-center rounded-[12px]'
+                disabled={!selectedDeckId}
+              >
+                <Plus className='h-[22.5px] w-[22.5px] text-primary' />
+              </Button>
+            </div>
+          </form>
+        </Form>
       )}
     </div>
   );

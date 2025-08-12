@@ -1,5 +1,5 @@
 import VibrationPattern from '@/lib/vibrate';
-import { Check, X } from 'lucide-react';
+import { Check, X } from 'phosphor-react';
 import { Grade, Rating } from 'ts-fsrs';
 
 type MobileGradeButtonsProps = {

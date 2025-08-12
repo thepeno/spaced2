@@ -8,7 +8,7 @@ import {
 import { CardWithMetadata } from '@/lib/types';
 import { MAX_DATE } from '@/lib/utils';
 import VibrationPattern from '@/lib/vibrate';
-import { BookmarkIcon, ChevronsRight, EyeOff, Trash } from 'lucide-react';
+import { BookmarkSimple, CaretDoubleRight, EyeSlash, Trash } from 'phosphor-react';
 import { toast } from 'sonner';
 
 export async function handleCardDelete(reviewCard?: CardWithMetadata) {
@@ -25,7 +25,7 @@ export async function handleCardSuspend(reviewCard?: CardWithMetadata) {
   await updateSuspendedClientSide(reviewCard.id, tenMinutesFromNow);
   navigator?.vibrate(VibrationPattern.buttonTap);
   toast('Skipped for 10 minutes', {
-    icon: <ChevronsRight className='size-4' />,
+    icon: <CaretDoubleRight className='size-4' />,
   });
 }
 
@@ -34,7 +34,7 @@ export async function handleCardBury(reviewCard?: CardWithMetadata) {
   await updateSuspendedClientSide(reviewCard.id, MAX_DATE);
   navigator?.vibrate(VibrationPattern.buttonTap);
   toast("You won't see this card again", {
-    icon: <EyeOff className='size-4' />,
+    icon: <EyeSlash className='size-4' />,
   });
 }
 
@@ -48,7 +48,7 @@ export async function handleCardSave(
     navigator?.vibrate(VibrationPattern.successConfirm);
     toast('Saved', {
       icon: (
-        <BookmarkIcon className='size-4 text-primary' fill='currentColor' />
+        <BookmarkSimple className='size-4 text-primary' weight='fill' />
       ),
     });
   } else {

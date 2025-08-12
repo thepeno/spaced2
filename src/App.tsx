@@ -18,7 +18,7 @@ import ReviewRoute from '@/routes/Review.tsx';
 import SavedRoute from '@/routes/SavedRoute';
 import StatsRoute from '@/routes/StatsRoute';
 import { useMediaQuery } from '@uidotdev/usehooks';
-import { CircleAlert, CircleCheck } from 'lucide-react';
+import { WarningCircle, CheckCircle } from 'phosphor-react';
 import { BrowserRouter, Route, Routes } from 'react-router';
 import './index.css';
 
@@ -33,8 +33,8 @@ export default function App() {
         <Toaster
           position={isMobile ? 'top-center' : 'top-right'}
           icons={{
-            success: <CircleCheck className='text-primary size-5' />,
-            error: <CircleAlert className='text-destructive size-5' />,
+            success: <CheckCircle className='text-primary size-5' />,
+            error: <WarningCircle className='text-destructive size-5' />,
             // close: <X className='text-muted-foreground size-3' />,
           }}
           theme='light'
@@ -56,29 +56,31 @@ export default function App() {
         <CommandBar />
         <div
           className={cn(
-            'grid grid-cols-12 gap-x-6 items-start',
-            'px-2 md:px-0 pb-12 pt-20 md:pt-8',
-            'min-h-screen grid-rows-[min-content_1fr] bg-background font-sans antialiased',
+            'w-screen flex flex-col justify-between',
+            'md:px-0 md:pt-8',
+            'min-h-screen bg-background font-sans antialiased',
             'bg-muted dark:bg-background'
           )}
         >
-          <NavBar />
           <SessionExpiredBanner />
-          <Routes>
-            <Route path='/' element={<ReviewRoute />} />
-            <Route path='/decks' element={<DecksRoute />} />
-            <Route path='/decks/_all' element={<AllCardsRoute />} />
-            <Route path='/decks/:deckId' element={<DeckRoute />} />
-            <Route path='/saved' element={<SavedRoute />} />
-            {/* <Route path='/debug' element={<DebugRoute />} /> */}
-            <Route path='/create' element={<CreateFlashcardRoute />} />
-            <Route path='/profile' element={<ProfileRoute />} />
-            <Route path='/stats' element={<StatsRoute />} />
-            <Route path='/login-success' element={<LoginSuccessRoute />} />
-            <Route path='/import' element={<ImportRoute />} />
+          <div className='p-5 flex flex-col grow h-full w-full'>
+            <Routes>
+              <Route path='/' element={<ReviewRoute />} />
+              <Route path='/decks' element={<DecksRoute />} />
+              <Route path='/decks/_all' element={<AllCardsRoute />} />
+              <Route path='/decks/:deckId' element={<DeckRoute />} />
+              <Route path='/saved' element={<SavedRoute />} />
+              {/* <Route path='/debug' element={<DebugRoute />} /> */}
+              <Route path='/create' element={<CreateFlashcardRoute />} />
+              <Route path='/profile' element={<ProfileRoute />} />
+              <Route path='/stats' element={<StatsRoute />} />
+              <Route path='/login-success' element={<LoginSuccessRoute />} />
+              <Route path='/import' element={<ImportRoute />} />
 
-            <Route path='/images' element={<ImagesRoute />} />
-          </Routes>
+              <Route path='/images' element={<ImagesRoute />} />
+            </Routes>
+          </div>
+          <NavBar />
         </div>
       </ThemeProvider>
     </BrowserRouter>

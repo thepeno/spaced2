@@ -1,8 +1,15 @@
 import * as React from 'react';
-import { Check, ChevronsUpDown } from 'lucide-react';
+import { Check, CaretDown } from 'phosphor-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { useMediaQuery } from '@uidotdev/usehooks';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 
 export const SUPPORTED_LANGUAGES = [
   { value: 'af', label: 'Afrikaans' },
@@ -69,6 +76,7 @@ export function LanguageSelect({
   const [search, setSearch] = React.useState('');
   const dropdownRef = React.useRef<HTMLDivElement>(null);
   const buttonRef = React.useRef<HTMLButtonElement>(null);
+  const isMobile = useMediaQuery('(max-width: 768px)');
 
   const selectedLanguage = SUPPORTED_LANGUAGES.find(
     (language) => language.value === value
@@ -114,60 +122,82 @@ export function LanguageSelect({
     setOpen(!open);
   };
 
-  return (
-    <div className="relative">
-      <Button
-        ref={buttonRef}
-        variant="outline"
-        role="combobox"
-        aria-expanded={open}
-        className={cn('w-full justify-between', className)}
-        disabled={disabled}
-        type="button"
-        onClick={handleToggle}
-      >
-        {selectedLanguage ? selectedLanguage.label : placeholder}
-        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-      </Button>
+  const renderOptions = () => (
+    <>
+      <div className="p-4 border-b">
+        <Input
+          placeholder="Search languages..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="text-sm"
+          autoFocus={!isMobile}
+        />
+      </div>
+      <div className={cn("overflow-y-auto", isMobile ? "max-h-[60vh]" : "max-h-60")}>
+        {filteredLanguages.length === 0 ? (
+          <div className="p-4 text-sm text-muted-foreground text-center">
+            No language found.
+          </div>
+        ) : (
+          filteredLanguages.map((language) => (
+            <div
+              key={language.value}
+              className="flex items-center px-4 py-3 text-sm cursor-pointer hover:bg-accent hover:text-accent-foreground"
+              onClick={() => handleSelect(language.value)}
+            >
+              <Check
+                className={cn(
+                  'mr-3 h-4 w-4',
+                  value === language.value ? 'opacity-100' : 'opacity-0'
+                )}
+              />
+              {language.label}
+            </div>
+          ))
+        )}
+      </div>
+    </>
+  );
 
-      {open && (
-        <div
-          ref={dropdownRef}
-          className="absolute z-50 w-full mt-1 bg-popover border rounded-md shadow-md"
+  return (
+    <>
+      <div className="relative">
+        <Button
+          ref={buttonRef}
+          variant="outline"
+          role="combobox"
+          aria-expanded={open}
+          className={cn('w-full justify-between', className)}
+          disabled={disabled}
+          type="button"
+          onClick={handleToggle}
         >
-          <div className="p-2">
-            <Input
-              placeholder="Search languages..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="text-sm"
-            />
+          {selectedLanguage ? selectedLanguage.label : placeholder}
+          <CaretDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+        </Button>
+
+        {/* Desktop Dropdown */}
+        {open && !isMobile && (
+          <div
+            ref={dropdownRef}
+            className="absolute z-50 w-full mt-1 bg-popover border rounded-md shadow-md"
+          >
+            {renderOptions()}
           </div>
-          <div className="max-h-60 overflow-y-auto">
-            {filteredLanguages.length === 0 ? (
-              <div className="p-2 text-sm text-muted-foreground text-center">
-                No language found.
-              </div>
-            ) : (
-              filteredLanguages.map((language) => (
-                <div
-                  key={language.value}
-                  className="flex items-center px-2 py-1.5 text-sm cursor-pointer hover:bg-accent hover:text-accent-foreground"
-                  onClick={() => handleSelect(language.value)}
-                >
-                  <Check
-                    className={cn(
-                      'mr-2 h-4 w-4',
-                      value === language.value ? 'opacity-100' : 'opacity-0'
-                    )}
-                  />
-                  {language.label}
-                </div>
-              ))
-            )}
-          </div>
-        </div>
+        )}
+      </div>
+
+      {/* Mobile Modal */}
+      {isMobile && (
+        <Dialog open={open} onOpenChange={setOpen}>
+          <DialogContent className="fixed bottom-0 left-0 right-0 top-auto max-w-none w-full rounded-t-xl rounded-b-none border-0 p-0 m-0 translate-x-0 translate-y-0">
+            <DialogHeader className="p-4 pb-0">
+              <DialogTitle>Select a language</DialogTitle>
+            </DialogHeader>
+            {renderOptions()}
+          </DialogContent>
+        </Dialog>
       )}
-    </div>
+    </>
   );
 }

@@ -19,17 +19,17 @@ import {
 } from '@/lib/review/actions';
 import { Deck } from '@/lib/types';
 import {
-    Ban,
-    Book,
-    Bookmark,
-    BookmarkIcon,
-    ChevronsRight,
-    Home,
-    Pencil,
+    Prohibit,
+    BookOpen,
+    BookmarkSimple,
+    BookmarkSimple as BookmarkIcon,
+    CaretDoubleRight,
+    House,
+    PencilSimple,
     Plus,
     Trash,
-    UserRound,
-} from 'lucide-react';
+    User,
+} from 'phosphor-react';
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 
@@ -89,17 +89,17 @@ function CommandBarActions({
       </CommandItem>
 
       <CommandItem onSelect={handleSkip}>
-        <ChevronsRight />
+        <CaretDoubleRight />
         <span>Skip</span>
       </CommandItem>
 
       <CommandItem onSelect={handleBury}>
-        <Ban />
+        <Prohibit />
         <span>Bury</span>
       </CommandItem>
 
       <CommandItem onSelect={handleEdit}>
-        <Pencil />
+        <PencilSimple />
         <span>Edit</span>
       </CommandItem>
 
@@ -122,7 +122,7 @@ function CommandBarDecks({
     <CommandGroup heading='Decks'>
       {decks.map((deck) => (
         <CommandItem key={deck.id} onSelect={() => onSelect(deck.id)}>
-          <Book className='h-4 w-4 text-primary' />
+          <BookOpen className='h-4 w-4 text-primary' />
           {deck.name}
         </CommandItem>
       ))}
@@ -218,19 +218,19 @@ export default function CommandBar() {
           <CommandGroup heading='Navigation'>
             <NavPathCommandItem
               path='/'
-              icon={<Home className='h-4 w-4' />}
+              icon={<House className='h-4 w-4' />}
               label='Home'
               onSelect={() => setOpen(false)}
             />
             <NavPathCommandItem
               path='/decks'
-              icon={<Book className='h-4 w-4' />}
+              icon={<BookOpen className='h-4 w-4' />}
               label='Decks'
               onSelect={() => setOpen(false)}
             />
             <NavPathCommandItem
               path='/saved'
-              icon={<Bookmark className='h-4 w-4' />}
+              icon={<BookmarkSimple className='h-4 w-4' />}
               label='Saved'
               onSelect={() => setOpen(false)}
             />
@@ -242,7 +242,7 @@ export default function CommandBar() {
             />
             <NavPathCommandItem
               path='/profile'
-              icon={<UserRound className='h-4 w-4' />}
+              icon={<User className='h-4 w-4' />}
               label='Profile'
               onSelect={() => setOpen(false)}
             />

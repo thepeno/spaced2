@@ -1,6 +1,6 @@
 import NavButton from '@/components/nav/nav-button';
 import { cn, isEventTargetInput } from '@/lib/utils';
-import { Book, Bookmark, Home, Plus, UserRound } from 'lucide-react';
+import { BookOpen, BookmarkSimple, House, Plus, User } from 'phosphor-react';
 import { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 
@@ -41,38 +41,38 @@ export default function NavBar() {
   return (
     <div
       className={cn(
-        'fixed bottom-0 full flex z-10 bg-muted dark:bg-background w-full',
+        'bottom-0 full flex z-10 bg-muted dark:bg-background w-full',
         'md:left-4 md:h-full md:flex-col md:justify-center md:w-16 -mx-2'
       )}
     >
       <NavButton
-        icon={<Book />}
+        icon={<BookOpen />}
         href={'/decks'}
         focused={path.pathname === '/decks'}
       />
 
       {/* Bookmarks */}
       <NavButton
-        icon={<Bookmark />}
+        icon={<BookmarkSimple />}
         href={'/saved'}
         focused={path.pathname === '/saved'}
       />
 
       <NavButton
-        icon={<Home className={cn('scale-x-110')} strokeWidth={2.5} />}
+        icon={<House className={cn('scale-x-110')} />}
         href={'/'}
         focused={path.pathname === '/'}
       />
 
       <NavButton
-        icon={<Plus strokeWidth={3} />}
+        icon={<Plus weight="bold" />}
         href={'/create'}
         focused={path.pathname === '/create'}
       />
 
       {/* Settings */}
       <NavButton
-        icon={<UserRound />}
+        icon={<User />}
         href={'/profile'}
         focused={path.pathname === '/profile'}
       />

@@ -1,8 +1,15 @@
 import * as React from 'react';
-import { Check, ChevronsUpDown, Plus } from 'lucide-react';
+import { Check, CaretDown, Plus } from 'phosphor-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { useMediaQuery } from '@uidotdev/usehooks';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 
 interface DeckSelectorProps {
   decks: Array<{
@@ -29,7 +36,8 @@ export function DeckSelector({
   const [search, setSearch] = React.useState('');
   const dropdownRef = React.useRef<HTMLDivElement>(null);
   const buttonRef = React.useRef<HTMLButtonElement>(null);
-  
+  const isMobile = useMediaQuery('(max-width: 768px)');
+
   const selectedDeck = decks.find((deck) => deck.id === value);
 
   const filteredDecks = decks.filter((deck) =>
@@ -84,82 +92,103 @@ export function DeckSelector({
     setOpen(!open);
   };
 
-  return (
-    <div className="relative">
-      <Button
-        ref={buttonRef}
-        variant="outline"
-        role="combobox"
-        aria-expanded={open}
-        className={cn('w-full justify-between', className)}
-        type="button"
-        onClick={handleToggle}
-      >
-        {selectedDeck ? selectedDeck.name : placeholder}
-        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-      </Button>
+  const renderOptions = () => (
+    <>
+      <div className="p-4 border-b">
+        <Input
+          placeholder="Search decks..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="text-sm"
+          autoFocus={!isMobile}
+        />
+      </div>
 
-      {open && (
+      <div className={cn("overflow-y-auto", isMobile ? "max-h-[60vh]" : "max-h-60")}>
         <div
-          ref={dropdownRef}
-          className="absolute z-50 w-full mt-1 bg-popover border rounded-md shadow-md"
+          className="flex items-center px-4 py-3 text-sm cursor-pointer hover:bg-accent hover:text-accent-foreground font-medium border-b"
+          onClick={() => {
+            onCreateNew();
+            setOpen(false);
+            setSearch('');
+          }}
         >
-          <div className="p-2">
-            <Input
-              placeholder="Search decks..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="text-sm"
-              autoFocus
-            />
-          </div>
-          
-          <div className="max-h-60 overflow-y-auto">
-            <div
-              className="flex items-center px-2 py-1.5 text-sm cursor-pointer hover:bg-accent hover:text-accent-foreground font-medium border-b"
-              onClick={() => {
-                onCreateNew();
-                setOpen(false);
-                setSearch('');
-              }}
-            >
-              <Plus className="mr-2 h-4 w-4" />
-              Create new deck
-            </div>
-            
-            {filteredDecks.length === 0 ? (
-              <div className="p-2 text-sm text-muted-foreground text-center">
-                No deck found.
-              </div>
-            ) : (
-              filteredDecks.map((deck) => (
-                <div
-                  key={deck.id}
-                  className="px-2 py-1.5 text-sm cursor-pointer hover:bg-accent hover:text-accent-foreground"
-                  onClick={() => handleSelect(deck.id)}
-                >
-                  <div className="flex items-start">
-                    <Check
-                      className={cn(
-                        'mr-2 h-4 w-4 mt-0.5 shrink-0',
-                        value === deck.id ? 'opacity-100' : 'opacity-0'
-                      )}
-                    />
-                    <div className="flex flex-col">
-                      <span>{deck.name}</span>
-                      {deck.description && (
-                        <span className="text-xs text-muted-foreground">
-                          {deck.description}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
+          <Plus className="mr-3 h-4 w-4" />
+          Create new deck
         </div>
+
+        {filteredDecks.length === 0 ? (
+          <div className="p-4 text-sm text-muted-foreground text-center">
+            No deck found.
+          </div>
+        ) : (
+          filteredDecks.map((deck) => (
+            <div
+              key={deck.id}
+              className="px-4 py-3 text-sm cursor-pointer hover:bg-accent hover:text-accent-foreground"
+              onClick={() => handleSelect(deck.id)}
+            >
+              <div className="flex items-start">
+                <Check
+                  className={cn(
+                    'mr-3 h-4 w-4 mt-0.5 shrink-0',
+                    value === deck.id ? 'opacity-100' : 'opacity-0'
+                  )}
+                />
+                <div className="flex flex-col">
+                  <span>{deck.name}</span>
+                  {deck.description && (
+                    <span className="text-xs text-muted-foreground">
+                      {deck.description}
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+    </>
+  );
+
+  return (
+    <>
+      <div className="relative w-full">
+        <Button
+          ref={buttonRef}
+          variant="outline"
+          role="combobox"
+          aria-expanded={open}
+          className={cn('w-full justify-between shadow-none h-15 font-normal rounded-[12px]', className)}
+          type="button"
+          onClick={handleToggle}
+        >
+          {selectedDeck ? selectedDeck.name : placeholder}
+          <CaretDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+        </Button>
+
+        {/* Desktop Dropdown */}
+        {open && !isMobile && (
+          <div
+            ref={dropdownRef}
+            className="absolute z-50 w-full mt-1 bg-popover border rounded-md shadow-md"
+          >
+            {renderOptions()}
+          </div>
+        )}
+      </div>
+
+      {/* Mobile Modal */}
+      {isMobile && (
+        <Dialog open={open} onOpenChange={setOpen}>
+          <DialogContent className="fixed bottom-0 left-0 right-0 top-auto max-w-none w-full rounded-t-xl rounded-b-none border-0 p-0 m-0 translate-x-0 translate-y-0">
+            <DialogHeader className="p-4 pb-0">
+              <DialogTitle>Select a deck</DialogTitle>
+            </DialogHeader>
+            {renderOptions()}
+          </DialogContent>
+        </Dialog>
       )}
-    </div>
+    </>
   );
 }

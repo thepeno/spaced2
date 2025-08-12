@@ -9,7 +9,7 @@ import {
 import { dropdownMenuItemVariants } from '@/components/ui/dropdown-variants';
 import { cn } from '@/lib/utils';
 import { useMediaQuery } from '@uidotdev/usehooks';
-import { Ban, BookmarkIcon, ChevronsRight, Pencil, Trash } from 'lucide-react';
+import { Prohibit, BookmarkSimple, CaretDoubleRight, PencilSimple, Trash } from 'phosphor-react';
 
 type DesktopActionsContextMenuProps = {
   children: React.ReactNode;
@@ -50,12 +50,12 @@ export default function DesktopActionsContextMenu({
           className={dropdownMenuItemVariants({ variant: 'telegram' })}
           onClick={() => handleBookmark(!bookmarked)}
         >
-          <BookmarkIcon
+          <BookmarkSimple
             className={cn(
               'size-5 group-hover:animate-wobble-icon',
               bookmarked && 'text-primary'
             )}
-            fill={bookmarked ? 'currentColor' : 'none'}
+            weight={bookmarked ? 'fill' : 'regular'}
           />
           <p className='text-base sm:text-sm'>
             {bookmarked ? 'Unsave' : 'Save'}
@@ -69,7 +69,7 @@ export default function DesktopActionsContextMenu({
             className={dropdownMenuItemVariants({ variant: 'telegram' })}
             onClick={handleSkip}
           >
-            <ChevronsRight className='size-5 group-hover:animate-scale-arrow-icon-size' />
+            <CaretDoubleRight className='size-5 group-hover:animate-scale-arrow-icon-size' />
             <p className='text-base sm:text-sm'>Skip</p>
           </ContextMenuItem>
 
@@ -77,7 +77,7 @@ export default function DesktopActionsContextMenu({
             className={dropdownMenuItemVariants({ variant: 'telegram' })}
             onClick={handleBury}
           >
-            <Ban className='size-5 group-hover:animate-scale-icon-size' />
+            <Prohibit className='size-5 group-hover:animate-scale-icon-size' />
             <p className='text-base sm:text-sm'>Bury</p>
           </ContextMenuItem>
         </ContextMenuGroup>
@@ -89,7 +89,7 @@ export default function DesktopActionsContextMenu({
             className={dropdownMenuItemVariants({ variant: 'telegram' })}
             onClick={handleEdit}
           >
-            <Pencil className='size-5 group-hover:animate-move-pencil-icon' />
+            <PencilSimple className='size-5 group-hover:animate-move-pencil-icon' />
             <p className='text-base sm:text-sm'>Edit</p>
           </ContextMenuItem>
 
