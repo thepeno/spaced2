@@ -39,6 +39,19 @@ export const cardContentFormSchema = z.object({
 
 export type CardContentFormValues = z.infer<typeof cardContentFormSchema>;
 
+export const assistedCardFormSchema = z.object({
+  word: z
+    .string()
+    .min(1, {
+      message: 'Word is required.',
+    })
+    .max(100, {
+      message: 'Word is too long.',
+    })
+    .describe('The word to generate a flashcard for.'),
+});
+export type AssistedCardFormValues = z.infer<typeof assistedCardFormSchema>;
+
 export const loginFormSchema = z.object({
   email: z.string().email({ message: 'Invalid email address.' }),
   password: z

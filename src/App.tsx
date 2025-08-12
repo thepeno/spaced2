@@ -1,7 +1,6 @@
 import { useGoogleSignInPrompt } from '@/components/hooks/google-sign-in-prompt';
 import CommandBar from '@/components/nav/command-bar';
 import NavBar from '@/components/nav/nav-bar.tsx';
-import { SpacedIcon } from '@/components/nav/spaced-icon';
 import SessionExpiredBanner from '@/components/session-expired-banner';
 import { ThemeProvider } from '@/components/theme/theme-provider';
 import { Toaster } from '@/components/ui/sonner.tsx';
@@ -63,7 +62,6 @@ export default function App() {
             'bg-muted dark:bg-background'
           )}
         >
-          <SpacedIcon />
           <NavBar />
           <SessionExpiredBanner />
           <Routes>
