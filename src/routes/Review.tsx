@@ -1,18 +1,11 @@
 import EditFlashcardResponsive from '@/components/card-actions/edit-flashcard-responsive';
 import CardCountBadges from '@/components/card-count-badges';
-import CurrentCardBadge from '@/components/current-card-badge';
-import FlashcardContent from '@/components/flashcard-content';
 import { useActiveStartTime } from '@/components/hooks/inactivity';
 import { useCards, useReviewCards } from '@/components/hooks/query';
-import CachedImagesContainer from '@/components/images/cached-images-container';
-import ActionsDropdownMenu from '@/components/review/actions-dropdown-menu';
 import DeleteFlashcardDialog from '@/components/review/delete-flashcard-dialog';
-import DesktopActionsContextMenu from '@/components/review/desktop-actions-context-menu';
 import EmptyReviewUi from '@/components/review/empty';
-import DesktopGradeButtons from '@/components/review/grade-buttons';
-import MobileGradeButtons from '@/components/review/mobile-grade-buttons';
-import MobileReviewCarousel from '@/components/review/review-carousel';
-import UndoGradeButton from '@/components/review/undo-grade-button';
+import SimplifiedReviewCard from '@/components/review/simplified-review-card';
+import SimplifiedGradeButtons from '@/components/review/simplified-grade-buttons';
 import { CardContentFormValues } from '@/lib/form-schema';
 import {
   handleCardBury,
@@ -22,10 +15,9 @@ import {
   handleCardSuspend,
 } from '@/lib/review/actions';
 import { gradeCardOperation } from '@/lib/sync/operation';
-import { cn } from '@/lib/utils';
-import { useMediaQuery } from '@uidotdev/usehooks';
-import { useState } from 'react';
-import { Grade } from 'ts-fsrs';
+import { reviewSession } from '@/lib/review-session';
+import { useState, useEffect } from 'react';
+import { Grade, Rating } from 'ts-fsrs';
 
 export default function ReviewRoute() {
   const allCards = useCards();
@@ -35,10 +27,17 @@ export default function ReviewRoute() {
   const nextReviewCard = reviewCards?.[0];
 
   const start = useActiveStartTime({ id: nextReviewCard?.id });
-  const isMobile = useMediaQuery('(max-width: 640px)');
 
   const [isEditing, setIsEditing] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isRevealed, setIsRevealed] = useState(false);
+
+  // Clear session when component unmounts (user leaves review)
+  useEffect(() => {
+    return () => {
+      reviewSession.clearSession();
+    };
+  }, []);
 
   async function handleEdit(values: CardContentFormValues) {
     await handleCardEdit(values, nextReviewCard);
@@ -47,20 +46,48 @@ export default function ReviewRoute() {
 
   async function handleGrade(grade: Grade) {
     if (!nextReviewCard) return;
+    
+    // Handle session-based review logic
+    if (grade === Rating.Again) {
+      // Add to delayed review queue (will reappear after delay)
+      reviewSession.addToDelayedReview(nextReviewCard.id);
+    } else {
+      // Remove from immediate review queue (Good or better)
+      reviewSession.removeFromImmediateReview(nextReviewCard.id);
+      // Mark as completed in this session
+      reviewSession.markCardCompleted(nextReviewCard.id);
+    }
+    
+    // Increment review count to track session progress
+    reviewSession.incrementReviewCount();
+    
     await gradeCardOperation(nextReviewCard, grade, Date.now() - start);
+    setIsRevealed(false); // Reset for next card
   }
 
   async function handleDelete() {
-    await handleCardDelete(nextReviewCard);
+    if (nextReviewCard) {
+      // Remove from immediate review queue when deleted
+      reviewSession.removeFromImmediateReview(nextReviewCard.id);
+      await handleCardDelete(nextReviewCard);
+    }
     setIsDeleteDialogOpen(false);
   }
 
   async function handleSuspend() {
-    await handleCardSuspend(nextReviewCard);
+    if (nextReviewCard) {
+      // Remove from immediate review queue when suspended
+      reviewSession.removeFromImmediateReview(nextReviewCard.id);
+      await handleCardSuspend(nextReviewCard);
+    }
   }
 
   async function handleBury() {
-    await handleCardBury(nextReviewCard);
+    if (nextReviewCard) {
+      // Remove from immediate review queue when buried
+      reviewSession.removeFromImmediateReview(nextReviewCard.id);
+      await handleCardBury(nextReviewCard);
+    }
   }
 
   async function handleSave(bookmarked: boolean) {
@@ -68,14 +95,7 @@ export default function ReviewRoute() {
   }
 
   return (
-    <div
-      className={cn(
-        'grid grid-cols-12 gap-x-6 items-start',
-        'col-start-1 col-end-13',
-        'md:col-start-3 md:col-end-11 md:grid-cols-8',
-        'md:mt-12 mb-6'
-      )}
-    >
+    <div className="flex grow flex-col h-full justify-center max-w-4xl mx-auto w-full">
       <DeleteFlashcardDialog
         open={isDeleteDialogOpen}
         onOpenChange={setIsDeleteDialogOpen}
@@ -90,98 +110,42 @@ export default function ReviewRoute() {
           onEdit={handleEdit}
         />
       )}
-      <DesktopActionsContextMenu
-        bookmarked={nextReviewCard?.bookmarked}
-        handleBookmark={handleSave}
-        handleDelete={() => setIsDeleteDialogOpen(true)}
-        handleSkip={handleSuspend}
-        handleBury={handleBury}
-        handleEdit={() => setIsEditing(true)}
-      >
-        <div
-          className={cn(
-            'relative col-span-12 flex flex-col gap-x-4 gap-y-0 sm:gap-y-1 bg-background/60 backdrop-blur-sm dark:bg-muted/30 rounded-t-2xl sm:rounded-b-2xl px-1 md:px-0 pt-1 h-full animate-fade-in',
-            'dark:border',
-            'sm:shadow-lg'
-          )}
-        >
-          {/* Actions dropdown menu */}
-          {nextReviewCard && (
-            <div className='absolute top-1 sm:-top-1 right-2 flex z-20'>
-              {/* <div className='px-2 py-3'>
-                <Redo2 className='size-6 text-muted-foreground/50 hover:text-muted-foreground transition-all rotate-180' />
-              </div> */}
-              <UndoGradeButton />
 
-              <ActionsDropdownMenu
-                bookmarked={nextReviewCard?.bookmarked}
-                handleBookmark={handleSave}
-                handleDelete={() => setIsDeleteDialogOpen(true)}
-                handleSkip={handleSuspend}
-                handleBury={handleBury}
-                handleEdit={() => setIsEditing(true)}
+      {/* Main review area */}
+      <div className="flex-1 flex flex-col justify-center">
+        {nextReviewCard ? (
+          <>
+            <div className='flex flex-col gap-3 h-full grow relative'>
+              {/* Card count badges overlay */}
+              <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-10">
+                <CardCountBadges />
+              </div>
+
+              {/* Review card */}
+              <SimplifiedReviewCard
+                card={nextReviewCard}
+                onGrade={handleGrade}
+                isRevealed={isRevealed}
+                onReveal={() => setIsRevealed(true)}
+                onBookmark={handleSave}
+                onDelete={() => setIsDeleteDialogOpen(true)}
+                onSuspend={handleSuspend}
+                onBury={handleBury}
+                onEdit={() => setIsEditing(true)}
+              />
+
+              {/* Grade buttons */}
+              <SimplifiedGradeButtons
+                onGrade={handleGrade}
+                visible={isRevealed}
               />
             </div>
-          )}
-
-          <div className='w-full flex flex-col-reverse sm:flex-row justify-between items-center gap-4 px-2'>
-            <div className='flex gap-2 items-center ml-2'>
-              <CardCountBadges />
-              {nextReviewCard && <CurrentCardBadge card={nextReviewCard} />}
-            </div>
-          </div>
-
-          <CachedImagesContainer
-            renderItem={(ref) => {
-              return (
-                <div
-                  className='flex flex-col md:flex-row justify-stretch md:justify-center items-center gap-2 lg:gap-4 w-full h-full sm:bg-background rounded-b-2xl sm:border-t'
-                  ref={ref}
-                >
-                  {nextReviewCard ? (
-                    <div className='w-full hidden sm:flex items-start gap-6 p-6'>
-                      <div className='flex-1'>
-                        <FlashcardContent content={nextReviewCard.front} />
-                        {nextReviewCard.exampleSentence && (
-                          <div className='mt-4 p-3 bg-muted/30 rounded-lg border-l-4 border-primary'>
-                            <p className='text-sm text-muted-foreground mb-2'>Example:</p>
-                            <FlashcardContent content={nextReviewCard.exampleSentence} />
-                          </div>
-                        )}
-                      </div>
-                      <div className='flex-1'>
-                        <FlashcardContent content={nextReviewCard.back} />
-                        {nextReviewCard.exampleSentenceTranslation && (
-                          <div className='mt-4 p-3 bg-muted/30 rounded-lg border-l-4 border-secondary'>
-                            <p className='text-sm text-muted-foreground mb-2'>Example translation:</p>
-                            <FlashcardContent content={nextReviewCard.exampleSentenceTranslation} />
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  ) : (
-                    <EmptyReviewUi noCardsCreatedYet={noCardsCreatedYet} />
-                  )}
-                  {nextReviewCard && (
-                    <MobileReviewCarousel card={nextReviewCard} />
-                  )}
-                </div>
-              );
-            }}
-          />
-        </div>
-      </DesktopActionsContextMenu>
-
-      <div className='col-span-12 w-full hidden sm:block sm:mx-auto sm:w-max mb-4 px-4 pb-2'>
-        {nextReviewCard && !isMobile && (
-          <DesktopGradeButtons onGrade={handleGrade} card={nextReviewCard} />
+          </>
+        ) : (
+          <EmptyReviewUi noCardsCreatedYet={noCardsCreatedYet} />
         )}
       </div>
-      <div className='col-span-12 mt-0'>
-        {nextReviewCard && isMobile && (
-          <MobileGradeButtons onGrade={handleGrade} />
-        )}
-      </div>
+
     </div>
   );
 }

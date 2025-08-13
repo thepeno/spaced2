@@ -144,6 +144,6 @@ export async function nuclearClearStorage() {
 
 // Make both functions available globally for console debugging
 if (typeof window !== 'undefined') {
-  (window as any).clearSpacedDatabase = clearDatabase;
-  (window as any).nuclearClearStorage = nuclearClearStorage;
+  (window as { clearSpacedDatabase?: typeof clearDatabase; nuclearClearStorage?: typeof nuclearClearStorage }).clearSpacedDatabase = clearDatabase;
+  (window as { clearSpacedDatabase?: typeof clearDatabase; nuclearClearStorage?: typeof nuclearClearStorage }).nuclearClearStorage = nuclearClearStorage;
 }
