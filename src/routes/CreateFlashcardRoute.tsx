@@ -4,13 +4,16 @@ import { useDecks } from '@/components/hooks/query';
 import { createNewCard } from '@/lib/sync/operation';
 import { generateFlashcard } from '@/lib/ai/gpt-service';
 import { AssistedCardFormValues } from '@/lib/form-schema';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 
 
 export default function CreateFlashcardRoute() {
   const decks = useDecks().sort((a, b) => b.lastModified - a.lastModified);
-  const [selectedDeckId, setSelectedDeckId] = useState<string>('');
+  const [selectedDeckId, setSelectedDeckId] = useState<string>(() => {
+    const saved = localStorage.getItem('flashcard-selected-deck');
+    return saved || '';
+  });
   const [createDeckDialogOpen, setCreateDeckDialogOpen] = useState(false);
   const [isGeneratingCard, setIsGeneratingCard] = useState(false);
 
@@ -26,6 +29,13 @@ export default function CreateFlashcardRoute() {
       targetLanguage: selectedDeck?.targetLanguage || 'Spanish'
     };
   };
+
+  // Save selected deck to localStorage
+  useEffect(() => {
+    if (selectedDeckId) {
+      localStorage.setItem('flashcard-selected-deck', selectedDeckId);
+    }
+  }, [selectedDeckId]);
 
   const handleAssistedSubmit = async (values: AssistedCardFormValues) => {
     if (!selectedDeckId) {
@@ -70,35 +80,41 @@ export default function CreateFlashcardRoute() {
 
 
   return (
-    <div className='grow md:px-24 xl:px-0 h-full flex flex-col'>
-
-      <CreateDeckForm
-        open={createDeckDialogOpen}
-        onOpenChange={setCreateDeckDialogOpen}
-      />
-
-      <div className='animate-fade-in h-full grow flex flex-col'>
-        <CreateUpdateFlashcardForm
-          onSubmit={async (values) => {
-            if (!selectedDeckId) {
-              toast.error('Please select a deck');
-              return;
-            }
-            await createNewCard(
-              values.front,
-              values.back,
-              [selectedDeckId],
-              values.exampleSentence || null,
-              values.exampleSentenceTranslation || null
-            );
-          }}
-          onAssistedSubmit={handleAssistedSubmit}
-          selectedDeckId={selectedDeckId}
-          onDeckChange={setSelectedDeckId}
-          decks={decks}
-          onCreateDeck={() => setCreateDeckDialogOpen(true)}
-          isGenerating={isGeneratingCard}
+    <div className='grow h-full flex flex-col md:justify-center md:items-center'>
+      <div className='w-full flex-1 md:flex-none md:h-auto md:max-w-xl flex flex-col'>
+        <CreateDeckForm
+          open={createDeckDialogOpen}
+          onOpenChange={setCreateDeckDialogOpen}
         />
+        <div className='animate-fade-in flex-1 flex flex-col'>
+          <CreateUpdateFlashcardForm
+            onSubmit={async (values) => {
+              if (!selectedDeckId) {
+                toast.error('Please select a deck');
+                return;
+              }
+              await createNewCard(
+                values.front,
+                values.back,
+                [selectedDeckId],
+                values.exampleSentence || null,
+                values.exampleSentenceTranslation || null
+              );
+            }}
+            onAssistedSubmit={handleAssistedSubmit}
+            selectedDeckId={selectedDeckId}
+            onDeckChange={setSelectedDeckId}
+            decks={decks.map(deck => ({
+            id: deck.id,
+            name: deck.name,
+            description: deck.description,
+            nativeLanguage: deck.nativeLanguage,
+            targetLanguage: deck.targetLanguage
+          }))}
+            onCreateDeck={() => setCreateDeckDialogOpen(true)}
+            isGenerating={isGeneratingCard}
+          />
+        </div>
       </div>
     </div>
   );

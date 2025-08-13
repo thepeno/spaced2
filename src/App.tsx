@@ -57,13 +57,13 @@ export default function App() {
         <div
           className={cn(
             'w-screen flex flex-col justify-between',
-            'md:px-0 md:pt-8',
+            'md:pl-24 md:px-0 md:pt-8',
             'min-h-screen bg-background font-sans antialiased',
             'bg-muted dark:bg-background'
           )}
         >
           <SessionExpiredBanner />
-          <div className='p-5 flex flex-col grow h-full w-full'>
+          <div className='p-5 pb-20 md:pb-5 flex flex-col grow h-full w-full'>
             <Routes>
               <Route path='/' element={<ReviewRoute />} />
               <Route path='/decks' element={<DecksRoute />} />

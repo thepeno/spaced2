@@ -18,6 +18,7 @@ type FormTextareaProps<TFieldValues extends FieldValues> =
     className?: string;
     rows?: number;
     grow?: boolean;
+    resizable?: boolean;
   };
 
 export function FormTextarea<TFieldValues extends FieldValues>({
@@ -30,6 +31,7 @@ export function FormTextarea<TFieldValues extends FieldValues>({
   description,
   rows,
   grow,
+  resizable = true,
 }: FormTextareaProps<TFieldValues>) {
   return (
     <FormField
@@ -41,7 +43,12 @@ export function FormTextarea<TFieldValues extends FieldValues>({
           {label && <FormLabel>{label}</FormLabel>}
           <FormControl className={cn(grow && 'flex-1')}>
             <Textarea
-              className={cn(className, 'text-sm', grow && 'grow h-full')}
+              className={cn(
+                className, 
+                'text-sm', 
+                grow && 'grow h-full',
+                !resizable && 'resize-none'
+              )}
               placeholder={placeholder}
               rows={rows}
               {...field}

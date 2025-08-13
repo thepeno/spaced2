@@ -10,12 +10,90 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { CircleFlag } from 'react-circle-flags';
+
+// Language to country code mapping for flags
+const getLanguageFlag = (language: string | null): string | null => {
+  if (!language) return null;
+
+  const languageMap: Record<string, string> = {
+    // Language codes
+    'en': 'us',
+    'es': 'es',
+    'fr': 'fr',
+    'de': 'de',
+    'it': 'it',
+    'pt': 'pt',
+    'pt-br': 'br',
+    'nl': 'nl',
+    'ru': 'ru',
+    'zh': 'cn',
+    'ja': 'jp',
+    'ko': 'kr',
+    'ar': 'sa',
+    'hi': 'in',
+    'pl': 'pl',
+    'sv': 'se',
+    'no': 'no',
+    'da': 'dk',
+    'fi': 'fi',
+    'cs': 'cz',
+    'hu': 'hu',
+    'ro': 'ro',
+    'bg': 'bg',
+    'hr': 'hr',
+    'el': 'gr',
+    'tr': 'tr',
+    'he': 'il',
+    'th': 'th',
+    'vi': 'vn',
+    'id': 'id',
+    'ms': 'my',
+    'uk': 'ua',
+    // Full language names (keeping for compatibility)
+    'English': 'us',
+    'Spanish': 'es',
+    'French': 'fr',
+    'German': 'de',
+    'Italian': 'it',
+    'Portuguese': 'pt',
+    'Dutch': 'nl',
+    'Russian': 'ru',
+    'Chinese': 'cn',
+    'Japanese': 'jp',
+    'Korean': 'kr',
+    'Arabic': 'sa',
+    'Hindi': 'in',
+    'Polish': 'pl',
+    'Swedish': 'se',
+    'Norwegian': 'no',
+    'Danish': 'dk',
+    'Finnish': 'fi',
+    'Czech': 'cz',
+    'Hungarian': 'hu',
+    'Romanian': 'ro',
+    'Bulgarian': 'bg',
+    'Croatian': 'hr',
+    'Greek': 'gr',
+    'Turkish': 'tr',
+    'Hebrew': 'il',
+    'Thai': 'th',
+    'Vietnamese': 'vn',
+    'Indonesian': 'id',
+    'Malay': 'my',
+    'Ukrainian': 'ua',
+  };
+
+  return languageMap[language] || null;
+};
 
 interface DeckSelectorProps {
   decks: Array<{
     id: string;
     name: string;
     description: string;
+    nativeLanguage: string | null;
+    targetLanguage: string | null;
   }>;
   value: string;
   onValueChange: (value: string) => void;
@@ -122,30 +200,56 @@ export function DeckSelector({
             No deck found.
           </div>
         ) : (
-          filteredDecks.map((deck) => (
-            <div
-              key={deck.id}
-              className="px-4 py-3 text-sm cursor-pointer hover:bg-accent hover:text-accent-foreground"
-              onClick={() => handleSelect(deck.id)}
-            >
-              <div className="flex items-start">
-                <Check
-                  className={cn(
-                    'mr-3 h-4 w-4 mt-0.5 shrink-0',
-                    value === deck.id ? 'opacity-100' : 'opacity-0'
-                  )}
-                />
-                <div className="flex flex-col">
-                  <span>{deck.name}</span>
-                  {deck.description && (
-                    <span className="text-xs text-muted-foreground">
-                      {deck.description}
-                    </span>
-                  )}
+          filteredDecks.map((deck) => {
+            const nativeFlagCode = getLanguageFlag(deck.nativeLanguage);
+            const targetFlagCode = getLanguageFlag(deck.targetLanguage);
+
+
+            return (
+              <div
+                key={deck.id}
+                className="px-4 py-3 text-sm cursor-pointer hover:bg-accent hover:text-accent-foreground"
+                onClick={() => handleSelect(deck.id)}
+              >
+                <div className="flex items-center">
+                  <div className='flex items-center gap-2 w-full'>
+                    {/* Language flags */}
+                    <div className="relative flex items-center mt-0.5 w-[20px] h-[20px] mr-4">
+                      {nativeFlagCode && (
+                        <CircleFlag
+                          countryCode={nativeFlagCode}
+                          height="20"
+                          className="absolute left-0"
+                        />
+                      )}
+                      {targetFlagCode && (
+                        <CircleFlag
+                          countryCode={targetFlagCode}
+                          height="20"
+                          className="absolute left-3 ring-2 ring-background rounded-full"
+                        />
+                      )}
+                    </div>
+
+                    <div className="flex flex-col">
+                      <span>{deck.name}</span>
+                      {deck.description && (
+                        <span className="text-xs text-muted-foreground">
+                          {deck.description}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <Check
+                    className={cn(
+                      'h-4 w-4 mt-0.5 shrink-0',
+                      value === deck.id ? 'opacity-100' : 'opacity-0'
+                    )}
+                  />
                 </div>
               </div>
-            </div>
-          ))
+            );
+          })
         )}
       </div>
     </>
@@ -163,7 +267,29 @@ export function DeckSelector({
           type="button"
           onClick={handleToggle}
         >
-          {selectedDeck ? selectedDeck.name : placeholder}
+          <div className="flex items-center gap-3 flex-1 ">
+            {selectedDeck && (
+              <div className="relative flex items-center w-[20px] h-[20px] mr-2.5">
+                {getLanguageFlag(selectedDeck.nativeLanguage) && (
+                  <CircleFlag
+                    countryCode={getLanguageFlag(selectedDeck.nativeLanguage)!}
+                    height="20"
+                    className="absolute left-0"
+                  />
+                )}
+                {getLanguageFlag(selectedDeck.targetLanguage) && (
+                  <CircleFlag
+                    countryCode={getLanguageFlag(selectedDeck.targetLanguage)!}
+                    height="20"
+                    className="absolute left-3 ring-2 ring-background rounded-full"
+                  />
+                )}
+              </div>
+            )}
+            <span className="text-left">
+              {selectedDeck ? selectedDeck.name : placeholder}
+            </span>
+          </div>
           <CaretDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
 

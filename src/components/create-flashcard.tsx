@@ -2,7 +2,7 @@ import { FormTextarea } from '@/components/form/form-textarea';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { Form } from '@/components/ui/form';
 import { DeckSelector } from '@/components/deck-selector';
 import {
@@ -15,7 +15,7 @@ import { isEventTargetInput } from '@/lib/utils';
 import VibrationPattern from '@/lib/vibrate';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Plus, MagicWand, Microphone } from 'phosphor-react';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
@@ -62,6 +62,8 @@ type CreateFlashcardFormProps = {
     id: string;
     name: string;
     description: string;
+    nativeLanguage: string | null;
+    targetLanguage: string | null;
   }>;
   onCreateDeck?: () => void;
   initialFront?: string;
@@ -87,8 +89,14 @@ export function CreateUpdateFlashcardForm({
   initialExampleSentenceTranslation,
   isGenerating = false,
 }: CreateFlashcardFormProps) {
-  const [assistedMode, setAssistedMode] = useState(false);
+  const [assistedMode, setAssistedMode] = useState(() => {
+    const saved = localStorage.getItem('flashcard-assisted-mode');
+    return saved !== null ? JSON.parse(saved) : true; // Default to true (assisted mode)
+  });
   const [isListening, setIsListening] = useState(false);
+  const [textareaRows, setTextareaRows] = useState(1);
+  const [maxHeight, setMaxHeight] = useState(0);
+  const parentRef = useRef<HTMLDivElement>(null);
 
   const form = useForm<CardContentFormValues>({
     resolver: zodResolver(cardContentFormSchema),
@@ -156,6 +164,15 @@ export function CreateUpdateFlashcardForm({
     [assistedForm, onAssistedSubmit]
   );
 
+  const handleTextChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const value = e.target.value;
+    assistedForm.setValue('word', value);
+
+    // Calculate number of lines based on newlines + 1
+    const lines = value.split('\n').length;
+    setTextareaRows(Math.max(1, lines));
+  }, [assistedForm]);
+
   const handleDictation = useCallback(() => {
     if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
       toast.error('Speech recognition not supported in this browser');
@@ -201,6 +218,26 @@ export function CreateUpdateFlashcardForm({
     recognition.start();
   }, [assistedForm, isListening]);
 
+  // Save assisted mode preference to localStorage
+  useEffect(() => {
+    localStorage.setItem('flashcard-assisted-mode', JSON.stringify(assistedMode));
+  }, [assistedMode]);
+
+  useEffect(() => {
+    const updateMaxHeight = () => {
+      if (parentRef.current) {
+        const parentHeight = parentRef.current.clientHeight;
+        // Use 80% of parent height to leave some room for centering
+        setMaxHeight(parentHeight);
+      }
+    };
+
+    updateMaxHeight();
+    window.addEventListener('resize', updateMaxHeight);
+
+    return () => window.removeEventListener('resize', updateMaxHeight);
+  }, [assistedMode]);
+
   useEffect(() => {
     // cmd enter to submit
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -227,13 +264,14 @@ export function CreateUpdateFlashcardForm({
   return (
     <div className='flex flex-col grow gap-8 rounded-xl h-full'>
       {showAssistedToggle && (
-        <div className='flex items-center justify-between space-x-2'>
+        <div className='flex align-middle justify-between space-x-2'>
           <Label htmlFor='assisted-mode' className='flex items-center gap-2'>
             <MagicWand className='w-4 h-4' />
             Assisted creation
           </Label>
           <Switch
             id='assisted-mode'
+            size='lg'
             checked={assistedMode}
             onCheckedChange={setAssistedMode}
           />
@@ -246,17 +284,24 @@ export function CreateUpdateFlashcardForm({
             onSubmit={assistedForm.handleSubmit(handleAssistedSubmit)}
             className='flex flex-col grow gap-4 h-full justify-center'
           >
-            <div className='flex flex-col flex-1 relative'>
-              <Input
-                {...assistedForm.register('word')}
-                placeholder='Enter a word to study (e.g., "hello")'
-                className='flex-1 h-full text-lg text-center shadow-none border-none focus:outline-none focus-visible:ring-0'
-                disabled={isGenerating}
-              />
+            <div className='flex flex-col grow h-full relative justify-center md:min-h-[228px]' ref={parentRef}>
+              <div
+                style={{ maxHeight: maxHeight ? `${maxHeight}px` : 'none' }}
+                className='overflow-y-auto'
+              >
+                <Textarea
+                  {...assistedForm.register('word')}
+                  placeholder='Enter a word to study (e.g., "hello")'
+                  className='w-full text-lg text-center shadow-none border-none focus:outline-none focus-visible:ring-0 resize-none pb-10'
+                  disabled={isGenerating}
+                  rows={textareaRows}
+                  onChange={handleTextChange}
+                />
+              </div>
               <Button
                 type='button'
                 variant='outline'
-                className='absolute bottom-4 right-0 h-[60px] w-[60px] min-w-[60px] flex-shrink-0 inline-flex items-center justify-center rounded-[12px]'
+                className='absolute bottom-4 right-0 h-[60px] w-[60px] min-w-[60px] flex-shrink-0 inline-flex items-center justify-center rounded-[12px] shadow-none'
                 onClick={handleDictation}
                 disabled={isGenerating}
                 title={isListening ? 'Stop dictation' : 'Start dictation'}
@@ -284,7 +329,7 @@ export function CreateUpdateFlashcardForm({
               <Button
                 type='submit'
                 variant='outline'
-                className='rounded-lg h-[60px] w-[60px] min-w-[60px] flex-shrink-0 inline-flex items-center justify-center rounded-[12px]'
+                className='h-[60px] w-[60px] min-w-[60px] flex-shrink-0 inline-flex items-center justify-center rounded-[12px] shadow-none'
                 disabled={isGenerating || !selectedDeckId}
                 title={isGenerating ? 'Generating...' : 'Generate card'}
               >
@@ -300,6 +345,7 @@ export function CreateUpdateFlashcardForm({
             className='flex flex-col grow gap-3 h-full'
           >
             <FormTextarea
+              resizable={false}
               className='text-sm shadow-none bg-background h-10'
               form={form}
               name='front'
@@ -307,6 +353,7 @@ export function CreateUpdateFlashcardForm({
               placeholder='Input target word'
             />
             <FormTextarea
+              resizable={false}
               className='text-sm shadow-none bg-background h-10'
               form={form}
               name='back'
@@ -314,6 +361,7 @@ export function CreateUpdateFlashcardForm({
               placeholder='Input translation'
             />
             <FormTextarea
+              resizable={false}
               grow
               className='text-sm grow shadow-none bg-background h-full'
               form={form}
@@ -322,6 +370,7 @@ export function CreateUpdateFlashcardForm({
               placeholder='Example sentence'
             />
             <FormTextarea
+              resizable={false}
               grow
               className='text-sm grow shadow-none bg-background h-full'
               form={form}
@@ -343,7 +392,7 @@ export function CreateUpdateFlashcardForm({
               <Button
                 type='submit'
                 variant='outline'
-                className='h-[60px] w-[60px] min-w-[60px] flex-shrink-0 inline-flex items-center justify-center rounded-[12px]'
+                className='h-[60px] w-[60px] min-w-[60px] flex-shrink-0 inline-flex items-center justify-center rounded-[12px] shadow-none'
                 disabled={!selectedDeckId}
               >
                 <Plus className='h-[22.5px] w-[22.5px] text-primary' />
