@@ -46,7 +46,7 @@ export default function SearchBar({
       </Button>
       <Input
         ref={inputRef}
-        className='px-12 h-12 rounded-xl'
+        className='px-12 h-12 rounded-xl shadow-none'
         type='text'
         placeholder={placeholder}
         value={search}

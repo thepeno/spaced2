@@ -1,6 +1,6 @@
 import NavButton from '@/components/nav/nav-button';
 import { cn, isEventTargetInput } from '@/lib/utils';
-import { BookOpen, BookmarkSimple, House, Plus, User } from 'phosphor-react';
+import { BookOpen, /*BookmarkSimple,*/ House, Plus, User } from 'phosphor-react';
 import { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 

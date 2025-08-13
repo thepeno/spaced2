@@ -17,6 +17,7 @@ import ProfileRoute from '@/routes/ProfileRoute';
 import ReviewRoute from '@/routes/Review.tsx';
 import SavedRoute from '@/routes/SavedRoute';
 import StatsRoute from '@/routes/StatsRoute';
+import SettingsRoute from '@/routes/SettingsRoute';
 import { useMediaQuery } from '@uidotdev/usehooks';
 import { WarningCircle, CheckCircle } from 'phosphor-react';
 import { BrowserRouter, Route, Routes } from 'react-router';
@@ -73,6 +74,7 @@ export default function App() {
               {/* <Route path='/debug' element={<DebugRoute />} /> */}
               <Route path='/create' element={<CreateFlashcardRoute />} />
               <Route path='/profile' element={<ProfileRoute />} />
+              <Route path='/settings' element={<SettingsRoute />} />
               <Route path='/stats' element={<StatsRoute />} />
               <Route path='/login-success' element={<LoginSuccessRoute />} />
               <Route path='/import' element={<ImportRoute />} />
