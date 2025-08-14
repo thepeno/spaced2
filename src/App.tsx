@@ -64,12 +64,14 @@ export default function App() {
           )}
         >
           <SessionExpiredBanner />
-          <div className='p-5 pb-20 md:pb-5 flex flex-col grow h-full w-full'>
+          <div className='p-5 md:pb-5 flex flex-col grow h-full w-full'>
             <Routes>
-              <Route path='/' element={<ReviewRoute />} />
+              <Route path='/' element={<CreateFlashcardRoute />} />
+              <Route path='/review' element={<ReviewRoute />} />
               <Route path='/decks' element={<DecksRoute />} />
               <Route path='/decks/_all' element={<AllCardsRoute />} />
-              <Route path='/decks/:deckId' element={<DeckRoute />} />
+              <Route path='/decks/:deckId/review' element={<ReviewRoute />} />
+              <Route path='/decks/:deckId/browse' element={<DeckRoute />} />
               <Route path='/saved' element={<SavedRoute />} />
               {/* <Route path='/debug' element={<DebugRoute />} /> */}
               <Route path='/create' element={<CreateFlashcardRoute />} />

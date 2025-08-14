@@ -6,11 +6,18 @@ import { generateFlashcard } from '@/lib/ai/gpt-service';
 import { AssistedCardFormValues } from '@/lib/form-schema';
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
+import { useSearchParams } from 'react-router';
 
 
 export default function CreateFlashcardRoute() {
   const decks = useDecks().sort((a, b) => b.lastModified - a.lastModified);
+  const [searchParams] = useSearchParams();
+  const preselectedDeckId = searchParams.get('deck');
+  
   const [selectedDeckId, setSelectedDeckId] = useState<string>(() => {
+    if (preselectedDeckId) {
+      return preselectedDeckId;
+    }
     const saved = localStorage.getItem('flashcard-selected-deck');
     return saved || '';
   });

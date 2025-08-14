@@ -16,7 +16,7 @@ export default function DeckCard({
   unreviewedCount,
 }: DeckCardProps) {
   return (
-    <Link to={`/decks/${id}`} className='w-full'>
+    <Link to={`/decks/${id}/review`} className='w-full'>
       <Card className='group cursor-pointer border border-border bg-background px-4 py-3 transition-colors hover:bg-accent hover:text-accent-foreground shadow-none rounded-[12px]'>
         <div className='flex items-center justify-between'>
           <span className='text-sm font-medium'>

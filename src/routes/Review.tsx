@@ -1,11 +1,12 @@
 import EditFlashcardResponsive from '@/components/card-actions/edit-flashcard-responsive';
 import CardCountBadges from '@/components/card-count-badges';
 import { useActiveStartTime } from '@/components/hooks/inactivity';
-import { useCards, useReviewCards } from '@/components/hooks/query';
+import { useCards, useReviewCards, useDeck } from '@/components/hooks/query';
 import DeleteFlashcardDialog from '@/components/review/delete-flashcard-dialog';
 import EmptyReviewUi from '@/components/review/empty';
 import SimplifiedReviewCard from '@/components/review/simplified-review-card';
 import SimplifiedGradeButtons from '@/components/review/simplified-grade-buttons';
+import { Button } from '@/components/ui/button';
 import { CardContentFormValues } from '@/lib/form-schema';
 import {
   handleCardBury,
@@ -18,12 +19,20 @@ import { gradeCardOperation } from '@/lib/sync/operation';
 import { reviewSession } from '@/lib/review-session';
 import { useState, useEffect } from 'react';
 import { Grade, Rating } from 'ts-fsrs';
+import { useParams, useNavigate } from 'react-router';
 
 export default function ReviewRoute() {
+  const params = useParams();
+  const navigate = useNavigate();
+  const deckId = params.deckId as string | undefined;
+  
   const allCards = useCards();
   const noCardsCreatedYet = allCards.length === 0;
+  
+  // Always call the hook, but pass empty string if no deckId
+  const deck = useDeck(deckId || '');
 
-  const reviewCards = useReviewCards();
+  const reviewCards = useReviewCards(deckId);
   const nextReviewCard = reviewCards?.[0];
 
   const start = useActiveStartTime({ id: nextReviewCard?.id });
@@ -109,6 +118,41 @@ export default function ReviewRoute() {
           onOpenChange={setIsEditing}
           onEdit={handleEdit}
         />
+      )}
+
+      {/* Navigation buttons - only show for deck-specific reviews */}
+      {deckId && deck && (
+        <div className="flex gap-3 mb-4 justify-center">
+          <Button
+            variant="ghost"
+            className="text-primary hover:text-primary/80 hover:bg-transparent p-2"
+            onClick={() => navigate('/decks')}
+          >
+            All decks
+          </Button>
+          <Button
+            variant="ghost"
+            className="text-primary hover:text-primary/80 hover:bg-transparent p-2"
+            onClick={() => navigate(`/?deck=${deckId}`)}
+          >
+            Add
+          </Button>
+          <Button
+            variant="ghost"
+            className="text-primary hover:text-primary/80 hover:bg-transparent p-2"
+            onClick={() => nextReviewCard && setIsEditing(true)}
+            disabled={!nextReviewCard}
+          >
+            Edit
+          </Button>
+          <Button
+            variant="ghost"
+            className="text-primary hover:text-primary/80 hover:bg-transparent p-2"
+            onClick={() => navigate(`/decks/${deckId}/browse`)}
+          >
+            Browse
+          </Button>
+        </div>
       )}
 
       {/* Main review area */}

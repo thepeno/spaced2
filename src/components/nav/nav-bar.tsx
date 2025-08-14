@@ -1,6 +1,6 @@
 import NavButton from '@/components/nav/nav-button';
 import { cn, isEventTargetInput } from '@/lib/utils';
-import { BookOpen, /*BookmarkSimple,*/ House, Plus, User } from 'phosphor-react';
+import { BookOpen, /*BookmarkSimple,*/ Plus, User } from 'phosphor-react';
 import { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 
@@ -41,7 +41,7 @@ export default function NavBar() {
   return (
     <div
       className={cn(
-        'fixed bottom-0 left-0 right-0 flex z-10 bg-muted dark:bg-background w-full h-16',
+        'bottom-0 left-0 right-0 flex z-10 bg-muted dark:bg-background w-full h-16',
         'md:fixed md:left-4 md:top-1/2 md:transform md:-translate-y-1/2 h-fit md:w-16 md:flex-col md:rounded-xl md:py-2 md:gap-1'
       )}
     >
@@ -60,15 +60,9 @@ export default function NavBar() {
       */}
 
       <NavButton
-        icon={<House className={cn('scale-x-110')} />}
+        icon={<Plus weight="bold" />}
         href={'/'}
         focused={path.pathname === '/'}
-      />
-
-      <NavButton
-        icon={<Plus weight="bold" />}
-        href={'/create'}
-        focused={path.pathname === '/create'}
       />
 
       {/* Settings */}

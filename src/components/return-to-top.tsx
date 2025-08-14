@@ -19,7 +19,10 @@ export default function ReturnToTop() {
   return createPortal(
     <div
       // Make the surrounding hit area slighlty bigger
-      className='fixed top-4 left-1/2 -translate-x-1/2 z-30 py-4 px-8'
+      className={cn(
+        'fixed top-4 left-1/2 -translate-x-1/2 z-30 py-4 px-8',
+        !isVisible && 'pointer-events-none'
+      )}
       onClick={() => {
         if (isVisible) {
           document.documentElement.scrollTo({ top: 0, behavior: 'smooth' });

@@ -4,13 +4,12 @@ import ReturnToTop from '@/components/return-to-top';
 import SearchBar from '@/components/search-bar';
 import EditDeckModal from '@/components/edit-deck-modal';
 import { Button } from '@/components/ui/button';
-import { Separator } from '@radix-ui/react-dropdown-menu';
-import { Edit } from 'lucide-react';
 import { useState } from 'react';
-import { useParams } from 'react-router';
+import { useParams, useNavigate } from 'react-router';
 
 export default function DeckRoute() {
   const params = useParams();
+  const navigate = useNavigate();
   const deckId = params.deckId as string;
 
   const deck = useDeck(deckId);
@@ -28,44 +27,55 @@ export default function DeckRoute() {
   }
 
   return (
-    <div className='md:px-24 xl:px-0 col-span-12 xl:col-start-3 xl:col-end-11'>
+    <div className='md:px-24 xl:px-0 col-span-12 xl:col-start-3 xl:col-end-11 h-full flex grow flex-col'>
       <ReturnToTop />
-      <SearchBar
-        search={search}
-        setSearch={setSearch}
-        placeholder='Search cards...'
-      />
-      <div className='mb-4 px-2'>
-        <div className='flex justify-between items-start'>
-          <div className='flex-1'>
-            <h1 className='text-2xl md:text-4xl font-bold tracking-wide'>
-              {deck.name}
-            </h1>
-            <p className='text-sm text-muted-foreground mb-2'>{deck.description}</p>
-            {(deck.nativeLanguage || deck.targetLanguage) && (
-              <div className='flex gap-4 text-xs text-muted-foreground'>
-                {deck.nativeLanguage && (
-                  <span>Native: {deck.nativeLanguage}</span>
-                )}
-                {deck.targetLanguage && (
-                  <span>Target: {deck.targetLanguage}</span>
-                )}
-              </div>
-            )}
-          </div>
-          <Button
-            variant='outline'
-            size='sm'
-            onClick={() => setEditModalOpen(true)}
-            className='ml-4'
-          >
-            <Edit className='h-4 w-4 mr-2' />
-            Edit Deck
-          </Button>
-        </div>
+
+      {/* Navigation buttons */}
+      <div className="flex gap-3 mb-4 justify-center">
+        <Button
+          variant="ghost"
+          className="text-primary hover:text-primary/80 hover:bg-transparent p-2"
+          onClick={() => navigate('/decks')}
+        >
+          All decks
+        </Button>
+        <Button
+          variant="ghost"
+          className="text-primary hover:text-primary/80 hover:bg-transparent p-2"
+          onClick={() => navigate(`/?deck=${deckId}`)}
+        >
+          Add
+        </Button>
+        <Button
+          variant="ghost"
+          className="text-primary hover:text-primary/80 hover:bg-transparent p-2"
+          onClick={() => setEditModalOpen(true)}
+        >
+          Edit
+        </Button>
+        <Button
+          variant="ghost"
+          className="text-primary hover:text-primary/80 hover:bg-transparent p-2"
+          onClick={() => navigate(`/decks/${deckId}/review`)}
+        >
+          Review
+        </Button>
       </div>
-      <Separator className='my-4' />
-      <CardsTable cards={filteredCards} />
+
+      {/* Cards table with pagination - takes remaining height */}
+      <div className='flex flex-col grow h-full mb-4'>
+        <CardsTable cards={filteredCards} />
+      </div>
+
+      {/* Search bar at bottom */}
+      <div className='mb-2'>
+        <SearchBar
+          search={search}
+          setSearch={setSearch}
+          placeholder='Search cards...'
+        />
+      </div>
+
       <EditDeckModal
         deck={deck}
         open={editModalOpen}

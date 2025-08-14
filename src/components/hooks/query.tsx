@@ -19,8 +19,8 @@ export function useCards() {
   return snapshot.getCards();
 }
 
-export function useReviewCards() {
-  const cards = useCards();
+export function useReviewCards(deckId?: string) {
+  const cards = deckId ? useCardsForDeck(deckId) : useCards();
   const sessionSnapshot = useSyncExternalStore(
     reviewSession.subscribe.bind(reviewSession),
     reviewSession.getSnapshot.bind(reviewSession)

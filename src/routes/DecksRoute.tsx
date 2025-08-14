@@ -44,7 +44,7 @@ export default function DecksRoute() {
 
 
       {/* Deck Cards */}
-      <div className="space-y-2 mb-4 overflow-y-auto">
+      <div className="flex flex-col gap-2 mb-4 overflow-y-auto">
         {filteredDecks.map((deck) => (
           <DeckCardContainer key={deck.id} id={deck.id} />
         ))}

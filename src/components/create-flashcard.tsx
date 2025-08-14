@@ -11,10 +11,10 @@ import {
   assistedCardFormSchema,
   AssistedCardFormValues,
 } from '@/lib/form-schema';
-import { isEventTargetInput } from '@/lib/utils';
+import { cn, isEventTargetInput } from '@/lib/utils';
 import VibrationPattern from '@/lib/vibrate';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Plus, MagicWand, Microphone } from 'phosphor-react';
+import { MagicWand, Microphone } from 'phosphor-react';
 import { useCallback, useEffect, useState, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
@@ -89,7 +89,12 @@ export function CreateUpdateFlashcardForm({
   initialExampleSentenceTranslation,
   isGenerating = false,
 }: CreateFlashcardFormProps) {
+  const isUpdate = Boolean(initialFront || initialBack);
+
   const [assistedMode, setAssistedMode] = useState(() => {
+    // Never use assisted mode for updates/edits
+    if (isUpdate) return false;
+
     const saved = localStorage.getItem('flashcard-assisted-mode');
     return saved !== null ? JSON.parse(saved) : true; // Default to true (assisted mode)
   });
@@ -130,7 +135,6 @@ export function CreateUpdateFlashcardForm({
     }
   }, [initialFront, initialBack, initialExampleSentence, initialExampleSentenceTranslation, form]);
 
-  const isUpdate = initialFront || initialBack;
   const handleSubmit = useCallback(
     (data: CardContentFormValues) => {
       navigator?.vibrate(VibrationPattern.successConfirm);
@@ -218,10 +222,12 @@ export function CreateUpdateFlashcardForm({
     recognition.start();
   }, [assistedForm, isListening]);
 
-  // Save assisted mode preference to localStorage
+  // Save assisted mode preference to localStorage (only for creation, not edits)
   useEffect(() => {
-    localStorage.setItem('flashcard-assisted-mode', JSON.stringify(assistedMode));
-  }, [assistedMode]);
+    if (!isUpdate) {
+      localStorage.setItem('flashcard-assisted-mode', JSON.stringify(assistedMode));
+    }
+  }, [assistedMode, isUpdate]);
 
   useEffect(() => {
     const updateMaxHeight = () => {
@@ -278,7 +284,7 @@ export function CreateUpdateFlashcardForm({
         </div>
       )}
 
-      {assistedMode ? (
+      {assistedMode && !isUpdate ? (
         <Form {...assistedForm}>
           <form
             onSubmit={assistedForm.handleSubmit(handleAssistedSubmit)}
@@ -349,7 +355,7 @@ export function CreateUpdateFlashcardForm({
               className='text-sm shadow-none bg-background h-10'
               form={form}
               name='front'
-              // label='Question'
+              label={isUpdate ? 'Target word' : ''}
               placeholder='Input target word'
             />
             <FormTextarea
@@ -357,7 +363,7 @@ export function CreateUpdateFlashcardForm({
               className='text-sm shadow-none bg-background h-10'
               form={form}
               name='back'
-              // label='Answer'
+              label={isUpdate ? 'Translation' : ''}
               placeholder='Input translation'
             />
             <FormTextarea
@@ -366,7 +372,7 @@ export function CreateUpdateFlashcardForm({
               className='text-sm grow shadow-none bg-background h-full'
               form={form}
               name='exampleSentence'
-              // label='Example Sentence'
+              label={isUpdate ? 'Example sentence' : ''}
               placeholder='Example sentence'
             />
             <FormTextarea
@@ -375,10 +381,12 @@ export function CreateUpdateFlashcardForm({
               className='text-sm grow shadow-none bg-background h-full'
               form={form}
               name='exampleSentenceTranslation'
-              // label='Example Translation'
+              label={isUpdate ? 'Example translation' : ''}
               placeholder='Translation of example sentence'
             />
-            <div className='flex gap-2 items-center'>
+            <div className={cn('flex gap-2 items-center',
+              isUpdate && 'justify-center'
+            )}>
               {onDeckChange && onCreateDeck && (
                 <DeckSelector
                   decks={decks}
@@ -392,10 +400,12 @@ export function CreateUpdateFlashcardForm({
               <Button
                 type='submit'
                 variant='outline'
-                className='h-[60px] w-[60px] min-w-[60px] flex-shrink-0 inline-flex items-center justify-center rounded-[12px] shadow-none'
-                disabled={!selectedDeckId}
+                className={cn('h-[60px] px-6 flex-shrink-0 inline-flex items-center justify-center rounded-[12px] shadow-none text-primary',
+                  isUpdate && 'h-fit mt-3 self-end'
+                )}
+                disabled={!isUpdate && !selectedDeckId}
               >
-                <Plus className='h-[22.5px] w-[22.5px] text-primary' />
+                {isUpdate ? 'Save' : 'Create'}
               </Button>
             </div>
           </form>
