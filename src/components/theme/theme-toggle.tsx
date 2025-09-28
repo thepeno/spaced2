@@ -1,42 +1,52 @@
-import BouncyButton from '@/components/bouncy-button';
 import { useTheme } from '@/components/theme/theme-provider';
-import { Monitor, MoonIcon, SunIcon } from 'lucide-react';
+import { Card } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
+import { Monitor, Moon, Sun } from 'phosphor-react';
 
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme();
 
+  const getNextTheme = () => {
+    if (theme === 'system') return 'dark';
+    if (theme === 'dark') return 'light';
+    return 'system';
+  };
+
+  const getCurrentThemeInfo = () => {
+    switch (theme) {
+      case 'system':
+        return { icon: Monitor, label: 'System', description: 'Follow system preference' };
+      case 'dark':
+        return { icon: Moon, label: 'Dark', description: 'Dark theme' };
+      default:
+        return { icon: Sun, label: 'Light', description: 'Light theme' };
+    }
+  };
+
+  const themeInfo = getCurrentThemeInfo();
+  const IconComponent = themeInfo.icon;
+
   return (
-    <div className='flex items-center justify-center'>
-      <BouncyButton
-        variant='large'
-        asButton
-        onClick={() => {
-          if (theme === 'system') {
-            setTheme('dark');
-          } else if (theme === 'dark') {
-            setTheme('light');
-          } else {
-            setTheme('system');
-          }
-        }}
-        className='bg-background/50 dark:bg-muted/50 w-52 h-48 rounded-xl flex flex-col items-center justify-center'
-      >
-        {theme === 'system' ? (
-          <Monitor className='size-16' />
-        ) : theme === 'dark' ? (
-          <MoonIcon className='size-16' />
-        ) : (
-          <SunIcon className='size-16' />
-        )}
-        <div className='mt-2'>
-          {theme === 'system'
-            ? 'System '
-            : theme === 'dark'
-            ? 'Dark '
-            : 'Light '}
-          Theme
-        </div>
-      </BouncyButton>
-    </div>
+    <Card className="p-4 shadow-none">
+      <h2 className="text-lg font-medium mb-4">Theme</h2>
+      <div className="flex items-center justify-between">
+        <Label className="flex flex-col gap-1">
+          <span>{themeInfo.label} theme</span>
+          <span className="text-sm text-muted-foreground font-normal">
+            {themeInfo.description}
+          </span>
+        </Label>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setTheme(getNextTheme())}
+          className="flex items-center gap-2"
+        >
+          <IconComponent className="h-4 w-4" />
+          {themeInfo.label}
+        </Button>
+      </div>
+    </Card>
   );
 }

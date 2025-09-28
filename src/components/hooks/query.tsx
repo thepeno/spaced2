@@ -20,7 +20,9 @@ export function useCards() {
 }
 
 export function useReviewCards(deckId?: string) {
-  const cards = deckId ? useCardsForDeck(deckId) : useCards();
+  const cardsForDeck = useCardsForDeck(deckId || '');
+  const allCards = useCards();
+  const cards = deckId ? cardsForDeck : allCards;
   const sessionSnapshot = useSyncExternalStore(
     reviewSession.subscribe.bind(reviewSession),
     reviewSession.getSnapshot.bind(reviewSession)

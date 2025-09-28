@@ -167,7 +167,7 @@ export function LanguageSelect({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className={cn('w-full justify-between', className)}
+          className={cn('w-full justify-between shadow-none', className)}
           disabled={disabled}
           type="button"
           onClick={handleToggle}

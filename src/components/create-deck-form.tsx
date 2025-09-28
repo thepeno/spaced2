@@ -27,9 +27,11 @@ import { toast } from 'sonner';
 export default function CreateDeckForm({
   open,
   onOpenChange,
+  onSuccess,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onSuccess?: (deckId: string) => void;
 }) {
   const form = useForm<DeckFormValues>({
     resolver: zodResolver(deckFormSchema),
@@ -41,8 +43,8 @@ export default function CreateDeckForm({
     },
   });
 
-  const handleSubmit = (data: DeckFormValues) => {
-    createNewDeck(
+  const handleSubmit = async (data: DeckFormValues) => {
+    const newDeckId = await createNewDeck(
       data.name, 
       data.description ?? '', 
       data.nativeLanguage || null, 
@@ -52,6 +54,10 @@ export default function CreateDeckForm({
     form.reset();
 
     toast.success('New deck created');
+    
+    if (onSuccess) {
+      onSuccess(newDeckId);
+    }
   };
 
   return (

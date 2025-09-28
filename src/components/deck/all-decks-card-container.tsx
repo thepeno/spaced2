@@ -8,9 +8,7 @@ export default function AllDecksCardContainer() {
     <DeckCard
       id="_all"
       name="All Cards"
-      description=""
-      lastModified={new Date()}
-      cardCount={cards.length}
+      unreviewedCount={cards.length}
     />
   );
 }

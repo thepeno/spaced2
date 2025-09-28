@@ -36,6 +36,7 @@ export type Snapshot = {
   getDeckById: (id: string) => Deck | undefined;
   getDecks: () => Deck[];
   getCardsForDeck: (deckId: string) => CardWithMetadata[];
+  getDeckForCard: (cardId: string) => Deck | null;
   getUndoStack: () => UndoGrade[];
 };
 
@@ -117,9 +118,12 @@ const getDeckById = (id: string) => {
 /**
  * Returns all decks.
  * Does not include deleted decks.
+ * Sorted by creation date (oldest first).
  */
 const getDecks = memoize(() => {
-  return Object.values(memoryDb.decks).filter((deck) => !deck.deleted);
+  return Object.values(memoryDb.decks)
+    .filter((deck) => !deck.deleted)
+    .sort((a, b) => a.lastModified - b.lastModified);
 });
 
 /**
@@ -138,6 +142,22 @@ const getCardsForDeck = (deckId: string) => {
     .filter((card) => !card.deleted);
 
   return cards;
+};
+
+/**
+ * Returns the deck for a given card.
+ * Returns null if card doesn't belong to any deck or deck is deleted.
+ */
+const getDeckForCard = (cardId: string) => {
+  for (const [deckId, cardsMap] of Object.entries(memoryDb.decksToCards)) {
+    if (cardsMap[cardId] && cardsMap[cardId] % 2 === 1) {
+      const deck = memoryDb.decks[deckId];
+      if (deck && !deck.deleted) {
+        return deck;
+      }
+    }
+  }
+  return null;
 };
 
 const pushUndoGrade = (undo: UndoGrade) => {
@@ -164,6 +184,7 @@ let snapshot: Snapshot = {
   getDeckById,
   getDecks,
   getCardsForDeck,
+  getDeckForCard,
   getUndoStack,
 };
 
@@ -189,6 +210,7 @@ const MemoryDB = {
   getDeckById,
   getDecks,
   getCardsForDeck,
+  getDeckForCard,
   pushUndoGrade,
   popUndoGrade,
 };

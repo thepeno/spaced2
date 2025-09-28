@@ -10,6 +10,7 @@ export type CardWithMetadata = Card & {
   deleted: boolean;
   bookmarked: boolean;
   suspended?: Date;
+  isReverse: boolean; // true if front=native, back=target; false if front=target, back=native
 
   // CRDT metadata
   cardLastModified: number;

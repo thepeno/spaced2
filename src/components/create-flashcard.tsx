@@ -18,6 +18,7 @@ import { MagicWand, Microphone } from 'phosphor-react';
 import { useCallback, useEffect, useState, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
+import { shouldCreateBidirectionalCards } from '@/lib/card-settings';
 
 // Speech Recognition API types
 interface SpeechRecognitionEvent {
@@ -76,7 +77,7 @@ type CreateFlashcardFormProps = {
 
 const FOCUS_QUESTION_KEY = ' ';
 
-export function CreateUpdateFlashcardForm({
+export function   CreateUpdateFlashcardForm({
   onSubmit,
   onAssistedSubmit,
   selectedDeckId,
@@ -137,6 +138,12 @@ export function CreateUpdateFlashcardForm({
 
   const handleSubmit = useCallback(
     (data: CardContentFormValues) => {
+      // Block submission if no deck selected and not updating
+      if (!isUpdate && !selectedDeckId) {
+        toast.error('Please select a deck first');
+        return;
+      }
+      
       navigator?.vibrate(VibrationPattern.successConfirm);
       onSubmit(data);
       form.reset();
@@ -151,21 +158,28 @@ export function CreateUpdateFlashcardForm({
           toast.success('Flashcard updated');
         }
       } else {
-        toast.success('Flashcard created');
+        const isBidirectional = shouldCreateBidirectionalCards();
+        toast.success(isBidirectional ? 'Flashcards created' : 'Flashcard created');
       }
     },
-    [form, isUpdate, initialFront, initialBack, initialExampleSentence, initialExampleSentenceTranslation, onSubmit]
+    [form, isUpdate, initialFront, initialBack, initialExampleSentence, initialExampleSentenceTranslation, onSubmit, selectedDeckId]
   );
 
   const handleAssistedSubmit = useCallback(
     (data: AssistedCardFormValues) => {
+      // Block submission if no deck selected or deck doesn't exist
+      if (!selectedDeckId || !decks.find(deck => deck.id === selectedDeckId)) {
+        toast.error('Please select a deck first');
+        return;
+      }
+      
       if (onAssistedSubmit) {
         navigator?.vibrate(VibrationPattern.successConfirm);
         onAssistedSubmit(data);
         assistedForm.reset();
       }
     },
-    [assistedForm, onAssistedSubmit]
+    [assistedForm, onAssistedSubmit, selectedDeckId, decks]
   );
 
   const handleTextChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -255,6 +269,12 @@ export function CreateUpdateFlashcardForm({
         return;
       }
       if (event.metaKey && event.key === 'Enter') {
+        // Don't submit if no deck is selected and not updating
+        if (!isUpdate && !selectedDeckId) {
+          event.preventDefault();
+          return;
+        }
+        
         form.handleSubmit(handleSubmit)();
         form.setFocus('front');
         event.preventDefault();
@@ -262,7 +282,7 @@ export function CreateUpdateFlashcardForm({
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [form, handleSubmit]);
+  }, [form, handleSubmit, isUpdate, selectedDeckId]);
 
   // Don't show assisted mode for updates
   const showAssistedToggle = !isUpdate;
@@ -336,7 +356,7 @@ export function CreateUpdateFlashcardForm({
                 type='submit'
                 variant='outline'
                 className='h-[60px] w-[60px] min-w-[60px] flex-shrink-0 inline-flex items-center justify-center rounded-[12px] shadow-none'
-                disabled={isGenerating || !selectedDeckId}
+                disabled={isGenerating || !selectedDeckId || !decks.find(deck => deck.id === selectedDeckId)}
                 title={isGenerating ? 'Generating...' : 'Generate card'}
               >
                 <MagicWand className='h-7.5 w-7.5 text-primary' />
@@ -403,7 +423,7 @@ export function CreateUpdateFlashcardForm({
                 className={cn('h-[60px] px-6 flex-shrink-0 inline-flex items-center justify-center rounded-[12px] shadow-none text-primary',
                   isUpdate && 'h-fit mt-3 self-end'
                 )}
-                disabled={!isUpdate && !selectedDeckId}
+                disabled={!isUpdate && (!selectedDeckId || !decks.find(deck => deck.id === selectedDeckId))}
               >
                 {isUpdate ? 'Save' : 'Create'}
               </Button>

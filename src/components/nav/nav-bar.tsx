@@ -41,14 +41,14 @@ export default function NavBar() {
   return (
     <div
       className={cn(
-        'bottom-0 left-0 right-0 flex z-10 bg-muted dark:bg-background w-full h-16',
+        'bottom-0 left-0 right-0 flex z-10 bg-muted dark:bg-background w-full justify-center gap-8',
         'md:fixed md:left-4 md:top-1/2 md:transform md:-translate-y-1/2 h-fit md:w-16 md:flex-col md:rounded-xl md:py-2 md:gap-1'
       )}
     >
       <NavButton
         icon={<BookOpen />}
         href={'/decks'}
-        focused={path.pathname === '/decks'}
+        focused={path.pathname.includes('/decks')}
       />
 
       {/* Bookmarks 
@@ -69,7 +69,7 @@ export default function NavBar() {
       <NavButton
         icon={<User />}
         href={'/profile'}
-        focused={path.pathname === '/profile'}
+        focused={path.pathname.includes('/profile')}
       />
     </div>
   );

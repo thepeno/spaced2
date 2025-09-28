@@ -7,7 +7,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { State } from 'ts-fsrs';
 import React, { useSyncExternalStore } from 'react';
 
 export default function CardCountBadges() {

@@ -39,7 +39,7 @@ export default function DecksRoute() {
   );
 
   return (
-    <div className="flex flex-col h-full justify-end grow">
+    <div className="flex flex-col h-full justify-end grow px-5 pb-2 pt-6">
       {/* Conditional Search at top */}
 
 

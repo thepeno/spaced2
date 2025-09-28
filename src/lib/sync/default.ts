@@ -10,6 +10,7 @@ export const defaultCard: Omit<CardWithMetadata, 'id'> = {
   deleted: false,
 
   bookmarked: false,
+  isReverse: false, // default to forward card (front=target, back=native)
 
   // CRDT metadata
   cardLastModified: 0,

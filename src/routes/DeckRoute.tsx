@@ -27,7 +27,7 @@ export default function DeckRoute() {
   }
 
   return (
-    <div className='md:px-24 xl:px-0 col-span-12 xl:col-start-3 xl:col-end-11 h-full flex grow flex-col'>
+    <div className='md:px-24 xl:px-0 col-span-12 xl:col-start-3 xl:col-end-11 h-full flex grow flex-col px-5 pb-2 pt-6'>
       <ReturnToTop />
 
       {/* Navigation buttons */}
@@ -64,17 +64,19 @@ export default function DeckRoute() {
 
       {/* Cards table with pagination - takes remaining height */}
       <div className='flex flex-col grow h-full mb-4'>
-        <CardsTable cards={filteredCards} />
+        <CardsTable
+          cards={filteredCards}
+          targetLanguage={deck.targetLanguage}
+          nativeLanguage={deck.nativeLanguage}
+        />
       </div>
 
       {/* Search bar at bottom */}
-      <div className='mb-2'>
-        <SearchBar
-          search={search}
-          setSearch={setSearch}
-          placeholder='Search cards...'
-        />
-      </div>
+      <SearchBar
+        search={search}
+        setSearch={setSearch}
+        placeholder='Search cards...'
+      />
 
       <EditDeckModal
         deck={deck}

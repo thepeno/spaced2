@@ -1,4 +1,5 @@
 import EditFlashcardResponsive from '@/components/card-actions/edit-flashcard-responsive';
+import ViewFlashcardDialog from '@/components/card-actions/view-flashcard-dialog';
 import {
   Table,
   TableBody,
@@ -10,16 +11,25 @@ import {
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { CardContentFormValues } from '@/lib/form-schema';
-import { updateCardContentOperation, updateCardExampleSentenceOperation } from '@/lib/sync/operation';
+import { updateCardContentOperation, updateCardExampleSentenceOperation, updateDeletedClientSide } from '@/lib/sync/operation';
 import { CardWithMetadata } from '@/lib/types';
+import MemoryDB from '@/lib/db/memory';
 import { CaretLeft, CaretRight } from 'phosphor-react';
 import { useState, useMemo, useEffect, useRef } from 'react';
 
-const FlashcardTable = ({ cards }: { cards: CardWithMetadata[] }) => {
+interface FlashcardTableProps {
+  cards: CardWithMetadata[];
+  targetLanguage?: string | null;
+  nativeLanguage?: string | null;
+  showDeckColumn?: boolean;
+}
+
+const FlashcardTable = ({ cards, targetLanguage, nativeLanguage, showDeckColumn = false }: FlashcardTableProps) => {
   const [selectedCard, setSelectedCard] = useState<CardWithMetadata | null>(
     null
   );
-  const [open, setOpen] = useState(false);
+  const [viewOpen, setViewOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [cardsPerPage, setCardsPerPage] = useState(10);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -67,16 +77,6 @@ const FlashcardTable = ({ cards }: { cards: CardWithMetadata[] }) => {
         // Set cards per page based on available space
         const newCardsPerPage = Math.max(3, Math.min(maxRows, 20)); // Min 3, max 20
 
-        console.log('Table sizing:', {
-          containerHeight,
-          headerHeight,
-          paginationHeight,
-          rowHeight,
-          availableHeight,
-          maxRows,
-          newCardsPerPage
-        });
-
         if (newCardsPerPage !== cardsPerPage) {
           setCardsPerPage(newCardsPerPage);
           setCurrentPage(1); // Reset to first page when changing page size
@@ -101,10 +101,26 @@ const FlashcardTable = ({ cards }: { cards: CardWithMetadata[] }) => {
     };
   }, [cardsPerPage]);
 
-  // Reset to first page when cards change
+  // Reset to first page only when cards are added or when filter changes
+  // Don't reset when deleting (length decreases)
+  const prevCardsLengthRef = useRef(cards.length);
   useEffect(() => {
-    setCurrentPage(1);
-  }, [cards.length]);
+    const prevLength = prevCardsLengthRef.current;
+    const currentLength = cards.length;
+    
+    // Only reset to page 1 if cards were added (not removed)
+    if (currentLength > prevLength) {
+      setCurrentPage(1);
+    } else if (currentLength < prevLength) {
+      // When cards are deleted, check if current page is still valid
+      const maxPage = Math.ceil(currentLength / cardsPerPage);
+      if (currentPage > maxPage && maxPage > 0) {
+        setCurrentPage(maxPage);
+      }
+    }
+    
+    prevCardsLengthRef.current = currentLength;
+  }, [cards.length, currentPage, cardsPerPage]);
 
   const handleEdit = (values: CardContentFormValues) => {
     if (!selectedCard) {
@@ -128,22 +144,46 @@ const FlashcardTable = ({ cards }: { cards: CardWithMetadata[] }) => {
       }
     }
     setSelectedCard(null);
-    setOpen(false);
+    setEditOpen(false);
+  };
+
+  const handleDelete = async () => {
+    if (!selectedCard) {
+      return;
+    }
+    await updateDeletedClientSide(selectedCard.id, true);
+    setEditOpen(false);
+    setViewOpen(false);
+    setSelectedCard(null);
   };
 
   return (
     <div ref={containerRef} className='flex flex-col grow h-full rounded-[4px] overflow-clip border animate-fade-in bg-background'>
       {selectedCard && (
-        <EditFlashcardResponsive
-          card={selectedCard}
-          onEdit={handleEdit}
-          open={open}
-          onOpenChange={setOpen}
-        />
+        <>
+          <ViewFlashcardDialog
+            card={selectedCard}
+            open={viewOpen}
+            onOpenChange={setViewOpen}
+            onEdit={() => {
+              setViewOpen(false);
+              setEditOpen(true);
+            }}
+            onDelete={handleDelete}
+            targetLanguage={targetLanguage}
+            nativeLanguage={nativeLanguage}
+          />
+          <EditFlashcardResponsive
+            card={selectedCard}
+            onEdit={handleEdit}
+            open={editOpen}
+            onOpenChange={setEditOpen}
+          />
+        </>
       )}
 
       {/* Table container with fixed height */}
-      <div className='flex flex-col h-full grow overflow-hidden'>
+      <div className='flex flex-col h-full grow overflow-hidden bg-muted/50'>
         <Table ref={tableRef}>
           <TableHeader>
             <TableRow>
@@ -151,41 +191,50 @@ const FlashcardTable = ({ cards }: { cards: CardWithMetadata[] }) => {
               <TableHead className='w-80'>Answer</TableHead>
               <TableHead className='w-100'>Example</TableHead>
               <TableHead className='w-100'>Translation</TableHead>
+              {showDeckColumn && <TableHead className='w-32'>Deck</TableHead>}
               <TableHead className='w-32'>Created</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody className='body'>
-            {paginatedCards.map((card) => (
-              <TableRow
-                key={card.id}
-                onClick={() => {
-                  setSelectedCard(card);
-                  setOpen(true);
-                }}
-                className='cursor-pointer hover:bg-muted/50'
-              >
-                <TableCell className='font-medium'>
-                  <div className='truncate'>{card.front}</div>
-                </TableCell>
-                <TableCell>
-                  <div className='truncate'>{card.back}</div>
-                </TableCell>
-                <TableCell className='text-[14px] text-muted-foreground'>
-                  <div className='truncate'>{card.exampleSentence || '-'}</div>
-                </TableCell>
-                <TableCell className='text-[14px] text-muted-foreground'>
-                  <div className='truncate'>{card.exampleSentenceTranslation || '-'}</div>
-                </TableCell>
-                <TableCell>
-                  <div className='truncate'>{new Date(card.createdAt).toLocaleDateString()}</div>
-                </TableCell>
-              </TableRow>
-            ))}
+            {paginatedCards.map((card) => {
+              const deck = showDeckColumn ? MemoryDB.getDeckForCard(card.id) : null;
+              return (
+                <TableRow
+                  key={card.id}
+                  onClick={() => {
+                    setSelectedCard(card);
+                    setViewOpen(true);
+                  }}
+                  className='cursor-pointer hover:bg-muted/50'
+                >
+                  <TableCell className=''>
+                    <div className='truncate'>{card.front}</div>
+                  </TableCell>
+                  <TableCell>
+                    <div className='truncate'>{card.back}</div>
+                  </TableCell>
+                  <TableCell className='text-[14px]'>
+                    <div className='truncate'>{card.exampleSentence || '-'}</div>
+                  </TableCell>
+                  <TableCell className='text-[14px]'>
+                    <div className='truncate'>{card.exampleSentenceTranslation || '-'}</div>
+                  </TableCell>
+                  {showDeckColumn && (
+                    <TableCell className='text-[14px]'>
+                      <div className='truncate'>{deck?.name || 'No deck'}</div>
+                    </TableCell>
+                  )}
+                  <TableCell>
+                    <div className='truncate'>{new Date(card.createdAt).toLocaleDateString()}</div>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
 
             {/* Fill remaining rows only when there are multiple pages to maintain consistent height */}
             {totalPages > 1 && Array.from({ length: Math.max(0, cardsPerPage - paginatedCards.length) }).map((_, index) => (
               <TableRow key={`empty-${index}`} className='h-[37px] border-0'>
-                <TableCell colSpan={5} className='border-0'>&nbsp;</TableCell>
+                <TableCell colSpan={showDeckColumn ? 6 : 5} className='border-0'>&nbsp;</TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -194,7 +243,7 @@ const FlashcardTable = ({ cards }: { cards: CardWithMetadata[] }) => {
             <TableFooter>
               <TableRow>
                 <TableCell
-                  colSpan={5}
+                  colSpan={showDeckColumn ? 6 : 5}
                   className='text-muted-foreground text-center h-16'
                 >
                   No cards found

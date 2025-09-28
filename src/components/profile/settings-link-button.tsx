@@ -1,14 +1,23 @@
-import { Button } from '@/components/ui/button';
 import { Gear } from 'phosphor-react';
 import { Link } from 'react-router';
+import BouncyButton from '../bouncy-button';
+import { cn } from '@/lib/utils';
 
 export function SettingsLinkButton() {
   return (
-    <Link to="/settings">
-      <Button variant="outline" className="w-full justify-start shadow-none">
-        <Gear className="mr-2 h-4 w-4" />
-        Settings
-      </Button>
+    <Link to='/profile/settings'>
+      <BouncyButton
+        variant='large'
+        asButton={true}
+        className={cn(
+          'bg-background dark:bg-muted/50 w-full rounded-xl py-4 px-6  cursor-pointer transition-all duration-100 ease-out'
+        )}
+      >
+        <div className='flex justify-between'>
+          <span>Settings</span>
+          <Gear className="w-6 h-6 text-muted-foreground" />
+        </div>
+      </BouncyButton>
     </Link>
   );
 }

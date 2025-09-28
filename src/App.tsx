@@ -59,12 +59,12 @@ export default function App() {
           className={cn(
             'w-screen flex flex-col justify-between',
             'md:pl-24 md:px-0 md:pt-8',
-            'min-h-screen bg-background font-sans antialiased',
+            'h-screen bg-background font-sans antialiased',
             'bg-muted dark:bg-background'
           )}
         >
           <SessionExpiredBanner />
-          <div className='p-5 md:pb-5 flex flex-col grow h-full w-full'>
+          <div className='flex flex-col grow flex-1 h-[calc(100%-82px)] w-full'>
             <Routes>
               <Route path='/' element={<CreateFlashcardRoute />} />
               <Route path='/review' element={<ReviewRoute />} />
@@ -76,7 +76,7 @@ export default function App() {
               {/* <Route path='/debug' element={<DebugRoute />} /> */}
               <Route path='/create' element={<CreateFlashcardRoute />} />
               <Route path='/profile' element={<ProfileRoute />} />
-              <Route path='/settings' element={<SettingsRoute />} />
+              <Route path='/profile/settings' element={<SettingsRoute />} />
               <Route path='/stats' element={<StatsRoute />} />
               <Route path='/login-success' element={<LoginSuccessRoute />} />
               <Route path='/import' element={<ImportRoute />} />

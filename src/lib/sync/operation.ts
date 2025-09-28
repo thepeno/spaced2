@@ -82,6 +82,7 @@ export const cardContentOperationSchema = z
       cardId: z.string(),
       front: z.string(),
       back: z.string(),
+      isReverse: z.boolean().optional(), // Optional for backward compatibility
     }),
     timestamp: z.number(),
   })
@@ -257,6 +258,7 @@ export function emptyCardToOperations(card: CardWithMetadata): Operation[] {
       cardId: card.id,
       front: card.front,
       back: card.back,
+      isReverse: card.isReverse,
     },
     timestamp: now,
   };
@@ -287,13 +289,18 @@ export async function createNewCard(
   back: string,
   decks: string[] = [],
   exampleSentence?: string | null,
-  exampleSentenceTranslation?: string | null
+  exampleSentenceTranslation?: string | null,
+  shouldPregenerateTTS: boolean = true,
+  createReverse: boolean = false,
+  isReverse: boolean = false
 ) {
   const card: CardWithMetadata = {
+    ...defaultCard,
     ...createEmptyCard(),
     id: crypto.randomUUID(),
     front,
     back,
+    isReverse, // Set the reverse flag
 
     // CRDT metadata
     cardLastModified: 0,
@@ -333,12 +340,54 @@ export async function createNewCard(
   await db.operations.bulkAdd(operations);
   await db.pendingOperations.bulkAdd(operationsCopy);
   MemoryDB.notify();
+
+  // Pre-generate TTS for the new card if requested
+  if (shouldPregenerateTTS && decks.length > 0) {
+    // Import dynamically to avoid circular dependencies
+    const { pregenerateTTS } = await import('../tts/pregenerate');
+    const MemoryDB = (await import('../db/memory')).default;
+    
+    // Get the first deck's language settings
+    const allDecks = MemoryDB.getDecks();
+    const firstDeck = allDecks.find(deck => decks.includes(deck.id));
+    
+    if (firstDeck) {
+      // Run TTS pre-generation in background (don't await)
+      pregenerateTTS(
+        front,
+        back,
+        firstDeck.targetLanguage,
+        firstDeck.nativeLanguage,
+        exampleSentence,
+        exampleSentenceTranslation,
+        isReverse
+      ).catch(error => {
+        console.warn('TTS pre-generation failed:', error);
+      });
+    }
+  }
+
+  // Create reverse card if requested
+  if (createReverse) {
+    // Create the reverse card: back becomes front, front becomes back
+    await createNewCard(
+      back, // front becomes back (native language)
+      front, // back becomes front (target language)
+      decks,
+      exampleSentenceTranslation, // example becomes translation
+      exampleSentence, // translation becomes example
+      shouldPregenerateTTS,
+      false, // Don't create reverse of reverse
+      true // Mark as reverse card
+    );
+  }
 }
 
 export async function updateCardContentOperation(
   cardId: string,
   front: string,
-  back: string
+  back: string,
+  isReverse: boolean = false
 ) {
   const cardOperation: CardContentOperation = {
     type: 'cardContent',
@@ -346,6 +395,7 @@ export async function updateCardContentOperation(
       cardId,
       front,
       back,
+      isReverse,
     },
     timestamp: Date.now(),
   };
@@ -488,7 +538,7 @@ export async function createNewDeck(
   description: string,
   nativeLanguage?: string | null,
   targetLanguage?: string | null
-) {
+): Promise<string> {
   const deckId = crypto.randomUUID();
   const now = Date.now();
   
@@ -533,6 +583,8 @@ export async function createNewDeck(
   await db.operations.bulkAdd(operations);
   await db.pendingOperations.bulkAdd(operationsCopy);
   MemoryDB.notify();
+  
+  return deckId;
 }
 
 export async function updateDeckOperation(
@@ -653,6 +705,7 @@ function handleCardContentOperation(
       id: operation.payload.cardId,
       front: operation.payload.front,
       back: operation.payload.back,
+      isReverse: operation.payload.isReverse ?? false, // Default to false for backward compatibility
 
       cardContentLastModified: operation.timestamp,
     });
@@ -667,6 +720,7 @@ function handleCardContentOperation(
     ...card,
     front: operation.payload.front,
     back: operation.payload.back,
+    isReverse: operation.payload.isReverse ?? false, // Default to false for backward compatibility
     cardContentLastModified: operation.timestamp,
   };
 

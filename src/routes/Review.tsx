@@ -17,6 +17,7 @@ import {
 } from '@/lib/review/actions';
 import { gradeCardOperation } from '@/lib/sync/operation';
 import { reviewSession } from '@/lib/review-session';
+import { ttsManager } from '@/lib/tts/tts-manager';
 import { useState, useEffect } from 'react';
 import { Grade, Rating } from 'ts-fsrs';
 import { useParams, useNavigate } from 'react-router';
@@ -55,6 +56,9 @@ export default function ReviewRoute() {
 
   async function handleGrade(grade: Grade) {
     if (!nextReviewCard) return;
+    
+    // Stop any playing TTS before moving to the next card
+    ttsManager.stop();
     
     // Handle session-based review logic
     if (grade === Rating.Again) {
@@ -104,7 +108,7 @@ export default function ReviewRoute() {
   }
 
   return (
-    <div className="flex grow flex-col h-full justify-center max-w-4xl mx-auto w-full">
+    <div className="flex grow flex-col h-full justify-center max-w-4xl mx-auto w-full px-5 pb-2 pt-6">
       <DeleteFlashcardDialog
         open={isDeleteDialogOpen}
         onOpenChange={setIsDeleteDialogOpen}
@@ -171,6 +175,7 @@ export default function ReviewRoute() {
                 onGrade={handleGrade}
                 isRevealed={isRevealed}
                 onReveal={() => setIsRevealed(true)}
+                targetLanguage={deck?.targetLanguage}
                 onBookmark={handleSave}
                 onDelete={() => setIsDeleteDialogOpen(true)}
                 onSuspend={handleSuspend}

@@ -149,10 +149,15 @@ export function DeckSelector({
     return (
       <Button
         variant="outline"
-        onClick={onCreateNew}
-        className={cn('w-full justify-start', className)}
+        type="button"
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          onCreateNew();
+        }}
+        className={cn('w-full justify-center h-15 shadow-none rounded-xl font-medium text-primary text-base', className)}
       >
-        <Plus className="mr-2 h-4 w-4" />
+        <Plus className="h-5 w-5" />
         Create deck
       </Button>
     );
@@ -185,7 +190,9 @@ export function DeckSelector({
       <div className={cn("overflow-y-auto", isMobile ? "max-h-[60vh]" : "max-h-60")}>
         <div
           className="flex items-center px-4 py-3 text-sm cursor-pointer hover:bg-accent hover:text-accent-foreground font-medium border-b"
-          onClick={() => {
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
             onCreateNew();
             setOpen(false);
             setSearch('');

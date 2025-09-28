@@ -47,6 +47,10 @@ export const emitChange = async () => {
   for (const listener of listeners) {
     listener();
   }
+
+  // Trigger user info update when login status changes
+  const { emitUserInfoChange } = await import('./user-info');
+  emitUserInfoChange(true); // Force refresh on login status change
 };
 
 // Initial check
