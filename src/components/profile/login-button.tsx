@@ -23,6 +23,7 @@ import { cn } from '@/lib/utils';
 import { LogIn } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { useMediaQuery } from '@uidotdev/usehooks';
 
 type LoginFormDialogContentProps = {
   onSuccess: () => void;
@@ -141,6 +142,7 @@ export function LoginFormDialogContent({
 export function LoginButton() {
   const [isOpen, setIsOpen] = useState(false);
   const online = useOnlineStatus();
+  const isMobile = useMediaQuery('(max-width: 640px)');
 
   const onLoginSuccess = async () => {
     toast.success('Logged in!');
@@ -172,7 +174,10 @@ export function LoginButton() {
           </BouncyButton>
         </button>
       </DialogTrigger>
-      <DialogContent className='w-full h-max transition-all'>
+      <DialogContent className={cn(
+        'w-full h-max transition-all',
+        isMobile && 'fixed bottom-0 left-0 right-0 top-auto max-w-none rounded-t-xl rounded-b-none border-0 p-6 m-0 translate-x-0 translate-y-0 max-h-[90vh] overflow-y-auto'
+      )}>
         <LoginFormDialogContent onSuccess={onLoginSuccess} />
       </DialogContent>
     </Dialog>

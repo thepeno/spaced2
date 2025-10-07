@@ -1,9 +1,11 @@
 import { deckFormSchema, DeckFormValues } from '@/lib/form-schema';
-import { updateDeckLanguagesOperation, updateDeckOperation } from '@/lib/sync/operation';
+import { deleteDeckOperation, updateDeckLanguagesOperation, updateDeckNewCardsPerDayOperation, updateDeckOperation } from '@/lib/sync/operation';
 import { Deck } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
+import { useState } from 'react';
+import { useMediaQuery } from '@uidotdev/usehooks';
 import { Button } from './ui/button';
 import {
   Dialog,
@@ -12,6 +14,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from './ui/dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from './ui/alert-dialog';
 import {
   Form,
   FormControl,
@@ -36,6 +48,8 @@ export default function EditDeckModal({
   open,
   onOpenChange,
 }: EditDeckModalProps) {
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const isMobile = useMediaQuery('(max-width: 640px)');
   const form = useForm<DeckFormValues>({
     resolver: zodResolver(deckFormSchema),
     defaultValues: {
@@ -43,6 +57,7 @@ export default function EditDeckModal({
       description: deck.description,
       nativeLanguage: deck.nativeLanguage || '',
       targetLanguage: deck.targetLanguage || '',
+      newCardsPerDay: deck.newCardsPerDay,
     },
   });
 
@@ -64,6 +79,11 @@ export default function EditDeckModal({
       );
     }
 
+    // Update new cards per day if changed
+    if (data.newCardsPerDay !== deck.newCardsPerDay) {
+      await updateDeckNewCardsPerDayOperation(deck.id, data.newCardsPerDay);
+    }
+
     onOpenChange(false);
     toast.success('Deck updated successfully');
   };
@@ -73,67 +93,57 @@ export default function EditDeckModal({
     return SUPPORTED_LANGUAGES.find(lang => lang.value === languageCode)?.label;
   };
 
+  const handleDelete = async () => {
+    await deleteDeckOperation(deck.id);
+    setShowDeleteConfirm(false);
+    onOpenChange(false);
+    toast.success('Deck deleted successfully');
+  };
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className={cn('rounded-2xl max-w-lg')}>
-        <DialogHeader>
-          <DialogTitle>Edit Deck</DialogTitle>
-        </DialogHeader>
+    <>
+      <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently delete the deck "{deck.name}" and all its cards. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(handleSubmit)}
-            className='space-y-4'
-          >
-            <FormField
-              control={form.control}
-              name='name'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Name*</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder='Enter deck name'
-                      className='text-sm'
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className={cn(
+          'rounded-2xl max-w-lg',
+          isMobile && 'fixed bottom-0 left-0 right-0 top-auto max-w-none w-full rounded-t-xl rounded-b-none border-0 p-6 m-0 translate-x-0 translate-y-0'
+        )}>
+          <DialogHeader>
+            <DialogTitle>Edit Deck</DialogTitle>
+          </DialogHeader>
 
-            <FormField
-              control={form.control}
-              name='description'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Description</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder='Enter deck description'
-                      className='resize-none text-sm'
-                      rows={4}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(handleSubmit)}
+              className='space-y-4'
+            >
               <FormField
                 control={form.control}
-                name='nativeLanguage'
+                name='name'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Native Language</FormLabel>
+                    <FormLabel>Name*</FormLabel>
                     <FormControl>
-                      <LanguageSelect
-                        value={field.value}
-                        onValueChange={field.onChange}
-                        placeholder='Select native language'
+                      <Input
+                        placeholder='Enter deck name'
+                        className='text-sm'
+                        {...field}
                       />
                     </FormControl>
                     <FormMessage />
@@ -143,55 +153,126 @@ export default function EditDeckModal({
 
               <FormField
                 control={form.control}
-                name='targetLanguage'
+                name='description'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Target Language</FormLabel>
+                    <FormLabel>Description</FormLabel>
                     <FormControl>
-                      <LanguageSelect
-                        value={field.value}
-                        onValueChange={field.onChange}
-                        placeholder='Select target language'
+                      <Textarea
+                        placeholder='Enter deck description'
+                        className='resize-none text-sm'
+                        rows={4}
+                        {...field}
                       />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-            </div>
 
-            {/* Show current language selections */}
-            <div className='text-xs text-muted-foreground space-y-1'>
-              <p>
-                Current native language:{' '}
-                {getCurrentLanguageName(deck.nativeLanguage ?? undefined) || 'Not set'}
-              </p>
-              <p>
-                Current target language:{' '}
-                {getCurrentLanguageName(deck.targetLanguage ?? undefined) || 'Not set'}
-              </p>
-            </div>
+              <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
+                <FormField
+                  control={form.control}
+                  name='nativeLanguage'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Native Language</FormLabel>
+                      <FormControl>
+                        <LanguageSelect
+                          value={field.value}
+                          onValueChange={field.onChange}
+                          placeholder='Select native language'
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-            <DialogFooter>
-              <Button
-                type='button'
-                variant='outline'
-                onClick={() => onOpenChange(false)}
-                className='rounded-lg'
-              >
-                Cancel
-              </Button>
-              <Button
-                type='submit'
-                className='rounded-lg'
-                size={'lg'}
-              >
-                Save Changes
-              </Button>
-            </DialogFooter>
-          </form>
-        </Form>
-      </DialogContent>
-    </Dialog>
+                <FormField
+                  control={form.control}
+                  name='targetLanguage'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Target Language</FormLabel>
+                      <FormControl>
+                        <LanguageSelect
+                          value={field.value}
+                          onValueChange={field.onChange}
+                          placeholder='Select target language'
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <FormField
+                control={form.control}
+                name='newCardsPerDay'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>New Cards Per Day</FormLabel>
+                    <FormControl>
+                      <Input
+                        type='number'
+                        min={1}
+                        max={9999}
+                        placeholder='10'
+                        className='text-sm'
+                        {...field}
+                        onChange={(e) => field.onChange(parseInt(e.target.value) || 10)}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Show current language selections */}
+              <div className='text-xs text-muted-foreground space-y-1'>
+                <p>
+                  Current native language:{' '}
+                  {getCurrentLanguageName(deck.nativeLanguage ?? undefined) || 'Not set'}
+                </p>
+                <p>
+                  Current target language:{' '}
+                  {getCurrentLanguageName(deck.targetLanguage ?? undefined) || 'Not set'}
+                </p>
+              </div>
+
+              <DialogFooter className='flex flex-col sm:flex-row gap-2'>
+                <Button
+                  type='button'
+                  variant='destructive'
+                  onClick={() => setShowDeleteConfirm(true)}
+                  className='rounded-lg sm:mr-auto'
+                >
+                  Delete Deck
+                </Button>
+                <div className='flex gap-2 w-full sm:w-auto'>
+                  <Button
+                    type='button'
+                    variant='outline'
+                    onClick={() => onOpenChange(false)}
+                    className='rounded-lg flex-1 sm:flex-none'
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type='submit'
+                    className='rounded-lg flex-1 sm:flex-none'
+                    size={'lg'}
+                  >
+                    Save Changes
+                  </Button>
+                </div>
+              </DialogFooter>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }

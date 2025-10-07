@@ -29,7 +29,9 @@ export type Deck = {
   description: string;
   nativeLanguage: string | null;
   targetLanguage: string | null;
+  newCardsPerDay: number;
   deleted: boolean;
   lastModified: number;
   languagesLastModified: number;
+  newCardsPerDayLastModified: number;
 };

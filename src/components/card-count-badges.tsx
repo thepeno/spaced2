@@ -9,8 +9,12 @@ import {
 } from '@/components/ui/tooltip';
 import React, { useSyncExternalStore } from 'react';
 
-export default function CardCountBadges() {
-  const reviewCards = useReviewCards();
+interface CardCountBadgesProps {
+  deckId?: string;
+}
+
+export default function CardCountBadges({ deckId }: CardCountBadgesProps) {
+  const reviewCards = useReviewCards(deckId);
   const sessionSnapshot = useSyncExternalStore(
     reviewSession.subscribe.bind(reviewSession),
     reviewSession.getSnapshot.bind(reviewSession)

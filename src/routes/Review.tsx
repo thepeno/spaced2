@@ -166,7 +166,7 @@ export default function ReviewRoute() {
             <div className='flex flex-col gap-3 h-full grow relative'>
               {/* Card count badges overlay */}
               <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-10">
-                <CardCountBadges />
+                <CardCountBadges deckId={deckId} />
               </div>
 
               {/* Review card */}

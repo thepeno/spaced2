@@ -45,7 +45,7 @@ export const assistedCardFormSchema = z.object({
     .min(1, {
       message: 'Word is required.',
     })
-    .max(100, {
+    .max(1000, {
       message: 'Word is too long.',
     })
     .describe('The word to generate a flashcard for.'),
@@ -112,6 +112,11 @@ export const deckFormSchema = z.object({
     .optional(),
   nativeLanguage: z.string().optional(),
   targetLanguage: z.string().optional(),
+  newCardsPerDay: z
+    .number()
+    .int()
+    .min(1, { message: 'Must be at least 1 card per day.' })
+    .max(9999, { message: 'Must be less than 10000 cards per day.' }),
 });
 
 export type DeckFormValues = z.infer<typeof deckFormSchema>;

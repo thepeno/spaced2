@@ -192,6 +192,19 @@ export type UpdateDeckCardOperation = z.infer<
   typeof updateDeckCardOperationSchema
 >;
 
+export const deckNewCardsPerDayOperationSchema = z
+  .object({
+    type: z.literal('deckNewCardsPerDay'),
+    payload: z.object({
+      deckId: z.string(),
+      newCardsPerDay: z.number(),
+    }),
+    timestamp: z.number(),
+  })
+  .passthrough();
+
+export type DeckNewCardsPerDayOperation = z.infer<typeof deckNewCardsPerDayOperationSchema>;
+
 export const operationSchema = z.union([
   cardOperationSchema,
   cardContentOperationSchema,
@@ -200,6 +213,7 @@ export const operationSchema = z.union([
   cardSuspendedOperationSchema,
   deckOperationSchema,
   deckLanguagesOperationSchema,
+  deckNewCardsPerDayOperationSchema,
   cardExampleSentenceOperationSchema,
   updateDeckCardOperationSchema,
   reviewLogOperationSchema,
@@ -606,6 +620,23 @@ export async function updateDeckOperation(
   await handleClientOperationWithPersistence(deckOperation);
 }
 
+export async function deleteDeckOperation(deckId: string) {
+  const deck = MemoryDB.getDeckById(deckId);
+  if (!deck) return;
+  
+  const deckOperation: DeckOperation = {
+    type: 'deck',
+    payload: {
+      id: deckId,
+      name: deck.name,
+      description: deck.description,
+      deleted: true,
+    },
+    timestamp: Date.now(),
+  };
+  await handleClientOperationWithPersistence(deckOperation);
+}
+
 export async function updateDeckLanguagesOperation(
   deckId: string,
   nativeLanguage?: string | null,
@@ -622,6 +653,21 @@ export async function updateDeckLanguagesOperation(
   };
 
   await handleClientOperationWithPersistence(languagesOperation);
+}
+
+export async function updateDeckNewCardsPerDayOperation(
+  deckId: string,
+  newCardsPerDay: number
+) {
+  const newCardsPerDayOperation: DeckNewCardsPerDayOperation = {
+    type: 'deckNewCardsPerDay',
+    payload: {
+      deckId,
+      newCardsPerDay,
+    },
+    timestamp: Date.now(),
+  };
+  await handleClientOperationWithPersistence(newCardsPerDayOperation);
 }
 
 export async function updateCardExampleSentenceOperation(
@@ -898,6 +944,34 @@ function handleDeckLanguagesOperation(
   return { applied: true };
 }
 
+function handleDeckNewCardsPerDayOperation(
+  operation: DeckNewCardsPerDayOperation
+): OperationResult {
+  const deck = MemoryDB.getDeckById(operation.payload.deckId);
+
+  if (!deck) {
+    MemoryDB.putDeck({
+      ...defaultDeck,
+      id: operation.payload.deckId,
+      newCardsPerDay: operation.payload.newCardsPerDay,
+      newCardsPerDayLastModified: operation.timestamp,
+    });
+    return { applied: true };
+  }
+
+  if (deck.newCardsPerDayLastModified > operation.timestamp) {
+    return { applied: false };
+  }
+
+  const updatedDeck: Deck = {
+    ...deck,
+    newCardsPerDay: operation.payload.newCardsPerDay,
+    newCardsPerDayLastModified: operation.timestamp,
+  };
+  MemoryDB.putDeck(updatedDeck);
+  return { applied: true };
+}
+
 function handleCardExampleSentenceOperation(
   operation: CardExampleSentenceOperation
 ): OperationResult {
@@ -944,6 +1018,8 @@ export function handleClientOperation(operation: Operation): OperationResult {
       return handleDeckOperation(operation);
     case 'deckLanguages':
       return handleDeckLanguagesOperation(operation);
+    case 'deckNewCardsPerDay':
+      return handleDeckNewCardsPerDayOperation(operation);
     case 'cardExampleSentence':
       return handleCardExampleSentenceOperation(operation);
     case 'updateDeckCard':

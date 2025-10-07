@@ -28,7 +28,9 @@ export const defaultDeck: Omit<Deck, 'id'> = {
   description: '',
   nativeLanguage: null,
   targetLanguage: null,
+  newCardsPerDay: 10,
   deleted: false,
   lastModified: 0,
   languagesLastModified: 0,
+  newCardsPerDayLastModified: 0,
 };

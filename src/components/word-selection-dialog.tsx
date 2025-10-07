@@ -8,6 +8,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { WordSelectionData } from '@/lib/ai/gpt-service';
 import { cn } from '@/lib/utils';
+import { useMediaQuery } from '@uidotdev/usehooks';
 
 interface WordSelectionDialogProps {
   open: boolean;
@@ -23,6 +24,7 @@ export function WordSelectionDialog({
   onWordSelected,
 }: WordSelectionDialogProps) {
   const [selectedWord, setSelectedWord] = useState<string | null>(null);
+  const isMobile = useMediaQuery('(max-width: 640px)');
 
   if (!data) return null;
 
@@ -45,7 +47,10 @@ export function WordSelectionDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className={cn(
+        "max-w-2xl",
+        isMobile && 'fixed bottom-0 left-0 right-0 top-auto max-w-none w-full rounded-t-xl rounded-b-none border-0 p-6 m-0 translate-x-0 translate-y-0 max-h-[90vh] overflow-y-auto'
+      )}>
         <DialogHeader>
           <DialogTitle>Select Target Word</DialogTitle>
         </DialogHeader>

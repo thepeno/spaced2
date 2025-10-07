@@ -3,6 +3,7 @@ import { createNewDeck } from '@/lib/sync/operation';
 import { cn } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
+import { useMediaQuery } from '@uidotdev/usehooks';
 import { Button } from './ui/button';
 import {
     Dialog,
@@ -33,6 +34,7 @@ export default function CreateDeckForm({
   onOpenChange: (open: boolean) => void;
   onSuccess?: (deckId: string) => void;
 }) {
+  const isMobile = useMediaQuery('(max-width: 640px)');
   const form = useForm<DeckFormValues>({
     resolver: zodResolver(deckFormSchema),
     defaultValues: {
@@ -40,6 +42,7 @@ export default function CreateDeckForm({
       description: '',
       nativeLanguage: '',
       targetLanguage: '',
+      newCardsPerDay: 10,
     },
   });
 
@@ -62,7 +65,10 @@ export default function CreateDeckForm({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className={cn('rounded-2xl')}>
+      <DialogContent className={cn(
+        'rounded-2xl',
+        isMobile && 'fixed bottom-0 left-0 right-0 top-auto max-w-none w-full rounded-t-xl rounded-b-none border-0 p-6 m-0 translate-x-0 translate-y-0'
+      )}>
         <DialogHeader>
           <DialogTitle>Create New Deck</DialogTitle>
         </DialogHeader>

@@ -46,25 +46,44 @@ export async function analyzeInput(
 }
 
 /**
+ * Determines if input is a complete sentence vs a phrase/word
+ * A sentence should have:
+ * - Proper capitalization at the beginning
+ * - Ending punctuation (. ! ? etc.)
+ */
+function isSentence(text: string): boolean {
+  const trimmed = text.trim();
+
+  // Check if it starts with a capital letter
+  const startsWithCapital = /^[A-ZÁÉÍÓÚÜÑ]/.test(trimmed);
+
+  // Check if it ends with sentence-ending punctuation
+  const endsWithPunctuation = /[.!?¿¡;:]$/.test(trimmed);
+
+  // Must have both to be considered a sentence
+  return startsWithCapital && endsWithPunctuation;
+}
+
+/**
  * Smart analysis with enhanced features
  */
 async function analyzeInputSmart(
   input: string
 ): Promise<SmartAnalysisResult> {
   const trimmed = input.trim();
-  
+
   // 1. Check for list separators (commas, newlines, semicolons)
   const hasCommas = trimmed.includes(',');
   const hasNewlines = trimmed.includes('\n');
   const hasSemicolons = trimmed.includes(';');
-  
+
   if (hasCommas || hasNewlines || hasSemicolons) {
     // Split on various separators and clean up
     const words = trimmed
       .split(/[,\n;]+/)
       .map(word => word.trim())
       .filter(word => word.length > 0);
-      
+
     if (words.length > 1) {
       // Detect language and potentially correct spelling
       const processedWords = await processWordList(words);
@@ -75,21 +94,20 @@ async function analyzeInputSmart(
       };
     }
   }
-  
-  // 2. Check if it looks like a sentence (multiple words, ends with punctuation or is long)
+
+  // 2. Check if it's a complete sentence based on capitalization and punctuation
   const wordCount = trimmed.split(/\s+/).length;
-  const hasPunctuation = /[.!?]$/.test(trimmed);
-  const isLongPhrase = wordCount > 4;
-  
-  if (wordCount > 2 && (hasPunctuation || isLongPhrase)) {
+
+  if (wordCount > 1 && isSentence(trimmed)) {
     return {
       type: 'sentence',
       sentence: trimmed
     };
   }
-  
-  // Removed native language input detection - always assume target language input
-  
+
+  // 3. Multi-word phrases (like "pode crer", "lenço de papel") are treated as single words
+  // They don't have capitalization/punctuation, so they fall through to single-word handling
+
   // 4. Check for verb conjugation expansion
   const conjugations = await detectVerbConjugations();
   if (conjugations.length > 0) {
@@ -98,8 +116,8 @@ async function analyzeInputSmart(
       conjugations
     };
   }
-  
-  // Default to single word
+
+  // Default to single word (includes multi-word phrases)
   return {
     type: 'single-word'
   };
