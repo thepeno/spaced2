@@ -395,6 +395,9 @@ export async function createNewCard(
       true // Mark as reverse card
     );
   }
+
+  // Return the card ID so it can be used for navigation/editing
+  return card.id;
 }
 
 export async function updateCardContentOperation(

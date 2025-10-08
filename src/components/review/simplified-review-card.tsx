@@ -85,7 +85,7 @@ export default function SimplifiedReviewCard({
         };
       }
     }
-  }, [isRevealed, ttsSettings.autoPlay, targetLanguage, targetText, isTargetOnFront, targetExampleSentence]);
+  }, [isRevealed, ttsSettings.autoPlay, targetLanguage, targetText, isTargetOnFront, targetExampleSentence, card.id]);
   const handleCardClick = (event: React.MouseEvent<HTMLDivElement>) => {
     // Don't trigger card actions if clicking on the menu area
     if ((event.target as HTMLElement).closest('[data-menu-area]')) {

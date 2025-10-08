@@ -23,18 +23,20 @@ export default function EditFlashcardDrawer({
 }: EditFlashcardDrawerProps) {
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className='w-full'>
-        <DrawerHeader>
+      <DrawerContent className='w-full max-h-[90vh] overflow-hidden flex flex-col'>
+        <DrawerHeader className='flex-shrink-0'>
           <DrawerTitle>Edit Flashcard</DrawerTitle>
         </DrawerHeader>
 
-        <CreateUpdateFlashcardForm
-          onSubmit={onEdit}
-          initialFront={card.front}
-          initialBack={card.back}
-          initialExampleSentence={card.exampleSentence ?? undefined}
-          initialExampleSentenceTranslation={card.exampleSentenceTranslation ?? undefined}
-        />
+        <div className='overflow-y-auto flex-1 px-4 pb-4'>
+          <CreateUpdateFlashcardForm
+            onSubmit={onEdit}
+            initialFront={card.front}
+            initialBack={card.back}
+            initialExampleSentence={card.exampleSentence ?? undefined}
+            initialExampleSentenceTranslation={card.exampleSentenceTranslation ?? undefined}
+          />
+        </div>
       </DrawerContent>
     </Drawer>
   );

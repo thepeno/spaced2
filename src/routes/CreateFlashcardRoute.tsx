@@ -15,12 +15,13 @@ import { shouldCreateBidirectionalCards } from '@/lib/card-settings';
 import { WordSelectionDialog } from '@/components/word-selection-dialog';
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
-import { useSearchParams } from 'react-router';
+import { useSearchParams, useNavigate } from 'react-router';
 
 
 export default function CreateFlashcardRoute() {
   const decks = useDecks().sort((a, b) => b.lastModified - a.lastModified);
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const preselectedDeckId = searchParams.get('deck');
   
   const [selectedDeckId, setSelectedDeckId] = useState<string>(() => {
@@ -169,7 +170,7 @@ export default function CreateFlashcardRoute() {
       finalFront = articleAnalysis.wordWithArticle;
     }
 
-    await createNewCard(
+    const cardId = await createNewCard(
       finalFront,
       generatedCard.back,
       [selectedDeckId],
@@ -181,9 +182,13 @@ export default function CreateFlashcardRoute() {
 
     const isBidirectional = shouldCreateBidirectionalCards();
     toast.success('Flashcard generated successfully!', {
-      description: isBidirectional 
+      description: isBidirectional
         ? 'Your AI-generated flashcards (both directions) have been created'
         : 'Your AI-generated flashcard has been created',
+      action: {
+        label: 'Edit',
+        onClick: () => navigate(`/decks/${selectedDeckId}/browse?edit=${cardId}`)
+      }
     });
   };
 
@@ -213,7 +218,7 @@ export default function CreateFlashcardRoute() {
       }
 
       // Use the original sentence as the example
-      await createNewCard(
+      const cardId = await createNewCard(
         finalFront,
         generatedCard.back,
         [selectedDeckId],
@@ -225,9 +230,13 @@ export default function CreateFlashcardRoute() {
 
       const isBidirectional = shouldCreateBidirectionalCards();
       toast.success('Flashcard created from sentence!', {
-        description: isBidirectional 
+        description: isBidirectional
           ? 'Flashcards (both directions) created with your sentence as example'
           : 'Flashcard created with your sentence as example',
+        action: {
+          label: 'Edit',
+          onClick: () => navigate(`/decks/${selectedDeckId}/browse?edit=${cardId}`)
+        }
       });
     } catch (error) {
       console.error('Error creating flashcard from sentence:', error);
@@ -257,7 +266,7 @@ export default function CreateFlashcardRoute() {
                 toast.error('Please select a deck');
                 return;
               }
-              await createNewCard(
+              const cardId = await createNewCard(
                 values.front,
                 values.back,
                 [selectedDeckId],
@@ -266,6 +275,17 @@ export default function CreateFlashcardRoute() {
                 true, // shouldPregenerateTTS
                 shouldCreateBidirectionalCards() // createReverse
               );
+
+              const isBidirectional = shouldCreateBidirectionalCards();
+              toast.success('Flashcard created!', {
+                description: isBidirectional
+                  ? 'Flashcards (both directions) have been created'
+                  : 'Your flashcard has been created',
+                action: {
+                  label: 'Edit',
+                  onClick: () => navigate(`/decks/${selectedDeckId}/browse?edit=${cardId}`)
+                }
+              });
             }}
             onAssistedSubmit={handleAssistedSubmit}
             selectedDeckId={selectedDeckId}

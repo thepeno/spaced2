@@ -72,32 +72,30 @@ export function useReviewCards(deckId?: string) {
     const newCardsLimit = Math.max(0, deck.newCardsPerDay - newCardsReviewedToday);
     const limitedNewCards = newCards.slice(0, newCardsLimit);
 
-    console.log('[NEW CARDS LIMIT DEBUG]', {
-      deckId,
-      deckName: deck.name,
-      newCardsPerDay: deck.newCardsPerDay,
-      newCardsReviewedToday,
-      totalNewCards: newCards.length,
-      newCardsLimit,
-      limitedNewCardsCount: limitedNewCards.length,
-      otherCardsCount: otherCards.length,
-      beforeLimitTotal: allReviewCards.length,
-      afterLimitTotal: otherCards.length + limitedNewCards.length
-    });
-
     // Combine limited new cards with other cards
     allReviewCards = [...otherCards, ...limitedNewCards];
-  } else {
-    console.log('[NEW CARDS LIMIT DEBUG] - NOT APPLIED', {
-      deckId,
-      hasDeck: !!deck,
-      hasNewCardsPerDay: deck?.newCardsPerDay !== undefined,
-      deckNewCardsPerDay: deck?.newCardsPerDay
-    });
   }
 
   // Sort deterministically by id for consistent "randomization"
-  return allReviewCards.sort((a, b) => hashId(a.id) - hashId(b.id));
+  // For new cards (State.New), add extra mixing to separate forward/reverse pairs
+  const newCards = allReviewCards.filter(card => card.state === State.New);
+  const oldCards = allReviewCards.filter(card => card.state !== State.New);
+
+  if (newCards.length > 0) {
+    // Sort new cards with a compound hash that factors in isReverse to spread them apart
+    newCards.sort((a, b) => {
+      // Create a modified hash that includes reverse flag
+      const hashA = hashId(a.id) + (a.isReverse ? 1000000 : 0);
+      const hashB = hashId(b.id) + (b.isReverse ? 1000000 : 0);
+      return hashA - hashB;
+    });
+  }
+
+  // Sort old cards normally
+  oldCards.sort((a, b) => hashId(a.id) - hashId(b.id));
+
+  // Interleave old cards first (priority), then new cards
+  return [...oldCards, ...newCards];
 }
 
 export function useDecks() {

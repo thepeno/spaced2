@@ -368,7 +368,7 @@ export function   CreateUpdateFlashcardForm({
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(handleSubmit)}
-            className='flex flex-col grow gap-3 h-full'
+            className='flex flex-col grow gap-3 h-full overflow-y-auto'
           >
             <FormTextarea
               resizable={false}

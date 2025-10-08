@@ -49,6 +49,11 @@ export default function ReviewRoute() {
     };
   }, []);
 
+  // Reset reveal state when card changes
+  useEffect(() => {
+    setIsRevealed(false);
+  }, [nextReviewCard?.id]);
+
   async function handleEdit(values: CardContentFormValues) {
     await handleCardEdit(values, nextReviewCard);
     setIsEditing(false);
